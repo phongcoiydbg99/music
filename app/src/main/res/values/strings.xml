@@ -9,4 +9,10 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="listen_now">Listen Now</string>
+    <string name="recent">Recents</string>
+    <string name="music_library">Music Library</string>
+    <string name="setting">Settings</string>
+    <string name="help_feedback"><![CDATA[Help & feedback]]></string>
+    <string name="my_app_title">My Music</string>
 </resources>

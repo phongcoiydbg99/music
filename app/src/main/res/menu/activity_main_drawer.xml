@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_listen_now"
+            android:icon="@drawable/ic_menu_listen_now"
+            android:title="@string/listen_now" />
+        <item
+            android:id="@+id/nav_recent"
+            android:icon="@drawable/ic_menu_recent"
+            android:title="@string/recent" />
+        <item
+            android:id="@+id/nav_music_library"
+            android:icon="@drawable/ic_menu_music_library"
+            android:title="@string/music_library" />
+    </group>
+    <item>
+        <menu>
+            <item
+                android:id="@+id/nav_setting"
+                android:title="@string/setting" />
+            <item
+                android:id="@+id/nav_help_feedback"
+                android:title="@string/help_feedback" />
+        </menu>
+    </item>
+</menu>
