@@ -15,4 +15,6 @@
     <string name="setting">Settings</string>
     <string name="help_feedback"><![CDATA[Help & feedback]]></string>
     <string name="my_app_title">My Music</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
