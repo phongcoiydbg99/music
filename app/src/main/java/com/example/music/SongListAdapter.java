@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,14 +15,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
-public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder> {
+public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder> implements Filterable {
 
     private LinkedList<String> mSongList;
+    private LinkedList<String> mSongListFull;
     private Context mContext;
     private LayoutInflater mInflater;
 
+    public SongListAdapter (Context context, LinkedList<String> songList)
+    {
+        this.mContext = context;
+        this.mSongList = songList;
+        this.mSongListFull = songList;
+        mInflater = LayoutInflater.from(context);
+    }
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,6 +51,42 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     public int getItemCount() {
         return mSongList.size();
     }
+
+    @Override
+    public Filter getFilter() {
+        return filter;
+    }
+
+    Filter filter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            System.out.println(mSongListFull);
+            LinkedList<String> filteredList = new LinkedList<>();
+
+            if (constraint.toString().isEmpty()) {
+                filteredList.addAll(mSongListFull);
+            } else {
+                for (String songName : mSongListFull)
+                {
+                    if (songName.toLowerCase().contains(constraint.toString().toLowerCase().trim()))
+                    {
+                        filteredList.addLast(songName);
+                    }
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = filteredList;
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mSongList.clear();
+            mSongList.addAll((Collection<? extends String>) results.values);
+            notifyDataSetChanged();
+        }
+    };
 
     class SongViewHolder extends RecyclerView.ViewHolder{
         public final TextView itemId;
@@ -73,10 +120,5 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         }
     }
 
-    public SongListAdapter (Context context, LinkedList<String> songList)
-    {
-        this.mContext = context;
-        this.mSongList = songList;
-        mInflater = LayoutInflater.from(context);
-    }
+
 }
