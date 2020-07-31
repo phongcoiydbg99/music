@@ -6,8 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <fragment
-        android:id="@+id/fragment"
+    <FrameLayout
+        android:id="@+id/fragment_all_songs"
         android:name="com.example.music.AllSongsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -60,7 +60,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     Filter filter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            System.out.println(mSongListFull);
+
             LinkedList<String> filteredList = new LinkedList<>();
 
             if (constraint.toString().isEmpty()) {
@@ -85,6 +85,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             mSongList.clear();
             mSongList.addAll((Collection<? extends String>) results.values);
             notifyDataSetChanged();
+
         }
     };
 

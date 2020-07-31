@@ -8,12 +8,17 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.LinkedList;
+
 public class ActivityMusic extends AppCompatActivity {
+    private LinkedList<String> mSongList = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +26,19 @@ public class ActivityMusic extends AppCompatActivity {
         setContentView(R.layout.activity_music);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        for (int i = 0; i < 20; i++) {
+            mSongList.addLast("word: "+ i);
+        }
+
+        AllSongsFragment allSongsFragment = AllSongsFragment.newInstance(mSongList);
+        // Get the FragmentManager and start a transaction.
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        // Add the AllSongsFragment.
+        fragmentTransaction.add(R.id.fragment_all_songs, allSongsFragment).addToBackStack(null).commit();
 
         System.out.println("bye");
     }
