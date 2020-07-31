@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -29,7 +30,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     {
         this.mContext = context;
         this.mSongList = songList;
-        this.mSongListFull = songList;
+        mSongListFull = new LinkedList<String>();
+        mSongListFull.addAll(mSongList);
         mInflater = LayoutInflater.from(context);
     }
     @NonNull
