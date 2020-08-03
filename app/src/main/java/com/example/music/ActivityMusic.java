@@ -33,12 +33,12 @@ public class ActivityMusic extends AppCompatActivity {
 
 //        AllSongsFragment allSongsFragment = AllSongsFragment.newInstance(mSongList);
         // Get the FragmentManager and start a transaction.
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
-
-        // Add the AllSongsFragment.
-        fragmentTransaction.add(R.id.main_content, FirstFragment.newInstance() ).commit();
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager
+//                .beginTransaction();
+//
+//        // Add the AllSongsFragment.
+//        fragmentTransaction.add(R.id.main_content, FirstFragment.newInstance() ).commit();
 //        fragmentTransaction.add(R.id.fragment_all_songs, allSongsFragment).addToBackStack(null).commit();
         System.out.println("bye");
     }

@@ -9,16 +9,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/song_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="0dp">
     </androidx.recyclerview.widget.RecyclerView>
 
-    <fragment
+    <FrameLayout
         android:id="@+id/fragment_play"
-        android:name="com.example.music.FirstFragment"
+        android:name="com.example.music.SongPlayFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout="@layout/fragment_first"
-        tools:layout_editor_absoluteX="57dp"
-        tools:layout_editor_absoluteY="667dp" />
-
+        tools:layout="@layout/fragment_song_play"
+        android:layout_alignParentBottom="true"
+        />
 </RelativeLayout>

@@ -4,11 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 
@@ -28,6 +34,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final int VERTICAL_ITEM_SPACE = 100;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -37,6 +44,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private LinkedList<String> mSongList = new LinkedList<>();
     private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
+    private Fragment fragment;
 
     public AllSongsFragment() {}
     public AllSongsFragment(LinkedList<String> songList) {
@@ -88,12 +96,41 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         // Get a handle to the RecyclerView.
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
+
         // Create an adapter and supply the data to be displayed.
         mAdapter = new SongListAdapter(view.getContext(), mSongList);
         // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
+
+        mAdapter.setOnSongItemClickListener(new SongListAdapter.SongItemClickListener() {
+            @Override
+            public void onSongItemClick(View v, String song, final int pos) {
+                SongPlayFragment songPlayFragment = new SongPlayFragment();
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+            }
+        });
+
+        // song menu click listener
+        mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
+            @Override
+            public void onSongBtnClickListener(ImageButton btn, View v, final String song, final int pos) {
+                Toast.makeText(v.getContext(),song,Toast.LENGTH_SHORT).show();
+                PopupMenu popup = new PopupMenu(v.getContext(), v);
+                // Inflate the Popup using XML file.
+                popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return false;
+                    }
+                });
+                popup.show();
+            }
+        });
         return view;
     }
 

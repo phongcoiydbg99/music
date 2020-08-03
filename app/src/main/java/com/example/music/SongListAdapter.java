@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private LinkedList<String> mSongListFull;
     private Context mContext;
     private LayoutInflater mInflater;
+    SongItemClickListener songItemClickListener;
+    SongBtnClickListener songBtnClickListener;
 
     public SongListAdapter (Context context, LinkedList<String> songList)
     {
@@ -42,10 +45,31 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SongViewHolder holder, int position) {
-        String mCurrent = mSongList.get(position);
+    public void onBindViewHolder(@NonNull final SongViewHolder holder, final int position) {
+        final String mCurrent = mSongList.get(position);
         holder.itemId.setText(String.valueOf(position));
         holder.songItemView.setText(mCurrent);
+
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if(songItemClickListener != null ) {
+                    songItemClickListener.onSongItemClick(view, mCurrent, position);
+                }
+            }
+        });
+
+
+        holder.imageButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if(songBtnClickListener != null) {
+                    songBtnClickListener.onSongBtnClickListener(holder.imageButton, view, mCurrent,position);
+                }
+            }
+        });
 
     }
 
@@ -91,7 +115,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         }
     };
 
-    class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class SongViewHolder extends RecyclerView.ViewHolder {
+        public final RelativeLayout relativeLayout;
         public final TextView itemId;
         public final TextView songItemView;
         public final ImageButton imageButton;
@@ -101,34 +126,37 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             itemId = itemView.findViewById(R.id.song_id);
             songItemView = itemView.findViewById(R.id.song_name);
             imageButton = itemView.findViewById(R.id.popup_button);
+            relativeLayout = itemView.findViewById(R.id.song_list_item);
             this.mAdapter = adapter;
 
-            imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(itemView.getContext(),songItemView.getText().toString(),Toast.LENGTH_SHORT).show();
-                    System.out.println(mContext.getApplicationContext());
-                    PopupMenu popup = new PopupMenu(itemView.getContext(), v);
-                    // Inflate the Popup using XML file.
-                    popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            return false;
-                        }
-                    });
-                    popup.show();
-                }
-            });
-
-            itemView.setOnClickListener(this);
+//            imageButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                }
+//            });
+//
+//            itemView.setOnClickListener(this);
         }
-
-        @Override
-        public void onClick(View v) {
-            Toast.makeText(mContext,songItemView.getText().toString(), Toast.LENGTH_SHORT).show();
-        }
+//
+//        @Override
+//        public void onClick(View v) {
+//            Toast.makeText(mContext,songItemView.getText().toString(), Toast.LENGTH_SHORT).show();
+//        }
+    }
+    public interface SongItemClickListener {
+        void onSongItemClick(View v,String song,int pos);
     }
 
+    public interface SongBtnClickListener {
+        void onSongBtnClickListener(ImageButton btn, View v, String song, int pos);
+    }
 
+    public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
+        this.songItemClickListener = songItemClickListener;
+    }
+
+    public void setOnSongBtnClickListener(SongBtnClickListener songBtnClickListener) {
+        this.songBtnClickListener = songBtnClickListener;
+    }
 }
