@@ -91,7 +91,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         }
     };
 
-    class SongViewHolder extends RecyclerView.ViewHolder{
+    class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final TextView itemId;
         public final TextView songItemView;
         public final ImageButton imageButton;
@@ -121,6 +121,12 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
                 }
             });
 
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(mContext,songItemView.getText().toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
