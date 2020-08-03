@@ -27,19 +27,19 @@ public class ActivityMusic extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        for (int i = 0; i < 20; i++) {
-            mSongList.addLast("word: "+ i);
-        }
+//        for (int i = 0; i < 20; i++) {
+//            mSongList.addLast("word: "+ i);
+//        }
 
-        AllSongsFragment allSongsFragment = AllSongsFragment.newInstance(mSongList);
+//        AllSongsFragment allSongsFragment = AllSongsFragment.newInstance(mSongList);
         // Get the FragmentManager and start a transaction.
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
         // Add the AllSongsFragment.
-        fragmentTransaction.add(R.id.fragment_all_songs, allSongsFragment).addToBackStack(null).commit();
-
+        fragmentTransaction.add(R.id.main_content, FirstFragment.newInstance() ).commit();
+//        fragmentTransaction.add(R.id.fragment_all_songs, allSongsFragment).addToBackStack(null).commit();
         System.out.println("bye");
     }
 

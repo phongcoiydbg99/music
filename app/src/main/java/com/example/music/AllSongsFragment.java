@@ -38,6 +38,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
 
+    public AllSongsFragment() {}
     public AllSongsFragment(LinkedList<String> songList) {
         this.mSongList = songList;
         // Required empty public constructor
@@ -52,14 +53,14 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
      * @return A new instance of fragment AllSongsFragment.
      */
     // TODO: Rename and change types and number of parameters
-//    public static AllSongsFragment newInstance(String param1, String param2) {
-//        AllSongsFragment fragment = new AllSongsFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    public static AllSongsFragment newInstance(String param1, String param2) {
+        AllSongsFragment fragment = new AllSongsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public static AllSongsFragment newInstance(LinkedList<String> songList) {
         return new AllSongsFragment(songList);
@@ -81,7 +82,9 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         System.out.println("Hi");
-
+        for (int i = 0; i < 20; i++) {
+            mSongList.addLast("word: "+ i);
+        }
         View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         // Get a handle to the RecyclerView.
         mRecyclerView = view.findViewById(R.id.song_recyclerview);

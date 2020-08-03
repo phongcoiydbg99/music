@@ -106,7 +106,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(itemView.getContext(),"Asd",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(itemView.getContext(),songItemView.getText().toString(),Toast.LENGTH_SHORT).show();
+                    System.out.println(mContext.getApplicationContext());
                     PopupMenu popup = new PopupMenu(itemView.getContext(), v);
                     // Inflate the Popup using XML file.
                     popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());

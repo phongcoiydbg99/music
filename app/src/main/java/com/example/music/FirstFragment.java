@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import java.util.LinkedList;
+
 public class FirstFragment extends Fragment {
 
     @Override
@@ -30,5 +32,9 @@ public class FirstFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
+    }
+
+    public static FirstFragment newInstance() {
+        return new FirstFragment();
     }
 }
