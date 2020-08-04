@@ -45,6 +45,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
     private Fragment fragment;
+    private boolean songPlay = false;
 
     public AllSongsFragment() {}
     public AllSongsFragment(LinkedList<String> songList) {
@@ -108,9 +109,11 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mAdapter.setOnSongItemClickListener(new SongListAdapter.SongItemClickListener() {
             @Override
             public void onSongItemClick(View v, String song, final int pos) {
-                SongPlayFragment songPlayFragment = new SongPlayFragment();
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+                if (!songPlay) {
+                    SongPlayFragment songPlayFragment = SongPlayFragment.newInstance(song, pos);
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+                }
             }
         });
 

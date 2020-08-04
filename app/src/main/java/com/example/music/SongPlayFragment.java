@@ -1,5 +1,7 @@
 package com.example.music;
 
+import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +9,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.LinkedList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,21 +28,30 @@ public class SongPlayFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private String songName ;
+    private int songImageResource;
+    private RelativeLayout mRelativeLayout;
+    private ImageView mSongImage;
+    private TextView mSongName;
+    private ImageButton mSongPlayBtn;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public SongPlayFragment() {
+    public SongPlayFragment(){}
+    public SongPlayFragment(String name, int resource) {
         // Required empty public constructor
+        this.songName = name;
+        this.songImageResource = resource;
     }
 
+    public static SongPlayFragment newInstance(String name, int resource) {
+        return new SongPlayFragment(name,resource);
+    }
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment SongPlayFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -59,6 +77,28 @@ public class SongPlayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_song_play, container, false);
+        final View view = inflater.inflate(R.layout.fragment_song_play, container, false);
+        mRelativeLayout = view.findViewById(R.id.layout_song_play);
+        mSongImage = view.findViewById(R.id.song_image);
+        mSongName = view.findViewById(R.id.song_name_play);
+        mSongPlayBtn = view.findViewById(R.id.song_play_button);
+
+        mSongName.setText(songName);
+        mRelativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(view.getContext(),"AAHAHAHAH",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(view.getContext(),MediaPlaybackActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(view.getContext(),"Buton",Toast.LENGTH_SHORT).show();
+            }
+        });
+        return view;
     }
 }
