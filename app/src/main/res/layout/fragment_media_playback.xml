@@ -1,14 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MediaPlaybackFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
+        android:id="@+id/media_song_image"
+        android:src="@drawable/background_transparent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Media" />
+        />
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:background="#BCF4EDED"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/song_media_image"
+            android:src="@drawable/index"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/media_popup_button"
+            android:layout_toRightOf="@+id/song_media_image"
+            android:orientation="vertical"
+            android:padding="10dp">
+            <TextView
+                android:id="@+id/media_song_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bai hat"
+                android:paddingBottom="10dp"
+                android:textSize="20dp"
+                android:layout_centerVertical="true"
+                />
+            <TextView
+                android:id="@+id/song_author_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4:05"
+                android:layout_toRightOf="@+id/song_id"
+                android:textSize="15dp"
+                android:layout_centerVertical="true"
+                />
+        </LinearLayout>
 
-</FrameLayout>
+        <ImageButton
+            android:id="@+id/media_queue_button"
+            android:background="#0000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_queue_music_24"
+            android:layout_toLeftOf="@+id/media_popup_button"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            />
+        <ImageButton
+            android:id="@+id/media_popup_button"
+            android:background="#0000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_popup"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            />
+    </RelativeLayout>
+    <ImageButton
+        android:id="@+id/media_repeat"
+        android:background="#0000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_repeat_24"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/layout_play"
+        android:padding="10dp"
+        />
+    <ImageButton
+        android:id="@+id/media_shuffle"
+        android:background="#0000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_shuffle"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_above="@+id/layout_play"
+        android:padding="10dp"
+        />
+    <RelativeLayout
+        android:id="@+id/layout_play"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="#BCF4EDED"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/media_thumb_up"
+            android:background="#0000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_thumb_up"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:padding="10dp"
+            android:layout_margin="20dp"
+            />
+        <ImageButton
+            android:id="@+id/media_skip_previous"
+            android:background="#0000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_skip_previous"
+            android:layout_toRightOf="@+id/media_thumb_up"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+
+            />
+        <ImageButton
+            android:id="@+id/media_play_button"
+            android:background="#0000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_pause_circle"
+            android:layout_toRightOf="@+id/media_skip_previous"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            />
+        <ImageButton
+            android:id="@+id/media_skip_next"
+            android:background="#0000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_skip_next"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/media_thumb_down"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            />
+        <ImageButton
+            android:id="@+id/media_thumb_down"
+            android:background="#0000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_thumb_down"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:layout_margin="20dp"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>

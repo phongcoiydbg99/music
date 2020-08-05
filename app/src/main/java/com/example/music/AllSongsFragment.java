@@ -92,7 +92,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         // Inflate the layout for this fragment
         System.out.println("Hi");
         for (int i = 0; i < 20; i++) {
-            mSongList.addLast("word: "+ i);
+            mSongList.addLast("Song "+ i);
         }
         View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         // Get a handle to the RecyclerView.
