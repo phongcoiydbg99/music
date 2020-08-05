@@ -120,8 +120,7 @@
             android:src="@drawable/ic_skip_previous"
             android:layout_toRightOf="@+id/media_thumb_up"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:padding="10dp"
+            android:layout_margin="10dp"
 
             />
         <ImageButton
@@ -132,7 +131,9 @@
             android:src="@drawable/ic_pause_circle"
             android:layout_toRightOf="@+id/media_skip_previous"
             android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
             android:padding="10dp"
+            android:layout_margin="5dp"
             />
         <ImageButton
             android:id="@+id/media_skip_next"
@@ -142,7 +143,6 @@
             android:src="@drawable/ic_skip_next"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/media_thumb_down"
-            android:padding="10dp"
             android:layout_margin="10dp"
             />
         <ImageButton

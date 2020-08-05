@@ -34,7 +34,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final int VERTICAL_ITEM_SPACE = 100;
+    private static final int VERTICAL_ITEM_SPACE = 200;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
