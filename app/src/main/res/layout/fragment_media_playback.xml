@@ -45,7 +45,7 @@
                 android:id="@+id/song_author_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4:05"
+                android:text="Ten ca si"
                 android:layout_toRightOf="@+id/song_id"
                 android:textSize="15dp"
                 android:layout_centerVertical="true"
