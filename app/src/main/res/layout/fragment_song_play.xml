@@ -5,13 +5,13 @@
     android:layout_height="wrap_content"
     android:id="@+id/layout_song_play"
     tools:context=".SongPlayFragment">
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@drawable/background_shadow"/>
-
     <RelativeLayout
+        android:id="@+id/shadow_layout"
+        android:layout_width="match_parent"
+        android:background="@drawable/background_shadow"
+        android:layout_height="6dp"/>
+    <RelativeLayout
+        android:layout_below="@+id/shadow_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF">
@@ -22,16 +22,33 @@
             android:layout_height="60dp"
             android:layout_margin="10dp"
             />
-        <TextView
-            android:id="@+id/song_name_play"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/media_popup_button"
             android:layout_toRightOf="@+id/song_image"
-            android:text="Ten bao hat"
-            android:layout_centerVertical="true"
-            android:textStyle="bold"
-            android:textSize="30dp"
-            />
+            android:orientation="vertical"
+            android:padding="10dp">
+            <TextView
+                android:id="@+id/song_name_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bai hat"
+                android:paddingBottom="5dp"
+                android:textSize="25dp"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"
+                />
+            <TextView
+                android:id="@+id/song_author_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ten sa si"
+                android:layout_toRightOf="@+id/song_id"
+                android:textSize="15dp"
+                android:layout_centerVertical="true"
+                />
+        </LinearLayout>
         <ImageButton
             android:id="@+id/song_play_button"
             android:layout_width="wrap_content"
