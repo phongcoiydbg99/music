@@ -2,6 +2,7 @@ package com.example.music;
 
 import android.content.Intent;
 import android.media.Image;
+import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.util.LinkedList;
 
@@ -28,25 +31,26 @@ public class SongPlayFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private String songName ;
-    private int songImageResource;
+    private Song mSong;
+    private int mSongPos;
     private RelativeLayout mRelativeLayout;
     private ImageView mSongImage;
     private TextView mSongName;
+    private TextView mSongArtist;
     private ImageButton mSongPlayBtn;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     public SongPlayFragment(){}
-    public SongPlayFragment(String name, int resource) {
+    public SongPlayFragment(Song song, int pos) {
         // Required empty public constructor
-        this.songName = name;
-        this.songImageResource = resource;
+        this.mSong = song;
+        this.mSongPos = pos;
     }
 
-    public static SongPlayFragment newInstance(String name, int resource) {
-        return new SongPlayFragment(name,resource);
+    public static SongPlayFragment newInstance(Song song, int pos) {
+        return new SongPlayFragment(song,pos);
     }
     /**
      * Use this factory method to create a new instance of
@@ -81,14 +85,30 @@ public class SongPlayFragment extends Fragment {
         mRelativeLayout = view.findViewById(R.id.layout_song_play);
         mSongImage = view.findViewById(R.id.song_image);
         mSongName = view.findViewById(R.id.song_name_play);
+        mSongArtist = view.findViewById(R.id.song_artist_name);
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
 
-        mSongName.setText(songName);
+        mSongName.setText(mSong.getTitle());
+        mSongArtist.setText(mSong.getArtistName());
+        byte[] albumArt = getAlbumArt(mSong.getData());
+        if (albumArt != null)
+        {
+            Glide.with(view.getContext()).asBitmap()
+                    .load(albumArt)
+                    .into(mSongImage);
+        }
+        else
+        {
+            Glide.with(view.getContext())
+                    .load(R.drawable.background_transparent)
+                    .into(mSongImage);
+        }
         mRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(view.getContext(),"AAHAHAHAH",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(view.getContext(),MediaPlaybackActivity.class);
+                intent.putExtra("pos",mSongPos);
                 startActivity(intent);
             }
         });
@@ -100,5 +120,13 @@ public class SongPlayFragment extends Fragment {
             }
         });
         return view;
+    }
+    private byte[] getAlbumArt(String uri)
+    {
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(uri);
+        byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();
+        mediaMetadataRetriever.release();
+        return albumArt;
     }
 }

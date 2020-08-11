@@ -34,21 +34,22 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final int VERTICAL_ITEM_SPACE = 200;
+    private static final int VERTICAL_ITEM_SPACE = 150;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private LinkedList<String> mSongList = new LinkedList<>();
+    private LinkedList<Song> mSongList = new LinkedList<>();
     private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
     private Fragment fragment;
     private boolean songPlay = false;
+    private SongPlayClickListener songPlayClickListener;
 
     public AllSongsFragment() {}
-    public AllSongsFragment(LinkedList<String> songList) {
+    public AllSongsFragment(LinkedList<Song> songList) {
         this.mSongList = songList;
         // Required empty public constructor
     }
@@ -71,8 +72,19 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return fragment;
     }
 
-    public static AllSongsFragment newInstance(LinkedList<String> songList) {
+    public static AllSongsFragment newInstance(LinkedList<Song> songList) {
         return new AllSongsFragment(songList);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof SongPlayClickListener) {
+            songPlayClickListener = (SongPlayClickListener) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implemenet AllSongsFragment.SongPlayClickListener");
+        }
     }
 
     @Override
@@ -91,28 +103,27 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         System.out.println("Hi");
-        for (int i = 0; i < 20; i++) {
-            mSongList.addLast("Song "+ i);
-        }
-        View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
+        final View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         // Get a handle to the RecyclerView.
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
-
+        mRecyclerView.setHasFixedSize(true);
         // Create an adapter and supply the data to be displayed.
-        mAdapter = new SongListAdapter(view.getContext(), mSongList);
-        // Connect the adapter with the RecyclerView.
-        mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
+        if ( mSongList.size() > 0)
+        {
+            mAdapter = new SongListAdapter(view.getContext(), mSongList);
+            // Connect the adapter with the RecyclerView.
+            mRecyclerView.setAdapter(mAdapter);
+            // Give the RecyclerView a default layout manager.
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
+        }
 
         mAdapter.setOnSongItemClickListener(new SongListAdapter.SongItemClickListener() {
             @Override
-            public void onSongItemClick(View v, String song, final int pos) {
-                if (!songPlay) {
-                    SongPlayFragment songPlayFragment = SongPlayFragment.newInstance(song, pos);
-                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+            public void onSongItemClick(View v, final int pos) {
+                if (songPlayClickListener != null)
+                {
+                    songPlayClickListener.onSongPlayClick(v, pos);
                 }
             }
         });
@@ -120,8 +131,8 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         // song menu click listener
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
             @Override
-            public void onSongBtnClickListener(ImageButton btn, View v, final String song, final int pos) {
-                Toast.makeText(v.getContext(),song,Toast.LENGTH_SHORT).show();
+            public void onSongBtnClickListener(ImageButton btn, View v, final Song song, final int pos) {
+                Toast.makeText(v.getContext(),song.getAlbumName(),Toast.LENGTH_SHORT).show();
                 PopupMenu popup = new PopupMenu(v.getContext(), v);
                 // Inflate the Popup using XML file.
                 popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
@@ -167,5 +178,9 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     public boolean onQueryTextChange(String newText) {
         mAdapter.getFilter().filter(newText);
         return false;
+    }
+
+    public interface SongPlayClickListener {
+        void onSongPlayClick(View v, int pos);
     }
 }

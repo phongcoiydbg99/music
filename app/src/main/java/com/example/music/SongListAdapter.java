@@ -22,18 +22,18 @@ import java.util.LinkedList;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder> implements Filterable {
 
-    private LinkedList<String> mSongList;
-    private LinkedList<String> mSongListFull;
+    private LinkedList<Song> mSongList;
+    private LinkedList<Song> mSongListFull;
     private Context mContext;
     private LayoutInflater mInflater;
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
 
-    public SongListAdapter (Context context, LinkedList<String> songList)
+    public SongListAdapter (Context context, LinkedList<Song> songList)
     {
         this.mContext = context;
         this.mSongList = songList;
-        mSongListFull = new LinkedList<String>();
+        mSongListFull = new LinkedList<Song>();
         mSongListFull.addAll(mSongList);
         mInflater = LayoutInflater.from(context);
     }
@@ -46,16 +46,16 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     @Override
     public void onBindViewHolder(@NonNull final SongViewHolder holder, final int position) {
-        final String mCurrent = mSongList.get(position);
+        final Song mCurrent = mSongList.get(position);
         holder.itemId.setText(String.valueOf(position));
-        holder.songItemView.setText(mCurrent);
-
+        holder.songItemView.setText(mCurrent.getTitle());
+        holder.songDurationView.setText(String.valueOf(mCurrent.getDuration()));
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 if(songItemClickListener != null ) {
-                    songItemClickListener.onSongItemClick(view, mCurrent, position);
+                    songItemClickListener.onSongItemClick(view, position);
                 }
             }
         });
@@ -87,14 +87,14 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
-            LinkedList<String> filteredList = new LinkedList<>();
+            LinkedList<Song> filteredList = new LinkedList<>();
 
             if (constraint.toString().isEmpty()) {
                 filteredList.addAll(mSongListFull);
             } else {
-                for (String songName : mSongListFull)
+                for (Song songName : mSongListFull)
                 {
-                    if (songName.toLowerCase().contains(constraint.toString().toLowerCase().trim()))
+                    if (songName.getAlbumName().toLowerCase().contains(constraint.toString().toLowerCase().trim()))
                     {
                         filteredList.addLast(songName);
                     }
@@ -109,7 +109,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             mSongList.clear();
-            mSongList.addAll((Collection<? extends String>) results.values);
+            mSongList.addAll((Collection<? extends Song>) results.values);
             notifyDataSetChanged();
 
         }
@@ -119,37 +119,25 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         public final RelativeLayout relativeLayout;
         public final TextView itemId;
         public final TextView songItemView;
+        public final TextView songDurationView;
         public final ImageButton imageButton;
         final SongListAdapter mAdapter;
         public SongViewHolder(@NonNull final View itemView, SongListAdapter adapter) {
             super(itemView);
             itemId = itemView.findViewById(R.id.song_id);
             songItemView = itemView.findViewById(R.id.song_name);
+            songDurationView = itemView.findViewById(R.id.song_duration);
             imageButton = itemView.findViewById(R.id.popup_button);
             relativeLayout = itemView.findViewById(R.id.song_list_item);
             this.mAdapter = adapter;
-
-//            imageButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//                }
-//            });
-//
-//            itemView.setOnClickListener(this);
         }
-//
-//        @Override
-//        public void onClick(View v) {
-//            Toast.makeText(mContext,songItemView.getText().toString(), Toast.LENGTH_SHORT).show();
-//        }
     }
     public interface SongItemClickListener {
-        void onSongItemClick(View v,String song,int pos);
+        void onSongItemClick(View v, int pos);
     }
 
     public interface SongBtnClickListener {
-        void onSongBtnClickListener(ImageButton btn, View v, String song, int pos);
+        void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);
     }
 
     public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {

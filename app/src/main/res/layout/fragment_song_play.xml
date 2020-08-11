@@ -35,12 +35,12 @@
                 android:layout_height="wrap_content"
                 android:text="Bai hat"
                 android:paddingBottom="5dp"
-                android:textSize="25dp"
+                android:textSize="20dp"
                 android:textStyle="bold"
                 android:layout_centerVertical="true"
                 />
             <TextView
-                android:id="@+id/song_author_name"
+                android:id="@+id/song_artist_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ten sa si"
