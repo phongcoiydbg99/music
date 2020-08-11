@@ -1,17 +1,18 @@
-package com.example.music;
+package com.example.music.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,9 +20,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.example.music.R;
+import com.example.music.Song;
+import com.example.music.VerticalSpaceItemDecoration;
+import com.example.music.adapters.SongListAdapter;
+import com.example.music.interfaces.SongItemClickListener;
 
 import java.util.LinkedList;
 
@@ -46,13 +52,9 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private SongListAdapter mAdapter;
     private Fragment fragment;
     private boolean songPlay = false;
-    private SongPlayClickListener songPlayClickListener;
+    private SongItemClickListener mSongItemClickListener;
 
     public AllSongsFragment() {}
-    public AllSongsFragment(LinkedList<Song> songList) {
-        this.mSongList = songList;
-        // Required empty public constructor
-    }
 
     /**
      * Use this factory method to create a new instance of
@@ -72,20 +74,16 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return fragment;
     }
 
-    public static AllSongsFragment newInstance(LinkedList<Song> songList) {
-        return new AllSongsFragment(songList);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof SongPlayClickListener) {
-            songPlayClickListener = (SongPlayClickListener) context;
-        } else {
-            throw new ClassCastException(context.toString()
-                    + " must implemenet AllSongsFragment.SongPlayClickListener");
-        }
-    }
+//    @Override
+//    public void onAttach(@NonNull Context context) {
+//        super.onAttach(context);
+//        if (context instanceof SongPlayClickListener) {
+//            songPlayClickListener = (SongPlayClickListener) context;
+//        } else {
+//            throw new ClassCastException(context.toString()
+//                    + " must implemenet AllSongsFragment.SongPlayClickListener");
+//        }
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,6 +106,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
         // Create an adapter and supply the data to be displayed.
+        mSongList = getAllSongs(view.getContext());
         if ( mSongList.size() > 0)
         {
             mAdapter = new SongListAdapter(view.getContext(), mSongList);
@@ -117,16 +116,19 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
             mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
         }
-
-        mAdapter.setOnSongItemClickListener(new SongListAdapter.SongItemClickListener() {
-            @Override
-            public void onSongItemClick(View v, final int pos) {
-                if (songPlayClickListener != null)
-                {
-                    songPlayClickListener.onSongPlayClick(v, pos);
-                }
-            }
-        });
+        if (mAdapter != null) {
+            mAdapter.setOnSongItemClickListener(mSongItemClickListener);
+        }
+//        mAdapter.setOnSongItemClickListener(new SongListAdapter.SongItemClickListener() {
+//            @Override
+//            public void onSongItemClick(View v, final int pos) {
+//                if (songPlayClickListener != null)
+//                {
+//                    songPlayClickListener.onSongPlayClick(v, pos);
+//                }
+//                System.out.println("helllllllll");
+//            }
+//        });
 
         // song menu click listener
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
@@ -147,7 +149,39 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         });
         return view;
     }
+    public static LinkedList<Song> getAllSongs(Context context) {
+        LinkedList<Song> songList = new LinkedList<>();
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TRACK,
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.COMPOSER,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DATA
+        };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(0);
+                int trackNumber = cursor.getInt(1);
+                long duration = cursor.getInt(2);
+                String title = cursor.getString(3);
+                String artistName = cursor.getString(4);
+                String composer = cursor.getString(5);
+                String albumName = cursor.getString(6);
+                String data = cursor.getString(7);
 
+                Song song = new Song(id,title,artistName,composer,albumName,data,trackNumber,duration);
+                Log.d("TAG", "Data: "+ data + " Album: " + albumName);
+                songList.add(song);
+            }
+            cursor.close();
+        }
+        return  songList;
+    }
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -180,7 +214,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return false;
     }
 
-    public interface SongPlayClickListener {
-        void onSongPlayClick(View v, int pos);
+//    public interface SongPlayClickListener {
+//        void onSongPlayClick(View v, int pos);
+//    }
+    public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
+        mSongItemClickListener = songItemClickListener;
+        if (mAdapter != null) {
+            mAdapter.setOnSongItemClickListener(songItemClickListener);
+        }
     }
 }

@@ -5,32 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main_content"
-    tools:context=".ActivityMusic">
-
-    <com.google.android.material.appbar.AppBarLayout
+    tools:context=".activities.ActivityMusic">
+    <FrameLayout
+        android:id="@+id/full"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        android:layout_height="match_parent">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FF5722"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="@string/app_name"-->
-<!--                android:textColor="#FFFFFF"-->
-<!--                android:textSize="40dp"-->
-<!--                android:padding="10dp"-->
-<!--                android:textStyle="bold"/>-->
-        </androidx.appcompat.widget.Toolbar>
+            android:layout_height="match_parent">
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/app_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF5722"
+                    app:popupTheme="@style/AppTheme.PopupOverlay">
+                    <!--            <TextView-->
+                    <!--                android:layout_width="wrap_content"-->
+                    <!--                android:layout_height="wrap_content"-->
+                    <!--                android:text="@string/app_name"-->
+                    <!--                android:textColor="#FFFFFF"-->
+                    <!--                android:textSize="40dp"-->
+                    <!--                android:padding="10dp"-->
+                    <!--                android:textStyle="bold"/>-->
+                </androidx.appcompat.widget.Toolbar>
 
 
-    </com.google.android.material.appbar.AppBarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_main" />
-
+            <include layout="@layout/content_main" android:layout_below="@+id/app_bar_layout" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

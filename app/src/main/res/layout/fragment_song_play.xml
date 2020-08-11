@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/layout_song_play"
-    tools:context=".SongPlayFragment">
+    tools:context=".fragments.SongPlayFragment">
     <RelativeLayout
         android:id="@+id/shadow_layout"
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -7,34 +7,31 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.music.controllers.LayoutController;
+import com.example.music.controllers.PortLayoutController;
+import com.example.music.controllers.LandLayoutController;
+import com.example.music.R;
+import com.example.music.Song;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
-public class ActivityMusic extends AppCompatActivity implements AllSongsFragment.SongPlayClickListener {
+public class ActivityMusic extends AppCompatActivity {
     public static final String TAG = "ActivityMusic";
     public static final int REQUEST_CODE = 1;
     public static LinkedList<Song> mSongList = new LinkedList<>();
-
+    private LayoutController mLayoutController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,38 +42,42 @@ public class ActivityMusic extends AppCompatActivity implements AllSongsFragment
         System.out.println(density);
         permission();
 
-        AllSongsFragment allSongsFragment = AllSongsFragment.newInstance(mSongList);
-        if (findViewById(R.id.contentAllSongs) != null) {
-            // Found the ID of only one Fragment ==> Portrait mode
-            // Remove the existing fragment before add new one
-            if (savedInstanceState != null) {
-                getSupportFragmentManager().executePendingTransactions();
-                Fragment fragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_all_songs);
-                if (fragmentById != null) {
-                    getSupportFragmentManager().beginTransaction().remove(fragmentById).commit();
-                }
-            }
+        boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
+        mLayoutController = isPortrait ? new PortLayoutController(this)
+                : new LandLayoutController(this);
 
-            // Add new one
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_all_songs, allSongsFragment).commit();
-        } else {
-            // Landscape mode
-            // Remove the existing fragments before add new one
-            if (savedInstanceState != null) {
-                getSupportFragmentManager().executePendingTransactions();
-                Fragment firstFragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_all_songs);
-                if (firstFragmentById != null) {
-                    getSupportFragmentManager().beginTransaction().remove(firstFragmentById).commit();
-                }
-                Fragment secondFragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_play);
-                if (secondFragmentById != null) {
-                    getSupportFragmentManager().beginTransaction().remove(secondFragmentById).commit();
-                }
-            }
-
-            // Add new one
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_all_songs, allSongsFragment).commit();
-        }
+        mLayoutController.onCreate(savedInstanceState, "currentItemTitle");
+//        if (findViewById(R.id.contentAllSongs) != null) {
+//            // Found the ID of only one Fragment ==> Portrait mode
+//            // Remove the existing fragment before add new one
+//            if (savedInstanceState != null) {
+//                getSupportFragmentManager().executePendingTransactions();
+//                Fragment fragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_all_songs);
+//                if (fragmentById != null) {
+//                    getSupportFragmentManager().beginTransaction().remove(fragmentById).commit();
+//                }
+//            }
+//
+//            // Add new one
+//            getSupportFragmentManager().beginTransaction().add(R.id.fragment_all_songs, allSongsFragment).commit();
+//        } else {
+//            // Landscape mode
+//            // Remove the existing fragments before add new one
+//            if (savedInstanceState != null) {
+//                getSupportFragmentManager().executePendingTransactions();
+//                Fragment firstFragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_all_songs);
+//                if (firstFragmentById != null) {
+//                    getSupportFragmentManager().beginTransaction().remove(firstFragmentById).commit();
+//                }
+//                Fragment secondFragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_play);
+//                if (secondFragmentById != null) {
+//                    getSupportFragmentManager().beginTransaction().remove(secondFragmentById).commit();
+//                }
+//            }
+//
+//            // Add new one
+//            getSupportFragmentManager().beginTransaction().add(R.id.fragment_all_songs, allSongsFragment).commit();
+//        }
     }
 
     private void permission() {
@@ -157,13 +158,13 @@ public class ActivityMusic extends AppCompatActivity implements AllSongsFragment
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSongPlayClick(View v, int pos) {
-        Toast.makeText(this, "AAHAHAHAH", Toast.LENGTH_SHORT).show();
-        Song song = Song.EMPTY();
-        if (mSongList.get(pos) != null) song = mSongList.get(pos);
-        SongPlayFragment songPlayFragment = SongPlayFragment.newInstance(song, pos);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
-    }
+//    @Override
+//    public void onSongPlayClick(View v, int pos) {
+//        Toast.makeText(this, "AAHAHAHAH", Toast.LENGTH_SHORT).show();
+//        Song song = Song.EMPTY();
+//        if (mSongList.get(pos) != null) song = mSongList.get(pos);
+//        SongPlayFragment songPlayFragment = SongPlayFragment.newInstance(song, pos);
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+//    }
 }

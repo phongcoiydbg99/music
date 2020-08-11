@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MediaPlaybackActivity">
+    tools:context=".activities.MediaPlaybackActivity">
     <fragment
         android:id="@+id/fragment_media_palyback"
-        android:name="com.example.music.MediaPlaybackFragment"
+        android:name="com.example.music.fragments.MediaPlaybackFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_media_playback"/>

@@ -1,8 +1,7 @@
-package com.example.music;
+package com.example.music.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
@@ -10,13 +9,14 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.example.music.R;
+import com.example.music.Song;
+import com.example.music.interfaces.SongItemClickListener;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -132,9 +132,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             this.mAdapter = adapter;
         }
     }
-    public interface SongItemClickListener {
-        void onSongItemClick(View v, int pos);
-    }
+
 
     public interface SongBtnClickListener {
         void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);

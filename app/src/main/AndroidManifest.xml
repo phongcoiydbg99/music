@@ -12,18 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MediaPlaybackActivity"
+            android:name=".activities.MediaPlaybackActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
 
         <service
-            android:name=".MediaPlaybackService"
+            android:name=".services.MediaPlaybackService"
             android:enabled="true"
             android:exported="true" />
 
         <activity
-            android:name=".ActivityMusic"
+            android:name=".activities.ActivityMusic"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
