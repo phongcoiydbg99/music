@@ -2,26 +2,28 @@
 package com.example.music.controllers;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.music.R;
+import com.example.music.Song;
+import com.example.music.SongData;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
-import com.example.music.fragments.SongPlayFragment;
 
 
 public class PortLayoutController extends LayoutController {
+    public static final String TAG = "PortLayoutController";
     public PortLayoutController(AppCompatActivity activity) {
         super(activity);
     }
-    private SongPlayFragment songPlayFragment;
+
+    private SongData songData;
     @Override
     public void onCreate(Bundle savedInstanceState, String currentItemTitle) {
         // Check that the activity is using the layout version with
@@ -30,7 +32,8 @@ public class PortLayoutController extends LayoutController {
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = new AllSongsFragment();
             mAllSongsFragment.setOnSongItemClickListener(this);
-
+            Log.d("TAGG", "onCreate: ");
+            songData = new SongData(mActivity);
             // Add the fragment to the 'fragment_container' FrameLayout
             mActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_all_songs, mAllSongsFragment).commit();
@@ -38,31 +41,22 @@ public class PortLayoutController extends LayoutController {
     }
 
     @Override
-    public void onSongItemClick(View v, int pos) {
+    public void onSongItemClick(View v, final int pos) {
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-         LinearLayout linearLayout = mActivity.findViewById(R.id.play_song_layout);
-        System.out.println(linearLayout == null);
-         linearLayout.setVisibility(View.VISIBLE);
-         linearLayout.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
-                 mActivity.getSupportFragmentManager().beginTransaction()
-                         .replace(R.id.full, mediaPlaybackFragment).addToBackStack(null).commit();
-             }
-         });
-//        songPlayFragment = new SongPlayFragment();
-//        songPlayFragment.setOnSongPlayClickListener(this);
-//        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
-    }
-
-    @Override
-    public void onSongPlayClick(View v, int pos) {
-//        Toolbar toolbar = mActivity.findViewById(R.id.toolbar);
-        MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
-        mActivity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.full, mediaPlaybackFragment).addToBackStack(null).commit();
+        LinearLayout linearLayout = mActivity.findViewById(R.id.play_song_layout);
+        Song song = songData.getSongAt(pos);
+        mAllSongsFragment.updatePlaySongLayout(mActivity,song);
+        linearLayout.setVisibility(View.VISIBLE);
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onSongPlayClick: "+ pos);
+                MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(pos);
+                mActivity.getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.enter_down_to_up,R.anim.exit_up_to_down)
+                        .replace(R.id.full, mediaPlaybackFragment).addToBackStack(null).commit();
+            }
+        });
     }
 
 //    @Override

@@ -4,11 +4,10 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.music.fragments.AllSongsFragment;
-import com.example.music.interfaces.SongPlayClickListener;
 import com.example.music.interfaces.SongItemClickListener;
 
 
-public abstract class LayoutController implements SongItemClickListener, SongPlayClickListener {
+public abstract class LayoutController implements SongItemClickListener {
     public static final String LAST_ITEM_TITLE_EXTRA = "last_item_title";
     
     protected AppCompatActivity mActivity;

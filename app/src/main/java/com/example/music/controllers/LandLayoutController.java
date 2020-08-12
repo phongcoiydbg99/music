@@ -51,20 +51,6 @@ public class LandLayoutController extends LayoutController {
 //        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
     }
 
-    @Override
-    public void onSongPlayClick(View v, int pos) {
-
-    }
-
-//    @Override
-//    public void onSongPlayClick(View v, int pos) {
-//        Toast.makeText(mActivity, "AAHAHAHAH", Toast.LENGTH_SHORT).show();
-////        Song song = Song.EMPTY();
-////        if (mSongList.get(pos) != null) song = mSongList.get(pos);
-//        SongPlayFragment songPlayFragment = new SongPlayFragment();
-//        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
-//    }
 
 //    @Override
 //    public void onNewClick(NewItem item) {

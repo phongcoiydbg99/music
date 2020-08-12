@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
+    android:background="#FFFFFF"
     android:theme="@style/AppTheme.NoActionBar"
     tools:context=".fragments.MediaPlaybackFragment">
 
@@ -13,11 +13,12 @@
         android:src="@drawable/background_transparent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scaleType="fitXY"
         />
     <RelativeLayout
         android:orientation="horizontal"
         android:layout_alignParentTop="true"
-        android:background="#BCF4EDED"
+        android:background="#E8F4EDED"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
@@ -101,7 +102,7 @@
         android:id="@+id/layout_play"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="#BCF4EDED"
+        android:background="#E8F4EDED"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ProgressBar
@@ -168,6 +169,7 @@
                 android:layout_toLeftOf="@+id/media_skip_next"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
+                android:layout_marginBottom="15dp"
                 />
             <ImageButton
                 android:id="@+id/media_skip_next"

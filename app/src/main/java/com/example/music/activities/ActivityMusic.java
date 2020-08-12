@@ -47,37 +47,6 @@ public class ActivityMusic extends AppCompatActivity {
                 : new LandLayoutController(this);
 
         mLayoutController.onCreate(savedInstanceState, "currentItemTitle");
-//        if (findViewById(R.id.contentAllSongs) != null) {
-//            // Found the ID of only one Fragment ==> Portrait mode
-//            // Remove the existing fragment before add new one
-//            if (savedInstanceState != null) {
-//                getSupportFragmentManager().executePendingTransactions();
-//                Fragment fragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_all_songs);
-//                if (fragmentById != null) {
-//                    getSupportFragmentManager().beginTransaction().remove(fragmentById).commit();
-//                }
-//            }
-//
-//            // Add new one
-//            getSupportFragmentManager().beginTransaction().add(R.id.fragment_all_songs, allSongsFragment).commit();
-//        } else {
-//            // Landscape mode
-//            // Remove the existing fragments before add new one
-//            if (savedInstanceState != null) {
-//                getSupportFragmentManager().executePendingTransactions();
-//                Fragment firstFragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_all_songs);
-//                if (firstFragmentById != null) {
-//                    getSupportFragmentManager().beginTransaction().remove(firstFragmentById).commit();
-//                }
-//                Fragment secondFragmentById = getSupportFragmentManager().findFragmentById(R.id.fragment_play);
-//                if (secondFragmentById != null) {
-//                    getSupportFragmentManager().beginTransaction().remove(secondFragmentById).commit();
-//                }
-//            }
-//
-//            // Add new one
-//            getSupportFragmentManager().beginTransaction().add(R.id.fragment_all_songs, allSongsFragment).commit();
-//        }
     }
 
     private void permission() {
@@ -158,13 +127,4 @@ public class ActivityMusic extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public void onSongPlayClick(View v, int pos) {
-//        Toast.makeText(this, "AAHAHAHAH", Toast.LENGTH_SHORT).show();
-//        Song song = Song.EMPTY();
-//        if (mSongList.get(pos) != null) song = mSongList.get(pos);
-//        SongPlayFragment songPlayFragment = SongPlayFragment.newInstance(song, pos);
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
-//    }
 }

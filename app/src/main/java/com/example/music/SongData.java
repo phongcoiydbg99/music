@@ -4,8 +4,10 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,35 +17,24 @@ import java.util.Map;
 import java.util.Random;
 
 public class SongData {
-    private static SongData songData;
     private Context mContext;
     private LinkedList<Song> mSongList;
 
-//    private SongData(Context context) {
-//        mContext = context.getApplicationContext();
-//        mSongList = querySongs();
-//    }
+    public int getmCurrentSongId() {
+        return mCurrentSongId;
+    }
 
+    public void setmCurrentSongId(int mCurrentSongId) {
+        this.mCurrentSongId = mCurrentSongId;
+    }
 
-//    public static SongData get(Context context) {
-//        if (songData == null) {
-//            songData = new SongData(context);
-//        }
-//        return songData;
-//    }
+    private int mCurrentSongId;
 
-//    public Song getSong(long id) {
-//        SongCursorWrapper cursorWrapper = querySong("_id=" + id, null);
-//        try {
-//            if (cursorWrapper.getCount() != 0) {
-//                cursorWrapper.moveToFirst();
-//                return cursorWrapper.getSong();
-//            }
-//            return Song.EMPTY();
-//        } finally {
-//            cursorWrapper.close();
-//        }
-//    }
+    public SongData(Context context) {
+        mSongList = getAllSongs(context);
+        mCurrentSongId = 0;
+        mContext = context;
+    }
 
     public Song getRandomSong() {
         Random r = new Random();
@@ -67,24 +58,60 @@ public class SongData {
         }
     }
 
-    public List<Song> getmSongList() {
+    public LinkedList<Song> getSongList() {
         return mSongList;
     }
 
-//    public List<Song> querySongs() {
-//        List<Song> songList = new ArrayList();
-//        SongCursorWrapper cursor = querySong(null, null);
-//        try {
-//            cursor.moveToFirst();
-//            do {
-//                Song song = cursor.getSong();
-//                song = cursor.getSong();
-//                song.setAlbumArt(getAlbumUri(song.getAlbumId()).toString());
-//                mSongList.add(song);
-//            } while (cursor.moveToNext());
-//        } finally {
-//            cursor.close();
-//        }
-//        return songList;
-//    }
+    public Song getSongAt(int pos)
+    {
+        return mSongList.get(pos);
+    }
+    public int getCurrentSongId() {
+        return mCurrentSongId;
+    }
+    public int getCount() {
+        return mSongList.size();
+    }
+
+    public static LinkedList<Song> getAllSongs(Context context) {
+        LinkedList<Song> songList = new LinkedList<>();
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TRACK,
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.COMPOSER,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DATA
+        };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(0);
+                int trackNumber = cursor.getInt(1);
+                long duration = cursor.getInt(2);
+                String title = cursor.getString(3);
+                String artistName = cursor.getString(4);
+                String composer = cursor.getString(5);
+                String albumName = cursor.getString(6);
+                String data = cursor.getString(7);
+
+                Song song = new Song(id,title,artistName,composer,albumName,data,trackNumber,duration);
+                Log.d("TAG", "Data: "+ data + " Album: " + albumName);
+                songList.add(song);
+            }
+            cursor.close();
+        }
+        return  songList;
+    }
+    public static byte[] getAlbumArt(String uri)
+    {
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(uri);
+        byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();
+        mediaMetadataRetriever.release();
+        return albumArt;
+    }
 }

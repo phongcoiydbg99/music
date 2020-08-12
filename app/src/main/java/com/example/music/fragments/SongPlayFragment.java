@@ -1,6 +1,5 @@
 package com.example.music.fragments;
 
-import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 
@@ -15,12 +14,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.music.R;
 import com.example.music.Song;
-import com.example.music.activities.MediaPlaybackActivity;
-import com.example.music.interfaces.SongItemClickListener;
-import com.example.music.interfaces.SongPlayClickListener;
+//import com.example.music.interfaces.SongPlayClickListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,7 +39,7 @@ public class SongPlayFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private SongPlayClickListener songPlayClickListener;
+//    private SongPlayClickListener songPlayClickListener;
 
     public SongPlayFragment(){}
     public SongPlayFragment(Song song, int pos) {
@@ -93,19 +89,19 @@ public class SongPlayFragment extends Fragment {
 
 //        mSongName.setText(mSong.getTitle());
 //        mSongArtist.setText(mSong.getArtistName());
-//        byte[] albumArt = getAlbumArt(mSong.getData());
-//        if (albumArt != null)
-//        {
-//            Glide.with(view.getContext()).asBitmap()
-//                    .load(albumArt)
-//                    .into(mSongImage);
-//        }
-//        else
-//        {
-//            Glide.with(view.getContext())
-//                    .load(R.drawable.background_transparent)
-//                    .into(mSongImage);
-//        }
+////        byte[] albumArt = getAlbumArt(mSong.getData());
+////        if (albumArt != null)
+////        {
+////            Glide.with(view.getContext()).asBitmap()
+////                    .load(albumArt)
+////                    .into(mSongImage);
+////        }
+////        else
+////        {
+////            Glide.with(view.getContext())
+////                    .load(R.drawable.background_transparent)
+////                    .into(mSongImage);
+////        }
         mRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,10 +109,11 @@ public class SongPlayFragment extends Fragment {
 //                Intent intent = new Intent(view.getContext(), MediaPlaybackActivity.class);
 //                intent.putExtra("pos",mSongPos);
 //                startActivity(intent);
-                if (songPlayClickListener != null)
-                {
-                    songPlayClickListener.onSongPlayClick(v,0);
-                }
+                //inteface da xoas
+//                if (songPlayClickListener != null)
+//                {
+//                    songPlayClickListener.onSongPlayClick(v,0);
+//                }
             }
         });
 
@@ -136,7 +133,7 @@ public class SongPlayFragment extends Fragment {
         mediaMetadataRetriever.release();
         return albumArt;
     }
-    public void setOnSongPlayClickListener(SongPlayClickListener songPlayClickListener) {
-        this.songPlayClickListener = songPlayClickListener;
-    }
+//    public void setOnSongPlayClickListener(SongPlayClickListener songPlayClickListener) {
+//        this.songPlayClickListener = songPlayClickListener;
+//    }
 }

@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:background="#FFFFFF"
     android:padding="10dp"
-    android:paddingStart="20dp">
+    android:paddingLeft="20dp">
 
     <TextView
         android:id="@+id/song_id"
@@ -17,9 +17,19 @@
         android:textSize="20dp"
         android:padding="10dp"
         android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
         android:layout_centerHorizontal="true"
-        />
+        android:layout_alignParentLeft="true" />
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/icon_play"
+        android:src="@drawable/ic_outline_equalizer"
+        android:background="#FFFF"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

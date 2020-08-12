@@ -1,5 +1,7 @@
 package com.example.music;
 
+import javax.xml.datatype.Duration;
+
 public class Song {
 
     private int id;
@@ -10,6 +12,16 @@ public class Song {
     private String composer;
     private String albumName;
     private String data;
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
+
+    private boolean isPlaying;
 
 
     public static Song EMPTY() {
@@ -27,6 +39,7 @@ public class Song {
         this.data = data;
         this.trackNumber = trackNumber;
         this.duration = duration;
+        isPlaying = false;
     }
 
     public int getId() {
@@ -60,4 +73,12 @@ public class Song {
     public long getDuration() {
         return duration;
     }
+    public String formattedTime() {
+        String seconds = String.valueOf((duration/1000) % 60);
+        String minutes = String.valueOf((duration/1000) / 60);
+        if (minutes.length() <= 1) minutes = "0" + minutes;
+        if (seconds.length() <= 1) seconds = "0" + seconds;
+        return minutes +":"+seconds;
+    }
+
 }
