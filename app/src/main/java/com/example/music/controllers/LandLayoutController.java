@@ -46,9 +46,9 @@ public class LandLayoutController extends LayoutController {
     @Override
     public void onSongItemClick(View v, int pos) {
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-        SongPlayFragment songPlayFragment = new SongPlayFragment();
-        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+//        SongPlayFragment songPlayFragment = new SongPlayFragment();
+//        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
     }
 
     @Override

@@ -114,7 +114,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             mRecyclerView.setAdapter(mAdapter);
             // Give the RecyclerView a default layout manager.
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
+//            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
         }
         if (mAdapter != null) {
             mAdapter.setOnSongItemClickListener(mSongItemClickListener);

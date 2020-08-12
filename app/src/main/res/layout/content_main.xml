@@ -14,12 +14,12 @@
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_all_songs" />
 
-    <FrameLayout
-        android:id="@+id/fragment_play"
-        android:name="com.example.music.SongPlayFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:layout="@layout/fragment_song_play"
-        android:layout_alignParentBottom="true"
-        />
+<!--    <FrameLayout-->
+<!--        android:id="@+id/fragment_play"-->
+<!--        android:name="com.example.music.SongPlayFragment"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        tools:layout="@layout/fragment_song_play"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        />-->
 </RelativeLayout>

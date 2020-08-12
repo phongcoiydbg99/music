@@ -3,6 +3,7 @@ package com.example.music.controllers;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
@@ -39,10 +40,13 @@ public class PortLayoutController extends LayoutController {
     @Override
     public void onSongItemClick(View v, int pos) {
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-        songPlayFragment = new SongPlayFragment();
-        songPlayFragment.setOnSongPlayClickListener(this);
-        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+         LinearLayout linearLayout = mActivity.findViewById(R.id.play_song_layout);
+        System.out.println(linearLayout == null);
+         linearLayout.setVisibility(View.VISIBLE);
+//        songPlayFragment = new SongPlayFragment();
+//        songPlayFragment.setOnSongPlayClickListener(this);
+//        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
     }
 
     @Override

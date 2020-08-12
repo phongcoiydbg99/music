@@ -12,8 +12,71 @@
         android:background="#FFFFFF"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_above="@+id/play_song_layout"
         android:layout_marginBottom="0dp">
     </androidx.recyclerview.widget.RecyclerView>
-
-
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/play_song_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/shadow_layout"
+            android:layout_width="match_parent"
+            android:background="@drawable/background_shadow"
+            android:layout_height="6dp"/>
+        <RelativeLayout
+            android:layout_below="@+id/shadow_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF">
+            <ImageView
+                android:id="@+id/song_image"
+                android:src="@drawable/ic_launcher_background"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/media_popup_button"
+                android:layout_toRightOf="@+id/song_image"
+                android:orientation="vertical"
+                android:padding="10dp">
+                <TextView
+                    android:id="@+id/song_name_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bai hat"
+                    android:paddingBottom="5dp"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:layout_centerVertical="true"
+                    />
+                <TextView
+                    android:id="@+id/song_artist_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ten sa si"
+                    android:layout_toRightOf="@+id/song_id"
+                    android:textSize="15dp"
+                    android:layout_centerVertical="true"
+                    />
+            </LinearLayout>
+            <ImageButton
+                android:id="@+id/song_play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_button_play"
+                android:background="#0000"
+                android:layout_marginRight="20dp"
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
+    </LinearLayout>
 </RelativeLayout>
