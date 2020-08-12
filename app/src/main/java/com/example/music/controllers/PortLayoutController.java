@@ -43,6 +43,14 @@ public class PortLayoutController extends LayoutController {
          LinearLayout linearLayout = mActivity.findViewById(R.id.play_song_layout);
         System.out.println(linearLayout == null);
          linearLayout.setVisibility(View.VISIBLE);
+         linearLayout.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 MediaPlaybackFragment mediaPlaybackFragment = new MediaPlaybackFragment();
+                 mActivity.getSupportFragmentManager().beginTransaction()
+                         .replace(R.id.full, mediaPlaybackFragment).addToBackStack(null).commit();
+             }
+         });
 //        songPlayFragment = new SongPlayFragment();
 //        songPlayFragment.setOnSongPlayClickListener(this);
 //        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
