@@ -55,6 +55,11 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private LinkedList<Song> mSongList = new LinkedList<>();
     private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
+
+    public SongData getSongData() {
+        return mSongData;
+    }
+
     private SongData mSongData;
     private Fragment fragment;
     private LinearLayout mLinearLayout;
@@ -129,7 +134,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongList = mSongData.getSongList();
         if ( mSongList.size() > 0)
         {
-            mAdapter = new SongListAdapter(view.getContext(), mSongList);
+            mAdapter = new SongListAdapter(view.getContext(), mSongData);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 //            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));

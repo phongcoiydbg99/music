@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.music.R;
 import com.example.music.Song;
+import com.example.music.SongData;
 import com.example.music.interfaces.SongItemClickListener;
 
 import java.util.Collection;
@@ -25,6 +26,7 @@ import java.util.LinkedList;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder> implements Filterable {
 
+    private SongData mSongData;
     private LinkedList<Song> mSongList;
     private LinkedList<Song> mSongListFull;
     private Context mContext;
@@ -33,9 +35,10 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
 
-    public SongListAdapter(Context context, LinkedList<Song> songList) {
+    public SongListAdapter(Context context, SongData songData) {
+        this.mSongData = songData;
         this.mContext = context;
-        this.mSongList = songList;
+        this.mSongList = songData.getSongList();
         mSongListFull = new LinkedList<Song>();
         mSongListFull.addAll(mSongList);
         mInflater = LayoutInflater.from(context);
@@ -64,28 +67,15 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
             @Override
             public void onClick(View view) {
+                mSongData.setCurrentSongId(position);
                 if (songItemClickListener != null) {
                     songItemClickListener.onSongItemClick(view, position);
-//                    System.out.println(prePos);
-//                    mCurrent.setPlaying(true);
-//                    mSongList.set(position,mCurrent);
-//                    if (prePos != position && prePos >= 0) {
-//                        Song preSong = mSongList.get(prePos);
-//                        preSong.setPlaying(false);
-//                        mSongList.set(prePos,preSong);
-//                    }
-//                    for(Song song : mSongList)
-//                    System.out.print(" "+song.isPlaying());
-//                    System.out.println("");
-//                    prePos = position;
-                    currentPos = position;
                     notifyDataSetChanged();
-                    System.out.println(currentPos);
+                    System.out.println(mSongData.getCurrentSongId());
                 }
             }
         });
-        if (currentPos == position && currentPos >= 0){
-            System.out.println(currentPos);
+        if (mSongData.getCurrentSongId() == position){
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
             holder.songItemView.setTypeface(null, Typeface.BOLD);

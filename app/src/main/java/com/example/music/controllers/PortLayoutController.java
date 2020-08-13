@@ -44,7 +44,7 @@ public class PortLayoutController extends LayoutController {
     public void onSongItemClick(View v, final int pos) {
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
         LinearLayout linearLayout = mActivity.findViewById(R.id.play_song_layout);
-        Song song = songData.getSongAt(pos);
+        Song song = mAllSongsFragment.getSongData().getSongAt(pos);
         mAllSongsFragment.updatePlaySongLayout(mActivity,song);
         linearLayout.setVisibility(View.VISIBLE);
         linearLayout.setOnClickListener(new View.OnClickListener() {

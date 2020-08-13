@@ -19,20 +19,20 @@ import java.util.Random;
 public class SongData {
     private Context mContext;
     private LinkedList<Song> mSongList;
+    private int mCurrentSongId;
 
-    public int getmCurrentSongId() {
+    public int getCurrentSongId() {
         return mCurrentSongId;
     }
 
-    public void setmCurrentSongId(int mCurrentSongId) {
+    public void setCurrentSongId(int mCurrentSongId) {
         this.mCurrentSongId = mCurrentSongId;
     }
 
-    private int mCurrentSongId;
 
     public SongData(Context context) {
         mSongList = getAllSongs(context);
-        mCurrentSongId = 0;
+        mCurrentSongId = -1;
         mContext = context;
     }
 
@@ -65,9 +65,6 @@ public class SongData {
     public Song getSongAt(int pos)
     {
         return mSongList.get(pos);
-    }
-    public int getCurrentSongId() {
-        return mCurrentSongId;
     }
     public int getCount() {
         return mSongList.size();
