@@ -23,6 +23,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.LinkedList;
@@ -41,12 +42,11 @@ public class ActivityMusic extends AppCompatActivity {
         float density = getResources().getDisplayMetrics().density;
         System.out.println(density);
         permission();
-
         boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
         mLayoutController = isPortrait ? new PortLayoutController(this)
                 : new LandLayoutController(this);
-
         mLayoutController.onCreate(savedInstanceState, "currentItemTitle");
+        mLayoutController.getServiceConnection();
     }
 
     private void permission() {
@@ -57,6 +57,18 @@ public class ActivityMusic extends AppCompatActivity {
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
             mSongList = getAllSongs(this);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mLayoutController.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLayoutController.onDestroy();
     }
 
     @Override
@@ -127,4 +139,9 @@ public class ActivityMusic extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        getSupportActionBar().show();
+    }
 }

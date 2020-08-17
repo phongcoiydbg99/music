@@ -2,6 +2,9 @@ package com.example.music.interfaces;
 
 import android.view.View;
 
+import com.example.music.adapters.SongListAdapter;
+
+
 public interface SongItemClickListener {
-    void onSongItemClick(View v, int pos);
+    void onSongItemClick(SongListAdapter.SongViewHolder holder, int pos);
 }

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.music.R;
+import com.example.music.Song;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
 import com.example.music.fragments.SongPlayFragment;
@@ -32,7 +33,7 @@ public class LandLayoutController extends LayoutController {
             
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = new AllSongsFragment();
-            mAllSongsFragment.setOnSongItemClickListener(this);
+//            mAllSongsFragment.setOnSongItemClickListener(this);
 //            mNewsListFragment.setLoadCallback(mNewContentFragment);
 
             // Add the fragment to the 'fragment_container' FrameLayout
@@ -44,12 +45,18 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onSongItemClick(View v, int pos) {
-        Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-//        SongPlayFragment songPlayFragment = new SongPlayFragment();
-//        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+    public void onSongPlayClickListener(View v, Song song, int pos,long current, boolean isPlaying) {
+
     }
+
+
+//    @Override
+//    public void onSongItemClick(View v, int pos) {
+//        Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
+////        SongPlayFragment songPlayFragment = new SongPlayFragment();
+////        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
+////        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
+//    }
 
 
 //    @Override

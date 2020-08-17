@@ -41,23 +41,6 @@ public class SongData {
         return mSongList.get(r.nextInt(mSongList.size() - 1));
     }
 
-    public Song getNextSong(Song currentSong) {
-        try {
-            return mSongList.get(mSongList.indexOf(currentSong) + 1);
-        } catch (Exception e) {
-            return getRandomSong();
-        }
-    }
-
-
-    public Song getPreviousSong(Song currentSong) {
-        try {
-            return mSongList.get(mSongList.indexOf(currentSong) - 1);
-        } catch (Exception e) {
-            return getRandomSong();
-        }
-    }
-
     public LinkedList<Song> getSongList() {
         return mSongList;
     }

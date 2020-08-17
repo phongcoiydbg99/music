@@ -3,6 +3,7 @@ package com.example.music.adapters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.icu.text.UFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
+import com.example.music.fragments.AllSongsFragment;
 import com.example.music.interfaces.SongItemClickListener;
 
 import java.util.Collection;
@@ -26,6 +28,7 @@ import java.util.LinkedList;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder> implements Filterable {
 
+    private static final String TAG = SongListAdapter.class.getSimpleName();
     private SongData mSongData;
     private LinkedList<Song> mSongList;
     private LinkedList<Song> mSongListFull;
@@ -42,12 +45,13 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         mSongListFull = new LinkedList<Song>();
         mSongListFull.addAll(mSongList);
         mInflater = LayoutInflater.from(context);
-        currentPos = -1;
     }
 
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: ");
+        currentPos = mSongData.getCurrentSongId();
         View mItemView = mInflater.inflate(R.layout.song_list_item, parent, false);
         return new SongViewHolder(mItemView, this);
     }
@@ -59,28 +63,30 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     @Override
     public void onBindViewHolder(@NonNull final SongViewHolder holder, final int position) {
+        Log.d(TAG, "onBindViewHolder: " + currentPos + " * "+position );
         final Song mCurrent = mSongList.get(position);
         holder.itemId.setText(String.valueOf(position + 1));
         holder.songItemView.setText(mCurrent.getTitle());
         holder.songDurationView.setText(mCurrent.formattedTime());
-        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                mSongData.setCurrentSongId(position);
-                if (songItemClickListener != null) {
-                    songItemClickListener.onSongItemClick(view, position);
-                    notifyDataSetChanged();
-                    System.out.println(mSongData.getCurrentSongId());
-                }
-            }
-        });
-        if (mSongData.getCurrentSongId() == position){
+        holder.itemId.setVisibility(View.VISIBLE);
+        holder.iconPlay.setVisibility(View.INVISIBLE);
+        holder.songItemView.setTypeface(null, Typeface.NORMAL);
+        if (position == currentPos)
+        {
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
             holder.songItemView.setTypeface(null, Typeface.BOLD);
         }
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+position);
+                if (songItemClickListener != null) {
+                    songItemClickListener.onSongItemClick(holder, position);
+                }
+            }
+        });
         holder.imageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -133,7 +139,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         }
     };
 
-    class SongViewHolder extends RecyclerView.ViewHolder {
+    public class SongViewHolder extends RecyclerView.ViewHolder {
         public final RelativeLayout relativeLayout;
         public final TextView itemId;
         public final TextView songItemView;
@@ -154,6 +160,13 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         }
     }
 
+    public int getCurrentPos() {
+        return currentPos;
+    }
+
+    public void setCurrentPos(int currentPos) {
+        this.currentPos = currentPos;
+    }
 
     public interface SongBtnClickListener {
         void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);

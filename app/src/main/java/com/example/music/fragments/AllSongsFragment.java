@@ -1,17 +1,26 @@
 package com.example.music.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +42,7 @@ import com.example.music.SongData;
 import com.example.music.VerticalSpaceItemDecoration;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.interfaces.SongItemClickListener;
+import com.example.music.services.MediaPlaybackService;
 
 import java.util.LinkedList;
 
@@ -41,13 +51,16 @@ import java.util.LinkedList;
  * Use the {@link AllSongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener{
+public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final int VERTICAL_ITEM_SPACE = 150;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = AllSongsFragment.class.getSimpleName();
+    public static final String SONG_POSSITION = "song_possion";
+    private static final String MESSAGE_SONG_PLAY_COMPLETE = "message_song_play_complete";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -55,23 +68,30 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private LinkedList<Song> mSongList = new LinkedList<>();
     private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
-
-    public SongData getSongData() {
-        return mSongData;
-    }
+    private SongPlayClickListener songPlayClickListener;
+    private SongItemClickListener mSongItemClickListener;
 
     private SongData mSongData;
+    private Song mSong;
     private Fragment fragment;
+    private View view;
     private LinearLayout mLinearLayout;
     private ImageView mSongImage;
     private TextView mSongName;
     private TextView mSongArtist;
-    private ImageButton mSongPlayBtn;
+    private ImageView mSongPlayBtn;
     private boolean songPlay = false;
+    private MediaPlaybackService mediaPlaybackService;
+    private int visible = View.GONE;
+    private int mSongCurrentPosition = -1;
+    private boolean onSongPlay = false;
+    ServiceConnection serviceConnection;
+    Intent playIntent;
+    private boolean isPlaying = true;
 
-    private SongItemClickListener mSongItemClickListener;
 
-    public AllSongsFragment() {}
+    public AllSongsFragment() {
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -91,17 +111,31 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return fragment;
     }
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive: " + intent.getStringExtra(SONG_POSSITION));
+            if (intent.getAction() == SONG_POSSITION) {
+                if (onSongPlay) {
+                    Log.d(TAG, "onReceive: on song play " + onSongPlay);
+                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(SONG_POSSITION));
+                    isPlaying = mediaPlaybackService.isPlaying();
+                    updateUI();
+                }
+            }
+            if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
+                Log.d(TAG, "onReceive: song play complete");
+                mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MESSAGE_SONG_PLAY_COMPLETE));
+                mediaPlaybackService.play(mSongCurrentPosition);
+                updateUI();
+            }
+        }
+    };
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mSongData = new SongData(context);
-        System.out.println("asdasdasd");
-//        if (context instanceof SongPlayClickListener) {
-//            songPlayClickListener = (SongPlayClickListener) context;
-//        } else {
-//            throw new ClassCastException(context.toString()
-//                    + " must implemenet AllSongsFragment.SongPlayClickListener");
-//        }
     }
 
     @Override
@@ -113,41 +147,109 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         setHasOptionsMenu(true);
-        System.out.println("Heloo");
+
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
+                mediaPlaybackService = binder.getMediaPlaybackService();
+                Log.d(TAG, "onServiceConnected()");
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+        playIntent = new Intent(getActivity(), MediaPlaybackService.class);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SONG_POSSITION);
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
+        getActivity().bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+//        getActivity().startService(playIntent);
+        ContextCompat.startForegroundService(getContext(),playIntent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onStop()");
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
+        getActivity().stopService(playIntent);
+        getActivity().unbindService(serviceConnection);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        final View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
-
+        Log.d(TAG, "onCreateView: " + mSongCurrentPosition);
+        view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         mLinearLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
         mSongName = view.findViewById(R.id.song_name_play);
         mSongArtist = view.findViewById(R.id.song_artist_name);
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
-
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
-
         mSongList = mSongData.getSongList();
-        if ( mSongList.size() > 0)
-        {
+        if (mSongList.size() > 0) {
             mAdapter = new SongListAdapter(view.getContext(), mSongData);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 //            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
         }
-        if (mAdapter != null) {
-            mAdapter.setOnSongItemClickListener(mSongItemClickListener);
-        }
 
+        mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlaybackService.isPlaying()) {
+                    mediaPlaybackService.pause();
+                    mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
+                } else {
+                    mediaPlaybackService.start();
+                    mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
+                }
+                ;
+            }
+        });
+        // hien thanh nghe nhac
+        mAdapter.setOnSongItemClickListener(new SongItemClickListener() {
+            @Override
+            public void onSongItemClick(SongListAdapter.SongViewHolder holder, final int pos) {
+//                mSongData.setCurrentSongId(pos);
+//                mAdapter.setCurrentPos(pos);
+//                mAdapter.notifyDataSetChanged();
+                onSongPlay = true;
+                mSongCurrentPosition = pos;
+                mediaPlaybackService.play(mSongCurrentPosition);
+                mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
+                isPlaying = true;
+                Log.d(TAG, "onSongItemClick: " + isPlaying);
+                Toast.makeText(getActivity(), "Play music", Toast.LENGTH_SHORT).show();
+                updateUI();
+//                updatePlaySongLayout(pos);
+            }
+        });
+        // chuyen dang media fragment
+        mLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (songPlayClickListener != null)
+                    songPlayClickListener.onSongPlayClickListener(v, mSong, mSongCurrentPosition,mediaPlaybackService.getCurrentStreamPosition(), mediaPlaybackService.isPlaying());
+            }
+        });
         // song menu click listener
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
             @Override
             public void onSongBtnClickListener(ImageButton btn, View v, final Song song, final int pos) {
-                Toast.makeText(v.getContext(),song.getAlbumName(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), song.getAlbumName(), Toast.LENGTH_SHORT).show();
                 PopupMenu popup = new PopupMenu(v.getContext(), v);
                 // Inflate the Popup using XML file.
                 popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
@@ -195,27 +297,51 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return false;
     }
 
+    public SongData getSongData() {
+        return mSongData;
+    }
+
+    public void updateUI() {
+        mSongData.setCurrentSongId(mSongCurrentPosition);
+        mAdapter.setCurrentPos(mSongCurrentPosition);
+        mAdapter.notifyDataSetChanged();
+        updatePlaySongLayout(mSongCurrentPosition);
+    }
+
+    public void updatePlaySongLayout(int pos) {
+        visible = View.VISIBLE;
+        mLinearLayout.setVisibility(visible);
+        mSong = mSongList.get(pos);
+        mSongName.setText(mSong.getTitle());
+        mSongArtist.setText(mSong.getArtistName());
+        if (isPlaying)
+        {
+            mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
+        } else  mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);;
+        byte[] albumArt = SongData.getAlbumArt(mSong.getData());
+        if (albumArt != null) {
+            Glide.with(view.getContext()).asBitmap()
+                    .load(albumArt)
+                    .into(mSongImage);
+        } else {
+            Glide.with(view.getContext())
+                    .load(R.drawable.background_transparent)
+                    .into(mSongImage);
+        }
+    }
+
+    public interface SongPlayClickListener {
+        void onSongPlayClickListener(View v, Song song, int pos,long current, boolean isPlaying);
+    }
+
+    public void setOnSongPlayClickListener(SongPlayClickListener songPlayClickListener) {
+        this.songPlayClickListener = songPlayClickListener;
+    }
+
     public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
         mSongItemClickListener = songItemClickListener;
         if (mAdapter != null) {
             mAdapter.setOnSongItemClickListener(songItemClickListener);
         }
     }
-
-    public void updatePlaySongLayout(Context context,Song song)
-    {
-        mSongName.setText(song.getTitle());
-        mSongArtist.setText(song.getArtistName());
-        byte[] albumArt = SongData.getAlbumArt(song.getData());
-        if (albumArt != null) {
-            Glide.with(context).asBitmap()
-                    .load(albumArt)
-                    .into(mSongImage);
-        } else {
-            Glide.with(context)
-                    .load(R.drawable.background_transparent)
-                    .into(mSongImage);
-        }
-    }
-
 }

@@ -22,7 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-
         android:orientation="vertical">
         <View
             android:id="@+id/shadow_layout"
@@ -41,6 +40,7 @@
                 android:layout_margin="10dp"
                 />
             <LinearLayout
+                android:id="@+id/song_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@+id/media_popup_button"
@@ -51,7 +51,9 @@
                     android:id="@+id/song_name_play"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Bai hat"
+                    android:text="Bai hat jsjkhdkjashdkjashdkjhksjadhkjajsdhj"
+                    android:singleLine="true"
+                    android:maxEms="10"
                     android:paddingBottom="5dp"
                     android:textSize="20dp"
                     android:textStyle="bold"
@@ -67,12 +69,11 @@
                     android:layout_centerVertical="true"
                     />
             </LinearLayout>
-            <ImageButton
+            <ImageView
                 android:id="@+id/song_play_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/ic_button_play"
                 android:background="#0000"
                 android:layout_marginRight="20dp"
                 android:layout_centerVertical="true"
