@@ -25,13 +25,14 @@ public class PortLayoutController extends LayoutController {
 
     private SongData songData;
     @Override
-    public void onCreate(Bundle savedInstanceState, int songId) {
+    public void onCreate(Bundle savedInstanceState, int songPos) {
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = new AllSongsFragment();
             mAllSongsFragment.setOnSongPlayClickListener(this);
+            if (songPos >= 0) mAllSongsFragment.setSongCurrentPosition(songPos);
             Log.d("TAGG", "onCreate: ");
             songData = new SongData(mActivity);
             // Add the fragment to the 'fragment_container' FrameLayout
@@ -43,13 +44,15 @@ public class PortLayoutController extends LayoutController {
     @Override
     public void onSongPlayClickListener(View v, Song song, int pos,long current, boolean isPlaying) {
         Log.d(TAG, "onSongPlayClick: " + isPlaying);
-
-        MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(song.getTitle(),song.getArtistName(),song.getData(),song.getDuration(),pos,current,isPlaying);
-        Bundle args = newBundleFromNewItem(song);
-        mediaPlaybackFragment.setArguments(args);
-        mActivity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_all_songs, mediaPlaybackFragment).addToBackStack(null).commit();
-        mActivity.getSupportActionBar().hide();
+        if (isConnected) {
+            MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
+            mediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
+//            Bundle args = newBundleFromNewItem(song);
+//            mediaPlaybackFragment.setArguments(args);
+            mActivity.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_all_songs, mediaPlaybackFragment).addToBackStack(null).commit();
+            mActivity.getSupportActionBar().hide();
+        }
     }
 
 //    @Override

@@ -80,6 +80,7 @@ public class MediaPlaybackFragment extends Fragment {
     private MediaPlaybackService mediaPlaybackService;
     ServiceConnection serviceConnection;
     Intent playIntent;
+    Thread mSeekBarThread;
     Handler mHandler = new Handler();
 
     public MediaPlaybackFragment() {
@@ -93,7 +94,7 @@ public class MediaPlaybackFragment extends Fragment {
      * @return A new instance of fragment MediaPlaybackFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MediaPlaybackFragment newInstance(String title, String artist, String data, long duration, int pos,long current, boolean isPlaying) {
+    public static MediaPlaybackFragment newInstance(String title, String artist, String data, long duration, int pos, long current, boolean isPlaying) {
         MediaPlaybackFragment fragment = new MediaPlaybackFragment();
         Bundle args = new Bundle();
         args.putString(TITLE, title);
@@ -131,19 +132,17 @@ public class MediaPlaybackFragment extends Fragment {
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: ");
-        playIntent = new Intent(getActivity(), MediaPlaybackService.class);
-        playIntent.setAction("");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
-        getActivity().bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        getActivity().startService(playIntent);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
+
+        mSeekBarThread.interrupt();
         mServiceStatus = false;
         // gui message toi allsongsFragment khi back
         Intent intent = new Intent(SONG_POSSITON);
@@ -152,8 +151,6 @@ public class MediaPlaybackFragment extends Fragment {
         // unregister receiver
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        getActivity().stopService(playIntent);
-        getActivity().unbindService(serviceConnection);
 
     }
 
@@ -169,49 +166,78 @@ public class MediaPlaybackFragment extends Fragment {
             mSongCurrentPosition = getArguments().getInt(SONG_POSSITON);
             mSongCurrentStreamPossition = getArguments().getLong(CURRENT_STREAM_POSSITION);
         }
-        serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
-                mediaPlaybackService = binder.getMediaPlaybackService();
-                mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
-                mServiceStatus = true;
-                isPlaying = mediaPlaybackService.isPlaying();
-                Log.d(TAG, String.valueOf("onServiceConnected: " + mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition).getTitle()));
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (mediaPlaybackService.getmPlayer() != null) {
-                            if (mediaPlaybackService.isPlaying()) {
-                                try {
-                                    final long current = mediaPlaybackService.getCurrentStreamPosition();
-                                    if (getActivity() != null){
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
-                                                mMediaSeekBar.setProgress((int) (current));
-                                                mStartTime.setText(formattedTime(current));
-                                            }
-                                        });
-                                    }
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
+//        serviceConnection = new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName name, IBinder service) {
+//                MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
+//                mediaPlaybackService = binder.getMediaPlaybackService();
+//                mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
+//                mServiceStatus = true;
+//                isPlaying = mediaPlaybackService.isPlaying();
+//                Log.d(TAG, String.valueOf("onServiceConnected: " + mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition).getTitle()));
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        while (mediaPlaybackService.getmPlayer() != null) {
+//                            if (mediaPlaybackService.isPlaying()) {
+//                                try {
+//                                    final long current = mediaPlaybackService.getCurrentStreamPosition();
+//                                    if (getActivity() != null){
+//                                        getActivity().runOnUiThread(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
+//                                                mMediaSeekBar.setProgress((int) (current));
+//                                                mStartTime.setText(formattedTime(current));
+//                                            }
+//                                        });
+//                                    }
+//                                    Thread.sleep(1000);
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        }
+//                    }
+//                }).start();
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName name) {
+//
+//            }
+//        };
+        if (mediaPlaybackService != null) {
+            mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
+            mServiceStatus = true;
+            isPlaying = mediaPlaybackService.isPlaying();
+            mSeekBarThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (mediaPlaybackService.getmPlayer() != null) {
+                        if (mediaPlaybackService.isPlaying()) {
+                            try {
+                                final long current = mediaPlaybackService.getCurrentStreamPosition();
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
+                                            mMediaSeekBar.setProgress((int) (current));
+                                            mStartTime.setText(formattedTime(current));
+                                        }
+                                    });
                                 }
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
-                }).start();
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
+                }
+            });
+            mSeekBarThread.start();
         }
-
-        ;
     }
 
     @Override
@@ -222,6 +248,10 @@ public class MediaPlaybackFragment extends Fragment {
         initView();
         updateUI();
         return view;
+    }
+
+    public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
+        this.mediaPlaybackService = mediaPlaybackService;
     }
 
     public void initView() {
@@ -342,7 +372,7 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mediaPlaybackService!= null && fromUser){
+                if (mediaPlaybackService != null && fromUser) {
                     mediaPlaybackService.seekTo(progress);
                 }
             }

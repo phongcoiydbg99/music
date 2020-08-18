@@ -25,7 +25,7 @@ public class SongData {
         return mCurrentSongPossition;
     }
 
-    public void setCurrentSongId(int mCurrentSongPossition) {
+    public void setCurrentSongPossition(int mCurrentSongPossition) {
         this.mCurrentSongPossition = mCurrentSongPossition;
     }
 
@@ -102,10 +102,16 @@ public class SongData {
     }
     public static byte[] getAlbumArt(String uri)
     {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        mediaMetadataRetriever.setDataSource(uri);
-        byte[] albumArt = mediaMetadataRetriever.getEmbeddedPicture();
-        mediaMetadataRetriever.release();
+        byte[] albumArt = new byte[0];
+        try {
+            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+            mediaMetadataRetriever.setDataSource(uri);
+            albumArt = mediaMetadataRetriever.getEmbeddedPicture();
+            mediaMetadataRetriever.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         return albumArt;
     }
 }

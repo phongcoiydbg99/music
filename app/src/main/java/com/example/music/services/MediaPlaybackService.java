@@ -172,7 +172,7 @@ public class MediaPlaybackService extends Service implements
                 .setContentText(getString(R.string.notification_text))
                 .setSmallIcon(R.mipmap.ic_launcher_music)
                 .setAutoCancel(true).setContentIntent(notificationPendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setDefaults(NotificationCompat.DEFAULT_ALL);
         return notifyBuilder;
     }

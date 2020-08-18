@@ -1,7 +1,10 @@
 package com.example.music.activities;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,6 +15,7 @@ import com.example.music.controllers.PortLayoutController;
 import com.example.music.controllers.LandLayoutController;
 import com.example.music.R;
 import com.example.music.Song;
+import com.example.music.services.MediaPlaybackService;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -33,6 +38,9 @@ public class ActivityMusic extends AppCompatActivity {
     public static final int REQUEST_CODE = 1;
     public static LinkedList<Song> mSongList = new LinkedList<>();
     private boolean isPermission = false;
+    private MediaPlaybackService mediaPlaybackService;
+    private Intent playIntent;
+    private boolean isConnected = false;
     private LayoutController mLayoutController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,20 +51,35 @@ public class ActivityMusic extends AppCompatActivity {
         float density = getResources().getDisplayMetrics().density;
         System.out.println(density);
         permission();
-        int songId = -1;
+        int pos = -1;
         if (savedInstanceState != null){
-            songId = savedInstanceState.getInt(LayoutController.LAST_SONG_ID_EXTRA);
+            pos = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
         }
-        Log.d(TAG, "onCreate: "+songId);
+        Log.d(TAG, "onCreate: "+pos);
         boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
         if (isPermission){
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, songId);
-            mLayoutController.getServiceConnection();
+            mLayoutController.onCreate(savedInstanceState, pos);
         }
     }
 
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
+            mediaPlaybackService = binder.getMediaPlaybackService();
+            mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+            mLayoutController.setConnected(true);
+            isConnected = true;
+            Log.d(TAG,"onServiceConnected()");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
     private void permission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -71,13 +94,21 @@ public class ActivityMusic extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mLayoutController.onStart();
+        playIntent = new Intent(ActivityMusic.this, MediaPlaybackService.class);
+        Log.d(TAG,"onStart: ");
+        playIntent.setAction("");
+        bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+//        mActivity.startService(playIntent);
+        ContextCompat.startForegroundService(this.getApplicationContext(),playIntent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLayoutController.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+        stopService(playIntent);
+        unbindService(serviceConnection);
+//        mLayoutController.onDestroy();
     }
 
     @Override

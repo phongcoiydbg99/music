@@ -148,33 +148,33 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         }
         setHasOptionsMenu(true);
 
-        serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
-                mediaPlaybackService = binder.getMediaPlaybackService();
-                Log.d(TAG, "onServiceConnected()");
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
+//        serviceConnection = new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName name, IBinder service) {
+//                MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
+//                mediaPlaybackService = binder.getMediaPlaybackService();
+//                Log.d(TAG, "onServiceConnected()");
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName name) {
+//
+//            }
+//        };
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: ");
-        playIntent = new Intent(getActivity(), MediaPlaybackService.class);
+//        playIntent = new Intent(getActivity(), MediaPlaybackService.class);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SONG_POSSITION);
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
-        getActivity().bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-//        getActivity().startService(playIntent);
-        ContextCompat.startForegroundService(getContext(),playIntent);
+//        getActivity().bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+////        getActivity().startService(playIntent);
+//        ContextCompat.startForegroundService(getContext(),playIntent);
     }
 
     @Override
@@ -183,9 +183,14 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         Log.d(TAG, "onStop()");
         if (getActivity() != null){
             LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
-            getActivity().stopService(playIntent);
-            getActivity().unbindService(serviceConnection);
+//            getActivity().stopService(playIntent);
+//            getActivity().unbindService(serviceConnection);
         }
+    }
+
+    public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
+        this.mediaPlaybackService = mediaPlaybackService;
+        Log.d(TAG, "setMediaPlaybackService: "+ this.mediaPlaybackService.isPlaying());
     }
 
     @Override
@@ -202,6 +207,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mRecyclerView.setHasFixedSize(true);
         mSongList = mSongData.getSongList();
         if (mSongList.size() > 0) {
+            if (mSongCurrentPosition >= 0) mSongData.setCurrentSongPossition(mSongCurrentPosition);
             mAdapter = new SongListAdapter(view.getContext(), mSongData);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -307,12 +313,20 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return mSongData.getSongAt(mSongCurrentPosition);
     }
 
+    public int getSongCurrentPosition() {
+        return mSongCurrentPosition;
+    }
+
+    public void setSongCurrentPosition(int mSongCurrentPosition) {
+        this.mSongCurrentPosition = mSongCurrentPosition;
+    }
+
     public boolean isPlaying() {
         return isPlaying;
     }
 
     public void updateUI() {
-        mSongData.setCurrentSongId(mSongCurrentPosition);
+        mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mAdapter.setCurrentPos(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
         updatePlaySongLayout(mSongCurrentPosition);

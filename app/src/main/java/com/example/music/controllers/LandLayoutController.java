@@ -17,7 +17,7 @@ import com.example.music.fragments.MediaPlaybackFragment;
 import com.example.music.fragments.SongPlayFragment;
 
 public class LandLayoutController extends LayoutController {
-    private static final String TAG = "LayoutController";
+    private static final String TAG = "LandLayoutController";
     private MediaPlaybackFragment mMediaPlaybackFragment;
     private SongData mSongData;
     private Song mSong;
@@ -27,23 +27,27 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songId) {
+    public void onCreate(Bundle savedInstanceState, int songPos) {
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
-            Log.d(TAG, "onCreate: " + songId);
+            Log.d(TAG, "onCreate: " + songPos);
             mSongData = new SongData(mActivity.getApplicationContext());
-            if (songId < 0) mSong = mSongData.getSongId(60);
-            else mSong = mSongData.getSongId(songId);
+            if (songPos < 0) songPos = 0;
+            else mSong = mSongData.getSongAt(songPos);
             Log.d(TAG, "onCreate: " + mSong.getTitle());
             mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(mSong.getTitle(),mSong.getArtistName(),mSong.getData(),mSong.getDuration(),mSongData.getCurrentSongPossition(),3,true);
             Bundle args = new Bundle();
-            args.putInt(LAST_SONG_ID_EXTRA, songId);
+            args.putInt(LAST_SONG_POS_EXTRA, songPos);
             mMediaPlaybackFragment.setArguments(args);
 
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = new AllSongsFragment();
-
+            mAllSongsFragment.setSongCurrentPosition(songPos);
+            if (isConnected){
+                mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
+                mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+            }
             // Add the fragment to the 'fragment_container' FrameLayout
             mActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_all_songs, mAllSongsFragment)
