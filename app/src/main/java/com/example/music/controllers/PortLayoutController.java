@@ -25,7 +25,7 @@ public class PortLayoutController extends LayoutController {
 
     private SongData songData;
     @Override
-    public void onCreate(Bundle savedInstanceState, String currentItemTitle) {
+    public void onCreate(Bundle savedInstanceState, int songId) {
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
@@ -43,31 +43,14 @@ public class PortLayoutController extends LayoutController {
     @Override
     public void onSongPlayClickListener(View v, Song song, int pos,long current, boolean isPlaying) {
         Log.d(TAG, "onSongPlayClick: " + isPlaying);
+
         MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(song.getTitle(),song.getArtistName(),song.getData(),song.getDuration(),pos,current,isPlaying);
+        Bundle args = newBundleFromNewItem(song);
+        mediaPlaybackFragment.setArguments(args);
         mActivity.getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_all_songs, mediaPlaybackFragment).addToBackStack(null).commit();
         mActivity.getSupportActionBar().hide();
     }
-
-//    @Override
-//    public void onSongItemClick(View v, final int pos) {
-//        mediaPlaybackService.play(pos);
-//        Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-//        LinearLayout linearLayout = mActivity.findViewById(R.id.play_song_layout);
-//        Song song = mAllSongsFragment.getSongData().getSongAt(pos);
-//        mAllSongsFragment.updatePlaySongLayout(mActivity,song,mediaPlaybackService.isPlaying());
-//        linearLayout.setVisibility(View.VISIBLE);
-//        linearLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "onSongPlayClick: "+ pos);
-//                MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(pos);
-//                mActivity.getSupportFragmentManager().beginTransaction()
-//                        .setCustomAnimations(R.anim.enter_down_to_up,R.anim.exit_up_to_down)
-//                        .replace(R.id.full, mediaPlaybackFragment).addToBackStack(null).commit();
-//            }
-//        });
-//    }
 
 //    @Override
 //    public void onNewClick(NewItem item) {

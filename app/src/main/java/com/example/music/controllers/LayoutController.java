@@ -10,13 +10,15 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.music.Song;
 import com.example.music.fragments.AllSongsFragment;
+import com.example.music.fragments.MediaPlaybackFragment;
 import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
 
 
 public abstract class LayoutController implements AllSongsFragment.SongPlayClickListener {
-    public static final String LAST_ITEM_TITLE_EXTRA = "last_item_title";
+    public static final String LAST_SONG_ID_EXTRA = "last_song_id_extra";
     private static final String TAG = LayoutController.class.getSimpleName();
 
     protected AppCompatActivity mActivity;
@@ -60,20 +62,20 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
         mActivity.stopService(playIntent);
         mActivity.unbindService(serviceConnection);
     }
-//    protected Bundle newBundleFromNewItem(NewItem item) {
-//        Bundle args = new Bundle();
-//        args.putString(NewContentFragment.TITLE_EXTRA, item.title);
-//        args.putString(NewContentFragment.DESCRIPTION_EXTRA, item.description);
-//        args.putString(NewContentFragment.DATE_EXTRA, item.date);
-//        args.putString(NewContentFragment.CONTENT_ENCODED_EXTRA, item.contentEncoded);
-//        args.putString(NewContentFragment.IMAGE_URL_EXTRA, item.imageUrl);
-//        return args;
-//    }
-    
-    public void onSaveInstanceState(Bundle outState) {
-//        outState.putString(LAST_ITEM_TITLE_EXTRA, mNewsListFragment.getCurrentItemTitle());
-        outState.putString(LAST_ITEM_TITLE_EXTRA, "mNewsListFragment.getCurrentItemTitle()");
+    protected Bundle newBundleFromNewItem(Song song) {
+        Bundle args = new Bundle();
+        args.putString(MediaPlaybackFragment.ID, String.valueOf(song.getId()));
+        args.putString(MediaPlaybackFragment.TITLE, song.getTitle());
+        args.putString(MediaPlaybackFragment.ARTIST, song.getArtistName());
+        args.putString(MediaPlaybackFragment.DATA, song.getData());
+        args.putString(MediaPlaybackFragment.DURATION, String.valueOf(song.getDuration()));
+        return args;
     }
     
-    public abstract void onCreate(Bundle savedInstanceState, String currentItemTitle);
+    public void onSaveInstanceState(Bundle outState) {
+        int id = mAllSongsFragment.getSong() != null ?  mAllSongsFragment.getSong().getId() : -1;
+        outState.putInt(LAST_SONG_ID_EXTRA, id );
+    }
+    
+    public abstract void onCreate(Bundle savedInstanceState, int songId);
 }

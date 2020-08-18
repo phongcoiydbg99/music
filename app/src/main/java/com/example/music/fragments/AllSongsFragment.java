@@ -181,9 +181,11 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onStop()");
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
-        getActivity().stopService(playIntent);
-        getActivity().unbindService(serviceConnection);
+        if (getActivity() != null){
+            LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
+            getActivity().stopService(playIntent);
+            getActivity().unbindService(serviceConnection);
+        }
     }
 
     @Override
@@ -211,9 +213,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             public void onClick(View v) {
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
+                    isPlaying = false;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
                 } else {
                     mediaPlaybackService.start();
+                    isPlaying = true;
+
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
                 }
                 ;
@@ -223,9 +228,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mAdapter.setOnSongItemClickListener(new SongItemClickListener() {
             @Override
             public void onSongItemClick(SongListAdapter.SongViewHolder holder, final int pos) {
-//                mSongData.setCurrentSongId(pos);
-//                mAdapter.setCurrentPos(pos);
-//                mAdapter.notifyDataSetChanged();
                 onSongPlay = true;
                 mSongCurrentPosition = pos;
                 mediaPlaybackService.play(mSongCurrentPosition);
@@ -234,7 +236,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 Log.d(TAG, "onSongItemClick: " + isPlaying);
                 Toast.makeText(getActivity(), "Play music", Toast.LENGTH_SHORT).show();
                 updateUI();
-//                updatePlaySongLayout(pos);
             }
         });
         // chuyen dang media fragment
@@ -242,6 +243,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             @Override
             public void onClick(View v) {
                 if (songPlayClickListener != null)
+                    isPlaying = mediaPlaybackService.isPlaying();
                     songPlayClickListener.onSongPlayClickListener(v, mSong, mSongCurrentPosition,mediaPlaybackService.getCurrentStreamPosition(), mediaPlaybackService.isPlaying());
             }
         });
@@ -299,6 +301,14 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public SongData getSongData() {
         return mSongData;
+    }
+
+    public Song getSong() {
+        return mSongData.getSongAt(mSongCurrentPosition);
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
     }
 
     public void updateUI() {

@@ -19,20 +19,20 @@ import java.util.Random;
 public class SongData {
     private Context mContext;
     private LinkedList<Song> mSongList;
-    private int mCurrentSongId;
+    private int mCurrentSongPossition;
 
-    public int getCurrentSongId() {
-        return mCurrentSongId;
+    public int getCurrentSongPossition() {
+        return mCurrentSongPossition;
     }
 
-    public void setCurrentSongId(int mCurrentSongId) {
-        this.mCurrentSongId = mCurrentSongId;
+    public void setCurrentSongId(int mCurrentSongPossition) {
+        this.mCurrentSongPossition = mCurrentSongPossition;
     }
 
 
     public SongData(Context context) {
         mSongList = getAllSongs(context);
-        mCurrentSongId = -1;
+        mCurrentSongPossition = -1;
         mContext = context;
     }
 
@@ -53,6 +53,20 @@ public class SongData {
         return mSongList.size();
     }
 
+    public Song getSongId(int id){
+        int pos = 0;
+        if (mSongList.size() > 0) {
+            for(Song song: mSongList){
+                if (song.getId() == id)
+                {
+                    mCurrentSongPossition = pos;
+                    return song;
+                }
+                pos++;
+            }
+        }
+        return null;
+    }
     public static LinkedList<Song> getAllSongs(Context context) {
         LinkedList<Song> songList = new LinkedList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;

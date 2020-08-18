@@ -40,14 +40,14 @@ public class MediaPlaybackFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TAG = MediaPlaybackFragment.class.getSimpleName();
-    private static final String ID = "song_id";
-    private static final String TITLE = "song_title";
-    private static final String ARTIST = "song_artist";
-    private static final String DATA = "song_data";
-    private static final String DURATION = "song_duration";
-    private static final String CURRENT_STREAM_POSSITION = "CURRENT_STEAM_POSSITION";
-    private static final String IS_PLAYING = "is_playing";
-    private static final String SONG_POSSITON = "song_possion";
+    public static final String ID = "song_id";
+    public static final String TITLE = "song_title";
+    public static final String ARTIST = "song_artist";
+    public static final String DATA = "song_data";
+    public static final String DURATION = "song_duration";
+    public static final String CURRENT_STREAM_POSSITION = "CURRENT_STEAM_POSSITION";
+    public static final String IS_PLAYING = "is_playing";
+    public static final String SONG_POSSITON = "song_possion";
 
     private String mSongCurrentTitle;
     private String mSongCurrentArtist;

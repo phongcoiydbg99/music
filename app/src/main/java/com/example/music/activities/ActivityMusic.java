@@ -32,6 +32,7 @@ public class ActivityMusic extends AppCompatActivity {
     public static final String TAG = "ActivityMusic";
     public static final int REQUEST_CODE = 1;
     public static LinkedList<Song> mSongList = new LinkedList<>();
+    private boolean isPermission = false;
     private LayoutController mLayoutController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +43,18 @@ public class ActivityMusic extends AppCompatActivity {
         float density = getResources().getDisplayMetrics().density;
         System.out.println(density);
         permission();
+        int songId = -1;
+        if (savedInstanceState != null){
+            songId = savedInstanceState.getInt(LayoutController.LAST_SONG_ID_EXTRA);
+        }
+        Log.d(TAG, "onCreate: "+songId);
         boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
-        mLayoutController = isPortrait ? new PortLayoutController(this)
-                : new LandLayoutController(this);
-        mLayoutController.onCreate(savedInstanceState, "currentItemTitle");
-        mLayoutController.getServiceConnection();
+        if (isPermission){
+            mLayoutController = isPortrait ? new PortLayoutController(this)
+                    : new LandLayoutController(this);
+            mLayoutController.onCreate(savedInstanceState, songId);
+            mLayoutController.getServiceConnection();
+        }
     }
 
     private void permission() {
@@ -55,7 +63,8 @@ public class ActivityMusic extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-            mSongList = getAllSongs(this);
+            isPermission = true;
+//            mSongList = getAllSongs(this);
         }
     }
 
@@ -72,12 +81,19 @@ public class ActivityMusic extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mLayoutController.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-                mSongList = getAllSongs(this);
+                isPermission = true;
+//                mSongList = getAllSongs(this);
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
             }
