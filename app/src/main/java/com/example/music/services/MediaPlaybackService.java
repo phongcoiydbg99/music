@@ -155,7 +155,9 @@ public class MediaPlaybackService extends Service implements
                 .Builder(this, PRIMARY_CHANNEL_ID)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
-                .setSmallIcon(R.mipmap.ic_launcher_music);
+                .setSmallIcon(R.mipmap.ic_launcher_music)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setDefaults(NotificationCompat.DEFAULT_ALL);;
         return notifyBuilderq.build();
     }
     private NotificationCompat.Builder getNotificationBuilder() {
@@ -250,9 +252,9 @@ public class MediaPlaybackService extends Service implements
         mPlayer.start();
     }
 
-    public void play(int songId) {
+    public void play(int songPos) {
         mPlayer.reset();
-        Song playSong = mSongData.getSongAt(songId);
+        Song playSong = mSongData.getSongAt(songPos);
         Log.d(TAG, playSong.getData());
         play(playSong);
     }

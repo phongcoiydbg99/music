@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
+import com.example.music.adapters.SongListAdapter;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
 import com.example.music.fragments.SongPlayFragment;
@@ -21,34 +22,31 @@ public class LandLayoutController extends LayoutController {
     private MediaPlaybackFragment mMediaPlaybackFragment;
     private SongData mSongData;
     private Song mSong;
+    private boolean mIsPlaying;
+    private int mSongPos;
 
     public LandLayoutController(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos) {
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
+    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
             Log.d(TAG, "onCreate: " + songPos);
+            mSongPos = songPos;
+            mIsPlaying = isPlaying;
             mSongData = new SongData(mActivity.getApplicationContext());
             if (songPos < 0) songPos = 0;
-            else mSong = mSongData.getSongAt(songPos);
-            Log.d(TAG, "onCreate: " + mSong.getTitle());
-            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(mSong.getTitle(),mSong.getArtistName(),mSong.getData(),mSong.getDuration(),mSongData.getCurrentSongPossition(),3,true);
-            Bundle args = new Bundle();
-            args.putInt(LAST_SONG_POS_EXTRA, songPos);
-            mMediaPlaybackFragment.setArguments(args);
+            mSong = mSongData.getSongAt(songPos);
+            Log.d(TAG, "onCreate: " + mSong.getArtistName());
+            Log.d(TAG, "onCreate: " +isConnected);
+            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(mSong.getTitle(),mSong.getArtistName(),mSong.getData(),mSong.getDuration(),mSongData.getCurrentSongPossition(),songDuration,isPlaying);
 
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = new AllSongsFragment();
             mAllSongsFragment.setSongCurrentPosition(songPos);
-            if (isConnected){
-                mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-                mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-            }
-            // Add the fragment to the 'fragment_container' FrameLayout
+            mAllSongsFragment.setOnSongPlayClickListener(this);
+            mAllSongsFragment.setOnSongItemClickListener(this);
             mActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_all_songs, mAllSongsFragment)
                     .replace(R.id.fragment_media, mMediaPlaybackFragment)
@@ -57,8 +55,43 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
+    public void onConnection() {
+        if (isConnected){
+            mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
+            if (mIsPlaying) {
+                mediaPlaybackService.play(mSongPos);
+//                    Log.d(TAG, String.valueOf("onCreate: "+ mediaPlaybackService.getmPlayer() == null));
+//                    mediaPlaybackService.seekTo((int) songDuration);
+            }
+        }
+    }
 
+    @Override
+    public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
+        Toast.makeText(mActivity, "Play music "+isConnected, Toast.LENGTH_SHORT).show();
+        if (isConnected) {
+//            Bundle args = newBundleFromNewItem(song);
+//            mediaPlaybackFragment.setArguments(args);
+            Log.d(TAG, "onSongPlayClickListener: "+ song.getTitle());
+//            mActivity.getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.fragment_media, mMediaPlaybackFragment).commit();
+        }
+    }
+
+    @Override
+    public void onSongItemClick(SongListAdapter.SongViewHolder holder, int pos) {
+        mAllSongsFragment.setOnSongPlay(true);
+        mAllSongsFragment.setSongCurrentPosition(pos);
+        mediaPlaybackService.play(pos);
+        mediaPlaybackService.setCurrentSongPosition(pos);
+        mAllSongsFragment.setPlaying(true);
+        mAllSongsFragment.updateUILand();
+        Log.d(TAG, "onSongItemClick: " );
+        Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
+//        mAllSongsFragment.updateUI();
+        if (isConnected)
+        mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,mediaPlaybackService.isPlaying());
+        mMediaPlaybackFragment.updateUI();
     }
 
 

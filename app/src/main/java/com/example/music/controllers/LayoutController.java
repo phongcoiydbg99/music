@@ -18,9 +18,13 @@ import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
 
 
-public abstract class LayoutController implements AllSongsFragment.SongPlayClickListener {
+public abstract class LayoutController implements AllSongsFragment.SongPlayClickListener, SongItemClickListener {
+
     public static final String LAST_SONG_POS_EXTRA = "last_song_id_extra";
+    public static final String LAST_SONG_DURATION_EXTRA = "last_song_duration_extra";
+    public static final String LAST_SONG_ISPLAYING_EXTRA = "last_song_isplaying_extra";
     private static final String TAG = LayoutController.class.getSimpleName();
+
 
     protected AppCompatActivity mActivity;
     protected AllSongsFragment mAllSongsFragment;
@@ -32,52 +36,14 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
     public Intent playIntent;
     public boolean isConnected = false;
 
-//    ServiceConnection serviceConnection
-//    = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName name, IBinder service) {
-//            MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
-//            mediaPlaybackService = binder.getMediaPlaybackService();
-//            mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-//            isConnected = true;
-//            Log.d(TAG,"onServiceConnected()");
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName name) {
-//
-//        }
-//    };
-
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
         this.mediaPlaybackService = mediaPlaybackService;
     }
 
     public void setConnected(boolean connected) {
         isConnected = connected;
-        if (isConnected) mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
     }
 
-    //    public ServiceConnection getServiceConnection()
-//    {
-//        return serviceConnection;
-//    }
-//    public void onStart()
-//    {
-//        playIntent = new Intent(mActivity, MediaPlaybackService.class);
-//        Log.d(TAG,"onStart()");
-//        playIntent.setAction("");
-//        mActivity.bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-////        mActivity.startService(playIntent);
-//        ContextCompat.startForegroundService(mActivity.getApplicationContext(),playIntent);
-//    }
-//
-//    public void onDestroy()
-//    {
-//        Log.d(TAG,"onDestroy()");
-//        mActivity.stopService(playIntent);
-//        mActivity.unbindService(serviceConnection);
-//    }
     protected Bundle newBundleFromNewItem(Song song) {
         Bundle args = new Bundle();
         args.putString(MediaPlaybackFragment.ID, String.valueOf(song.getId()));
@@ -87,11 +53,14 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
         args.putString(MediaPlaybackFragment.DURATION, String.valueOf(song.getDuration()));
         return args;
     }
-    
+
     public void onSaveInstanceState(Bundle outState) {
-        int pos = mAllSongsFragment.getSong() != null ?  mAllSongsFragment.getSongCurrentPosition() : 0;
+        int pos = mAllSongsFragment.getSongCurrentPosition() != -1 ?  mAllSongsFragment.getSongCurrentPosition() : 0;
         outState.putInt(LAST_SONG_POS_EXTRA, pos );
+        outState.putLong(LAST_SONG_DURATION_EXTRA, mediaPlaybackService.getCurrentStreamPosition());
+        outState.putBoolean(LAST_SONG_ISPLAYING_EXTRA, mediaPlaybackService.isPlaying());
     }
     
-    public abstract void onCreate(Bundle savedInstanceState, int songId);
+    public abstract void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying);
+    public abstract void onConnection();
 }

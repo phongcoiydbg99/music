@@ -124,10 +124,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 }
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
-                Log.d(TAG, "onReceive: song play complete");
                 mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MESSAGE_SONG_PLAY_COMPLETE));
-                mediaPlaybackService.play(mSongCurrentPosition);
-                updateUI();
+                Log.d(TAG, "onReceive: song play complete " + mSongCurrentPosition);
+                if (mediaPlaybackService != null){
+                    mediaPlaybackService.play(mSongCurrentPosition);
+                    updateUI();
+                }
             }
         }
     };
@@ -167,14 +169,10 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: ");
-//        playIntent = new Intent(getActivity(), MediaPlaybackService.class);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SONG_POSSITION);
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
-//        getActivity().bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-////        getActivity().startService(playIntent);
-//        ContextCompat.startForegroundService(getContext(),playIntent);
     }
 
     @Override
@@ -183,8 +181,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         Log.d(TAG, "onStop()");
         if (getActivity() != null){
             LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
-//            getActivity().stopService(playIntent);
-//            getActivity().unbindService(serviceConnection);
         }
     }
 
@@ -230,25 +226,27 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 ;
             }
         });
+        mAdapter.setOnSongItemClickListener(mSongItemClickListener);
         // hien thanh nghe nhac
-        mAdapter.setOnSongItemClickListener(new SongItemClickListener() {
-            @Override
-            public void onSongItemClick(SongListAdapter.SongViewHolder holder, final int pos) {
-                onSongPlay = true;
-                mSongCurrentPosition = pos;
-                mediaPlaybackService.play(mSongCurrentPosition);
-                mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
-                isPlaying = true;
-                Log.d(TAG, "onSongItemClick: " + isPlaying);
-                Toast.makeText(getActivity(), "Play music", Toast.LENGTH_SHORT).show();
-                updateUI();
-            }
-        });
+//        mAdapter.setOnSongItemClickListener(new SongItemClickListener() {
+//            @Override
+//            public void onSongItemClick(SongListAdapter.SongViewHolder holder, final int pos) {
+//                onSongPlay = true;
+//                mSongCurrentPosition = pos;
+//                mediaPlaybackService.play(mSongCurrentPosition);
+//                mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
+//                isPlaying = true;
+//                Log.d(TAG, "onSongItemClick: " + isPlaying);
+//                Toast.makeText(getActivity(), "Play music", Toast.LENGTH_SHORT).show();
+//                updateUI();
+//            }
+//        });
         // chuyen dang media fragment
         mLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (songPlayClickListener != null)
+                    Log.d(TAG, String.valueOf(mediaPlaybackService == null));
                     isPlaying = mediaPlaybackService.isPlaying();
                     songPlayClickListener.onSongPlayClickListener(v, mSong, mSongCurrentPosition,mediaPlaybackService.getCurrentStreamPosition(), mediaPlaybackService.isPlaying());
             }
@@ -323,6 +321,20 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public boolean isPlaying() {
         return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
+
+    public void setOnSongPlay(boolean onSongPlay) {
+        this.onSongPlay = onSongPlay;
+    }
+
+    public void updateUILand() {
+        mSongData.setCurrentSongPossition(mSongCurrentPosition);
+        mAdapter.setCurrentPos(mSongCurrentPosition);
+        mAdapter.notifyDataSetChanged();
     }
 
     public void updateUI() {

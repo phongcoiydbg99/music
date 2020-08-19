@@ -28,12 +28,12 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import java.util.LinkedList;
 
 public class ActivityMusic extends AppCompatActivity {
+
     public static final String TAG = "ActivityMusic";
     public static final int REQUEST_CODE = 1;
     public static LinkedList<Song> mSongList = new LinkedList<>();
@@ -42,48 +42,62 @@ public class ActivityMusic extends AppCompatActivity {
     private Intent playIntent;
     private boolean isConnected = false;
     private LayoutController mLayoutController;
+    private int mSongLastPossition = -1;
+    private long mSongLastDuration = -1;
+    private Boolean mSongLastIsPlaying = true;
+    private ServiceConnection mServiceConnection;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
         float density = getResources().getDisplayMetrics().density;
         System.out.println(density);
         permission();
-        int pos = -1;
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
+                mediaPlaybackService = binder.getMediaPlaybackService();
+                mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+                mLayoutController.setConnected(true);
+                mLayoutController.onConnection();
+                isConnected = true;
+                Log.d(TAG, "onServiceConnected() ");
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                isConnected = false;
+            }
+        };
+
         if (savedInstanceState != null){
-            pos = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
+            mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
+            mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
+            mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
+            Log.d(TAG, "onCreate: "+mSongLastPossition);
+            Log.d(TAG, "onCreate: "+mSongLastDuration);
+            Log.d(TAG, "onCreate: "+mSongLastIsPlaying);
+
         }
-        Log.d(TAG, "onCreate: "+pos);
+
         boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
         if (isPermission){
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, pos);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying);
         }
     }
 
-    ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
-            mediaPlaybackService = binder.getMediaPlaybackService();
-            mLayoutController.setMediaPlaybackService(mediaPlaybackService);
-            mLayoutController.setConnected(true);
-            isConnected = true;
-            Log.d(TAG,"onServiceConnected()");
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
     private void permission() {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
             isPermission = true;
@@ -97,9 +111,15 @@ public class ActivityMusic extends AppCompatActivity {
         playIntent = new Intent(ActivityMusic.this, MediaPlaybackService.class);
         Log.d(TAG,"onStart: ");
         playIntent.setAction("");
-        bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 //        mActivity.startService(playIntent);
         ContextCompat.startForegroundService(this.getApplicationContext(),playIntent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
@@ -107,7 +127,10 @@ public class ActivityMusic extends AppCompatActivity {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
         stopService(playIntent);
-        unbindService(serviceConnection);
+        if (isConnected){
+            unbindService(mServiceConnection);
+            isConnected = false;
+        }
 //        mLayoutController.onDestroy();
     }
 
@@ -126,7 +149,7 @@ public class ActivityMusic extends AppCompatActivity {
                 isPermission = true;
 //                mSongList = getAllSongs(this);
             } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
             }
         }
     }

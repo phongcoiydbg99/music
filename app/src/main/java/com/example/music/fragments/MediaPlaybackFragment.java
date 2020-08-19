@@ -15,6 +15,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,7 +82,7 @@ public class MediaPlaybackFragment extends Fragment {
     ServiceConnection serviceConnection;
     Intent playIntent;
     Thread mSeekBarThread;
-    Handler mHandler = new Handler();
+    UpdateSeekBarThread updateSeekBarThread;
 
     public MediaPlaybackFragment() {
         // Required empty public constructor
@@ -104,6 +105,7 @@ public class MediaPlaybackFragment extends Fragment {
         args.putLong(CURRENT_STREAM_POSSITION, current);
         args.putBoolean(IS_PLAYING, isPlaying);
         args.putInt(SONG_POSSITON, pos);
+        Log.d(TAG, "newInstance: " + artist);
         fragment.setArguments(args);
         return fragment;
     }
@@ -113,11 +115,13 @@ public class MediaPlaybackFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE));
-                mediaPlaybackService.play(mSongCurrentPosition);
-                Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                updateSongCurrentData(song, mSongCurrentPosition, true);
-                updateUI();
-                Log.d(TAG, "onClickNext: " + song.getTitle() + " " + mSongCurrentPosition);
+                if (mediaPlaybackService != null) {
+                    mediaPlaybackService.play(mSongCurrentPosition);
+                    Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+                    updateSongCurrentData(song, mSongCurrentPosition, true);
+                    updateUI();
+                    Log.d(TAG, "onClickNext: " + song.getTitle() + " " + mSongCurrentPosition);
+                }
             }
         }
     };
@@ -142,7 +146,6 @@ public class MediaPlaybackFragment extends Fragment {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
 
-        mSeekBarThread.interrupt();
         mServiceStatus = false;
         // gui message toi allsongsFragment khi back
         Intent intent = new Intent(SONG_POSSITON);
@@ -157,7 +160,8 @@ public class MediaPlaybackFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        Bundle args = getArguments();
+        if (args != null) {
             mSongCurrentTitle = getArguments().getString(TITLE);
             mSongCurrentArtist = getArguments().getString(ARTIST);
             mSongCurrentData = getArguments().getString(DATA);
@@ -165,7 +169,9 @@ public class MediaPlaybackFragment extends Fragment {
             isPlaying = getArguments().getBoolean(IS_PLAYING);
             mSongCurrentPosition = getArguments().getInt(SONG_POSSITON);
             mSongCurrentStreamPossition = getArguments().getLong(CURRENT_STREAM_POSSITION);
+            Log.d(TAG, "onCreate: " + mSongCurrentArtist);
         }
+
 //        serviceConnection = new ServiceConnection() {
 //            @Override
 //            public void onServiceConnected(ComponentName name, IBinder service) {
@@ -207,47 +213,56 @@ public class MediaPlaybackFragment extends Fragment {
 //
 //            }
 //        };
-        if (mediaPlaybackService != null) {
-            mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
-            mServiceStatus = true;
-            isPlaying = mediaPlaybackService.isPlaying();
-            mSeekBarThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (mediaPlaybackService.getmPlayer() != null) {
-                        if (mediaPlaybackService.isPlaying()) {
-                            try {
-                                final long current = mediaPlaybackService.getCurrentStreamPosition();
-                                if (getActivity() != null) {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
-                                            mMediaSeekBar.setProgress((int) (current));
-                                            mStartTime.setText(formattedTime(current));
-                                        }
-                                    });
-                                }
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            });
-            mSeekBarThread.start();
-        }
+        updateSeekBarThread = new UpdateSeekBarThread();
+        updateSeekBarThread.start();
+//        if (mediaPlaybackService != null) {
+//            mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
+//            mServiceStatus = true;
+//            isPlaying = mediaPlaybackService.isPlaying();
+//            mSeekBarThread = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    while (mediaPlaybackService.getmPlayer() != null) {
+//                        if (mediaPlaybackService.isPlaying()) {
+//                            try {
+//                                final long current = mediaPlaybackService.getCurrentStreamPosition();
+//                                if (getActivity() != null) {
+//                                    getActivity().runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
+//                                            mMediaSeekBar.setProgress((int) (current));
+//                                            mStartTime.setText(formattedTime(current));
+//                                        }
+//                                    });
+//                                }
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }
+//            });
+//            mSeekBarThread.start();
+//        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d(TAG, "onCreateView: ");
         view = inflater.inflate(R.layout.fragment_media_playback, container, false);
         initView();
         updateUI();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
     }
 
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
@@ -285,6 +300,8 @@ public class MediaPlaybackFragment extends Fragment {
     }
 
     public void updateUI() {
+        Log.d(TAG, "updateUI: " + mSongCurrentArtist);
+        updateSeekBarThread.updateSeekBar();
         mSongName.setText(mSongCurrentTitle);
         mSongArtist.setText(mSongCurrentArtist);
         mStartTime.setText("00:00");
@@ -294,6 +311,7 @@ public class MediaPlaybackFragment extends Fragment {
         } else mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
         ;
         byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
+        Log.d(TAG, "updateUI: " + albumArt);
         if (albumArt != null) {
             Glide.with(view.getContext()).asBitmap()
                     .load(albumArt)
@@ -395,5 +413,43 @@ public class MediaPlaybackFragment extends Fragment {
         if (minutes.length() <= 1) minutes = "0" + minutes;
         if (seconds.length() <= 1) seconds = "0" + seconds;
         return minutes + ":" + seconds;
+    }
+
+    public class UpdateSeekBarThread extends Thread {
+        private Handler handler;
+
+        @Override
+        public void run() {
+            super.run();
+            Looper.prepare();
+            handler = new Handler();
+            Looper.loop();
+        }
+
+        public void updateSeekBar() {
+            if (mediaPlaybackService != null) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            final long current = mediaPlaybackService.getCurrentStreamPosition();
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
+                                        mMediaSeekBar.setProgress((int) (current));
+                                        mStartTime.setText(formattedTime(current));
+                                    }
+                                });
+                            }
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }
     }
 }
