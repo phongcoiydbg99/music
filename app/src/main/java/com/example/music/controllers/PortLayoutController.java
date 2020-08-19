@@ -30,7 +30,7 @@ public class PortLayoutController extends LayoutController {
     public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
-            mAllSongsFragment = new AllSongsFragment();
+            mAllSongsFragment = AllSongsFragment.newInstance(true);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
             if (songPos >= 0) mAllSongsFragment.setSongCurrentPosition(songPos);
@@ -54,8 +54,6 @@ public class PortLayoutController extends LayoutController {
         if (isConnected) {
             MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
             mediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-//            Bundle args = newBundleFromNewItem(song);
-//            mediaPlaybackFragment.setArguments(args);
             mActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_all_songs, mediaPlaybackFragment).addToBackStack(null).commit();
             mActivity.getSupportActionBar().hide();

@@ -32,7 +32,9 @@ public class MediaPlaybackService extends Service implements
 
     private static final String TAG = MediaPlaybackService.class.getSimpleName();
     public static final String SONG_PLAY_COMPLETE = "song_play_complete";
+    public static final String SONG_PLAY_CHANGE = "song_play_change";
     public static final String MESSAGE_SONG_PLAY_COMPLETE = "message_song_play_complete";
+    public static final String MESSAGE_SONG_PLAY_CHANGE = "message_song_play_change";
     public static final String NOTIFICATION_CHANNEL = "notification_channel";
     public static final int NOTIFICATION_ID = 123;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
@@ -263,6 +265,11 @@ public class MediaPlaybackService extends Service implements
         mPlayerThread.play(song);
     }
 
+    public void sendMessage(){
+        Intent intent = new Intent(SONG_PLAY_CHANGE);
+        intent.putExtra(MESSAGE_SONG_PLAY_CHANGE,String.valueOf(currentSongPosition));
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
     public void pause() {
         if (mPlayer != null) {
             mPlayer.pause();
@@ -306,14 +313,14 @@ public class MediaPlaybackService extends Service implements
         if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
         Log.d(TAG, "playNext: " + currentSongPosition);
         play(currentSongPosition);
-//        play(mSongData.getNextSong(mCurrentSong));
+        sendMessage();
     }
 
     public void playPrev() {
         currentSongPosition--;
         if (currentSongPosition < 0) currentSongPosition = mSongData.getSongList().size() - 1;
         play(currentSongPosition);
-//        play(mSongData.getPreviousSong(mCurrentSong));
+        sendMessage();
     }
 
     public class PlayerThread extends Thread {

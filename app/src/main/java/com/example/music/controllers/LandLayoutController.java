@@ -24,6 +24,7 @@ public class LandLayoutController extends LayoutController {
     private Song mSong;
     private boolean mIsPlaying;
     private int mSongPos;
+    private int mSongDuration;
 
     public LandLayoutController(AppCompatActivity activity) {
         super(activity);
@@ -35,15 +36,14 @@ public class LandLayoutController extends LayoutController {
             Log.d(TAG, "onCreate: " + songPos);
             mSongPos = songPos;
             mIsPlaying = isPlaying;
+            mSongDuration = (int) songDuration;
             mSongData = new SongData(mActivity.getApplicationContext());
             if (songPos < 0) songPos = 0;
             mSong = mSongData.getSongAt(songPos);
-            Log.d(TAG, "onCreate: " + mSong.getArtistName());
-            Log.d(TAG, "onCreate: " +isConnected);
             mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(mSong.getTitle(),mSong.getArtistName(),mSong.getData(),mSong.getDuration(),mSongData.getCurrentSongPossition(),songDuration,isPlaying);
 
             // Create a new Fragment to be placed in the activity layout
-            mAllSongsFragment = new AllSongsFragment();
+            mAllSongsFragment = AllSongsFragment.newInstance(false);
             mAllSongsFragment.setSongCurrentPosition(songPos);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
@@ -56,13 +56,21 @@ public class LandLayoutController extends LayoutController {
 
     @Override
     public void onConnection() {
+        Log.d(TAG, "onConnection: "+ mSongDuration+" "+mSong.getDuration());
         if (isConnected){
+            mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-//            if (mIsPlaying) {
-//                mediaPlaybackService.play(mSongPos);
-//                    Log.d(TAG, String.valueOf("onCreate: "+ mediaPlaybackService.getmPlayer() == null));
-//                    mediaPlaybackService.seekTo((int) songDuration);
-//            }
+            if (mIsPlaying) {
+                mAllSongsFragment.setOnSongPlay(true);
+                mAllSongsFragment.setSongCurrentPosition(mSongPos);
+                mediaPlaybackService.play(mSongPos);
+                mediaPlaybackService.setCurrentSongPosition(mSongPos);
+                mAllSongsFragment.setPlaying(true);
+                mAllSongsFragment.updateUILand();
+                mMediaPlaybackFragment.setSongCurrentStreamPossition(mSongDuration);
+                mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mSongPos),mSongPos,true);
+                mMediaPlaybackFragment.updateUI();
+            }
         }
     }
 
@@ -87,10 +95,10 @@ public class LandLayoutController extends LayoutController {
         mAllSongsFragment.setPlaying(true);
         mAllSongsFragment.updateUILand();
         Log.d(TAG, "onSongItemClick: " );
-        Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, String.valueOf(mediaPlaybackService.isPlaying()), Toast.LENGTH_SHORT).show();
 //        mAllSongsFragment.updateUI();
         if (isConnected)
-        mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,mediaPlaybackService.isPlaying());
+        mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,true);
         mMediaPlaybackFragment.updateUI();
     }
 

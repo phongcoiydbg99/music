@@ -215,37 +215,7 @@ public class MediaPlaybackFragment extends Fragment {
 //        };
         updateSeekBarThread = new UpdateSeekBarThread();
         updateSeekBarThread.start();
-//        if (mediaPlaybackService != null) {
-//            mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
-//            mServiceStatus = true;
-//            isPlaying = mediaPlaybackService.isPlaying();
-//            mSeekBarThread = new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    while (mediaPlaybackService.getmPlayer() != null) {
-//                        if (mediaPlaybackService.isPlaying()) {
-//                            try {
-//                                final long current = mediaPlaybackService.getCurrentStreamPosition();
-//                                if (getActivity() != null) {
-//                                    getActivity().runOnUiThread(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
-//                                            mMediaSeekBar.setProgress((int) (current));
-//                                            mStartTime.setText(formattedTime(current));
-//                                        }
-//                                    });
-//                                }
-//                                Thread.sleep(1000);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                }
-//            });
-//            mSeekBarThread.start();
-//        }
+
     }
 
     @Override
@@ -267,6 +237,12 @@ public class MediaPlaybackFragment extends Fragment {
 
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
         this.mediaPlaybackService = mediaPlaybackService;
+    }
+
+    public void setSongCurrentStreamPossition(long mSongCurrentStreamPossition) {
+        this.mSongCurrentStreamPossition = mSongCurrentStreamPossition;
+        Log.d(TAG, "setSongCurrentStreamPossition: "+mediaPlaybackService.isPlaying());
+        if (mediaPlaybackService.isPlaying()) mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition);
     }
 
     public void initView() {

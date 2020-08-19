@@ -56,15 +56,14 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final int VERTICAL_ITEM_SPACE = 150;
-    private static final String ARG_PARAM1 = "param1";
+    private static final String IS_PORTRAIT = "is_portrait";
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = AllSongsFragment.class.getSimpleName();
     public static final String SONG_POSSITION = "song_possion";
     private static final String MESSAGE_SONG_PLAY_COMPLETE = "message_song_play_complete";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Boolean isPortrait;
     private LinkedList<Song> mSongList = new LinkedList<>();
     private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
@@ -97,16 +96,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment AllSongsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AllSongsFragment newInstance(String param1, String param2) {
+    public static AllSongsFragment newInstance(Boolean isPortrait) {
         AllSongsFragment fragment = new AllSongsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putBoolean(IS_PORTRAIT, isPortrait);
         fragment.setArguments(args);
         return fragment;
     }
@@ -128,8 +124,16 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 Log.d(TAG, "onReceive: song play complete " + mSongCurrentPosition);
                 if (mediaPlaybackService != null){
                     mediaPlaybackService.play(mSongCurrentPosition);
-                    updateUI();
+                    if (isPortrait){
+                        updateUI();
+                    } else updateUILand();
+
                 }
+            }
+            if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
+                mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                if (!isPortrait){updateUILand();}
             }
         }
     };
@@ -145,24 +149,9 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            isPortrait = getArguments().getBoolean(IS_PORTRAIT);
         }
         setHasOptionsMenu(true);
-
-//        serviceConnection = new ServiceConnection() {
-//            @Override
-//            public void onServiceConnected(ComponentName name, IBinder service) {
-//                MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
-//                mediaPlaybackService = binder.getMediaPlaybackService();
-//                Log.d(TAG, "onServiceConnected()");
-//            }
-//
-//            @Override
-//            public void onServiceDisconnected(ComponentName name) {
-//
-//            }
-//        };
     }
 
     @Override
@@ -172,6 +161,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SONG_POSSITION);
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
     }
 
@@ -227,20 +217,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             }
         });
         mAdapter.setOnSongItemClickListener(mSongItemClickListener);
-        // hien thanh nghe nhac
-//        mAdapter.setOnSongItemClickListener(new SongItemClickListener() {
-//            @Override
-//            public void onSongItemClick(SongListAdapter.SongViewHolder holder, final int pos) {
-//                onSongPlay = true;
-//                mSongCurrentPosition = pos;
-//                mediaPlaybackService.play(mSongCurrentPosition);
-//                mediaPlaybackService.setCurrentSongPosition(mSongCurrentPosition);
-//                isPlaying = true;
-//                Log.d(TAG, "onSongItemClick: " + isPlaying);
-//                Toast.makeText(getActivity(), "Play music", Toast.LENGTH_SHORT).show();
-//                updateUI();
-//            }
-//        });
         // chuyen dang media fragment
         mLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
