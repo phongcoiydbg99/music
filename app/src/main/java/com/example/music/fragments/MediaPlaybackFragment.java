@@ -431,6 +431,26 @@ public class MediaPlaybackFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
+                       // while (mediaPlaybackService.getmPlayer() != null) {
+//                        if (mediaPlaybackService.isPlaying()) {
+//                            try {
+//                                final long current = mediaPlaybackService.getCurrentStreamPosition();
+//                                if (getActivity() != null) {
+//                                    getActivity().runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
+//                                            mMediaSeekBar.setProgress((int) (current));
+//                                            mStartTime.setText(formattedTime(current));
+//                                        }
+//                                    });
+//                                }
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
                         try {
                             final long current = mediaPlaybackService.getCurrentStreamPosition();
                             if (getActivity() != null) {
