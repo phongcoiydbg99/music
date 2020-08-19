@@ -58,11 +58,11 @@ public class LandLayoutController extends LayoutController {
     public void onConnection() {
         if (isConnected){
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-            if (mIsPlaying) {
-                mediaPlaybackService.play(mSongPos);
+//            if (mIsPlaying) {
+//                mediaPlaybackService.play(mSongPos);
 //                    Log.d(TAG, String.valueOf("onCreate: "+ mediaPlaybackService.getmPlayer() == null));
 //                    mediaPlaybackService.seekTo((int) songDuration);
-            }
+//            }
         }
     }
 
