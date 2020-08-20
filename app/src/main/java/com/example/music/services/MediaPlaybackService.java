@@ -208,8 +208,6 @@ public class MediaPlaybackService extends Service implements
     public void onCompletion(MediaPlayer mp) {
         currentSongPosition++;
         if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
-        mp.reset();
-        play(currentSongPosition);
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
         intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, String.valueOf(currentSongPosition));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -246,6 +244,7 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void play(int songPos) {
+        mPlayer.reset();
         currentSongPosition = songPos;
         Song playSong = mSongData.getSongAt(songPos);
         Log.d(TAG, playSong.getData());

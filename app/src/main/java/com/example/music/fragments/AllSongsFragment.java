@@ -123,7 +123,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MESSAGE_SONG_PLAY_COMPLETE));
                 Log.d(TAG, "onReceive: song play complete " + mSongCurrentPosition);
                 if (mediaPlaybackService != null) {
-//                    mediaPlaybackService.play(mSongCurrentPosition);
+                    mediaPlaybackService.play(mSongCurrentPosition);
                     if (isPortrait) {
                         updateUI();
                     } else updateUILand();

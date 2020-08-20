@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
+    android:src="@drawable/background_transparent"
     android:theme="@style/AppTheme.NoActionBar"
     tools:context=".fragments.MediaPlaybackFragment">
 
@@ -111,6 +112,9 @@
         android:progressDrawable="@drawable/custom_seekbar"
         android:layout_above="@id/layout_play"
         android:thumb="@drawable/custom_thumb"
+        android:progress="20"
+        android:layout_marginLeft="-18dp"
+        android:layout_marginRight="-18dp"
         android:elevation="10dp"
         android:layout_marginBottom="-10dp"
         />

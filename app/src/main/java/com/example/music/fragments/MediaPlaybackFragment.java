@@ -113,7 +113,7 @@ public class MediaPlaybackFragment extends Fragment {
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE));
                 if (mediaPlaybackService != null) {
-//                    mediaPlaybackService.play(mSongCurrentPosition);
+                    mediaPlaybackService.play(mSongCurrentPosition);
                     Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
                     updateSongCurrentData(song, mSongCurrentPosition, true);
                     updateUI();
