@@ -53,13 +53,6 @@ public class MediaPlaybackService extends Service implements
     private SongData mSongData;
     PlayerThread mPlayerThread;
     private int currentSongPosition;
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
-    };
-    private boolean isPrepare;
 
     public MediaPlaybackService() {
     }
@@ -71,7 +64,6 @@ public class MediaPlaybackService extends Service implements
         mSongData = new SongData(this);
         mPlayerThread = new PlayerThread();
         mPlayerThread.start();
-        isPrepare = false;
         // init service
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(this);
@@ -80,17 +72,10 @@ public class MediaPlaybackService extends Service implements
                 PowerManager.PARTIAL_WAKE_LOCK);
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         createNotificationChannel();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MUSIC_SERVICE_ACTION_PREV);
-        filter.addAction(MUSIC_SERVICE_ACTION_NEXT);
-        filter.addAction(MUSIC_SERVICE_ACTION_PAUSE);
-        filter.addAction(MUSIC_SERVICE_ACTION_PLAY);
-        registerReceiver(mBroadcastReceiver, filter);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         return mBinder;
     }
 
@@ -162,7 +147,6 @@ public class MediaPlaybackService extends Service implements
                 .setSmallIcon(R.mipmap.ic_launcher_music)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setDefaults(NotificationCompat.DEFAULT_ALL);
-        ;
         return notifyBuilderq.build();
     }
 
@@ -216,7 +200,6 @@ public class MediaPlaybackService extends Service implements
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy Music Service");
-        unregisterReceiver(mBroadcastReceiver);
         mPlayer.stop();
         mPlayer.release();
     }
@@ -225,6 +208,8 @@ public class MediaPlaybackService extends Service implements
     public void onCompletion(MediaPlayer mp) {
         currentSongPosition++;
         if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+        mp.reset();
+        play(currentSongPosition);
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
         intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, String.valueOf(currentSongPosition));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -238,10 +223,6 @@ public class MediaPlaybackService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
-        if(mp.getDuration() != -1){
-            //your code when when something is loading
-            isPrepare = true;
-        }
     }
 
     public int getCurrentSongPosition() {
@@ -260,16 +241,12 @@ public class MediaPlaybackService extends Service implements
         return mSongData;
     }
 
-    public boolean isPrepare() {
-        return isPrepare;
-    }
-
     public void start() {
         mPlayer.start();
     }
 
     public void play(int songPos) {
-        mPlayer.reset();
+        currentSongPosition = songPos;
         Song playSong = mSongData.getSongAt(songPos);
         Log.d(TAG, playSong.getData());
         play(playSong);
@@ -357,7 +334,6 @@ public class MediaPlaybackService extends Service implements
                 public void run() {
                     if (mPlayer != null) {
                         mPlayer.reset();
-                        isPrepare = false;
                         try {
                             mPlayer.setDataSource(song.getData());
                             mPlayer.prepareAsync();

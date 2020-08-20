@@ -63,10 +63,16 @@ public class LandLayoutController extends LayoutController {
             if (mIsPlaying) {
                 mAllSongsFragment.setOnSongPlay(true);
                 mAllSongsFragment.setSongCurrentPosition(mSongPos);
-                mediaPlaybackService.play(mSongPos);
+//                try {
+//                    mediaPlaybackService.play(mSongPos);
+//                    Thread.sleep(2000);
+//                    Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getDuration());
+//                    mediaPlaybackService.seekTo(mSongDuration);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 mAllSongsFragment.setPlaying(true);
                 mAllSongsFragment.updateUILand();
-                mMediaPlaybackFragment.setSongCurrentStreamPossition(mSongDuration);
                 mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mSongPos),mSongPos,true);
                 mMediaPlaybackFragment.updateUI();
             }
@@ -90,7 +96,6 @@ public class LandLayoutController extends LayoutController {
         mAllSongsFragment.setOnSongPlay(true);
         mAllSongsFragment.setSongCurrentPosition(pos);
         mediaPlaybackService.play(pos);
-        mediaPlaybackService.setCurrentSongPosition(pos);
         mAllSongsFragment.setPlaying(true);
         mAllSongsFragment.updateUILand();
         Log.d(TAG, "onSongItemClick: " );
@@ -98,22 +103,7 @@ public class LandLayoutController extends LayoutController {
 //        mAllSongsFragment.updateUI();
         if (isConnected)
         mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,true);
+        mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
         mMediaPlaybackFragment.updateUI();
     }
-
-
-//    @Override
-//    public void onSongItemClick(View v, int pos) {
-//        Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-////        SongPlayFragment songPlayFragment = new SongPlayFragment();
-////        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-////        transaction.replace(R.id.fragment_play, songPlayFragment).commit();
-//    }
-
-
-//    @Override
-//    public void onNewClick(NewItem item) {
-//        Bundle args = newBundleFromNewItem(item);
-//        mNewContentFragment.update(args);
-//    }
 }

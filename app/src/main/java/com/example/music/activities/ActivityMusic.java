@@ -126,7 +126,7 @@ public class ActivityMusic extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
-        stopService(playIntent);
+//        stopService(playIntent);
         if (isConnected){
             unbindService(mServiceConnection);
             isConnected = false;
