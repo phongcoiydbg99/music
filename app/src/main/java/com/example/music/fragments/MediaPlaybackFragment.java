@@ -154,7 +154,7 @@ public class MediaPlaybackFragment extends Fragment {
         // unregister receiver
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-
+        updateSeekBarThread.exit();
     }
 
     @Override
@@ -215,7 +215,6 @@ public class MediaPlaybackFragment extends Fragment {
 //        };
         updateSeekBarThread = new UpdateSeekBarThread();
         updateSeekBarThread.start();
-
     }
 
     @Override
@@ -232,6 +231,8 @@ public class MediaPlaybackFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (mediaPlaybackService.isPlaying())
+            mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition);
         Log.d(TAG, "onResume: ");
     }
 
@@ -241,8 +242,8 @@ public class MediaPlaybackFragment extends Fragment {
 
     public void setSongCurrentStreamPossition(long mSongCurrentStreamPossition) {
         this.mSongCurrentStreamPossition = mSongCurrentStreamPossition;
-        Log.d(TAG, "setSongCurrentStreamPossition: "+mediaPlaybackService.isPlaying());
-        if (mediaPlaybackService.isPlaying()) mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition);
+        Log.d(TAG, "setSongCurrentStreamPossition: " + mediaPlaybackService.isPlaying());
+
     }
 
     public void initView() {
@@ -277,7 +278,6 @@ public class MediaPlaybackFragment extends Fragment {
 
     public void updateUI() {
         Log.d(TAG, "updateUI: " + mSongCurrentArtist);
-        updateSeekBarThread.updateSeekBar();
         mSongName.setText(mSongCurrentTitle);
         mSongArtist.setText(mSongCurrentArtist);
         mStartTime.setText("00:00");
@@ -381,6 +381,7 @@ public class MediaPlaybackFragment extends Fragment {
 
             }
         });
+        updateSeekBarThread.updateSeekBar();
     }
 
     public String formattedTime(long duration) {
@@ -407,45 +408,42 @@ public class MediaPlaybackFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
+//                        if (mediaPlaybackService.isPlaying()) {
                         while (mediaPlaybackService.getmPlayer() != null) {
-                            if (mediaPlaybackService.isPlaying()) {
+                            Log.d(TAG, "run: ");
+                            try {
+                                long current = 0;
                                 try {
-                                    final long current = mediaPlaybackService.getCurrentStreamPosition();
-                                    if (getActivity() != null) {
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
-                                                mMediaSeekBar.setProgress((int) (current));
-                                                mStartTime.setText(formattedTime(current));
-                                            }
-                                        });
-                                    }
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
+                                    current = mediaPlaybackService.getCurrentStreamPosition();
                                 }
+                                catch (IllegalStateException e) {
+                                }
+
+                                if (getActivity() != null) {
+                                    final long finalCurrent = current;
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
+                                            mMediaSeekBar.setProgress((int) (finalCurrent));
+                                            mStartTime.setText(formattedTime(finalCurrent));
+                                        }
+                                    });
+                                }
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
                         }
-//                        try {
-//                            final long current = mediaPlaybackService.getCurrentStreamPosition();
-//                            if (getActivity() != null) {
-//                                getActivity().runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
-//                                        mMediaSeekBar.setProgress((int) (current));
-//                                        mStartTime.setText(formattedTime(current));
-//                                    }
-//                                });
-//                            }
-//                            Thread.sleep(1000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
 //                        }
                     }
                 });
             }
+        }
+
+        public void exit()
+        {
+            handler.getLooper().quit();
         }
     }
 }

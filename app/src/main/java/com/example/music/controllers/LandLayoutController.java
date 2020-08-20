@@ -64,7 +64,6 @@ public class LandLayoutController extends LayoutController {
                 mAllSongsFragment.setOnSongPlay(true);
                 mAllSongsFragment.setSongCurrentPosition(mSongPos);
                 mediaPlaybackService.play(mSongPos);
-                mediaPlaybackService.setCurrentSongPosition(mSongPos);
                 mAllSongsFragment.setPlaying(true);
                 mAllSongsFragment.updateUILand();
                 mMediaPlaybackFragment.setSongCurrentStreamPossition(mSongDuration);

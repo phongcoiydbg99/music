@@ -28,7 +28,7 @@ import com.example.music.SongData;
 
 public class MediaPlaybackService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener{
+        MediaPlayer.OnCompletionListener {
 
     private static final String TAG = MediaPlaybackService.class.getSimpleName();
     public static final String SONG_PLAY_COMPLETE = "song_play_complete";
@@ -46,7 +46,6 @@ public class MediaPlaybackService extends Service implements
     private static final String MUSIC_SERVICE_ACTION_START = "music_service_action_start";
 
 
-
     private NotificationManager mNotifyManager;
     private final IBinder mBinder = new MediaPlaybackBinder();
     private MediaPlayer mPlayer;
@@ -60,6 +59,8 @@ public class MediaPlaybackService extends Service implements
 
         }
     };
+    private boolean isPrepare;
+
     public MediaPlaybackService() {
     }
 
@@ -70,7 +71,7 @@ public class MediaPlaybackService extends Service implements
         mSongData = new SongData(this);
         mPlayerThread = new PlayerThread();
         mPlayerThread.start();
-        
+        isPrepare = false;
         // init service
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(this);
@@ -84,7 +85,7 @@ public class MediaPlaybackService extends Service implements
         filter.addAction(MUSIC_SERVICE_ACTION_NEXT);
         filter.addAction(MUSIC_SERVICE_ACTION_PAUSE);
         filter.addAction(MUSIC_SERVICE_ACTION_PLAY);
-        registerReceiver(mBroadcastReceiver,filter);
+        registerReceiver(mBroadcastReceiver, filter);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: "+ intent.getAction());
+        Log.d(TAG, "onStartCommand: " + intent.getAction());
         startForeground(NOTIFICATION_ID, showNotification());
 
 //        switch (intent.getAction()){
@@ -129,19 +130,19 @@ public class MediaPlaybackService extends Service implements
     }
 
     private Notification showNotification() {
-        Intent playIntent = new Intent(this,MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PLAY);
+        Intent playIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PLAY);
         PendingIntent playPendingIntent = PendingIntent.getService(this,
                 0, playIntent, 0);
 
-        Intent pauseIntent = new Intent(this,MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PAUSE);
+        Intent pauseIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PAUSE);
         PendingIntent pausePendingIntent = PendingIntent.getService(this,
                 0, pauseIntent, 0);
 
-        Intent nextIntent = new Intent(this,MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_NEXT);
+        Intent nextIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_NEXT);
         PendingIntent nextPendingIntent = PendingIntent.getService(this,
                 0, nextIntent, 0);
 
-        Intent prevIntent = new Intent(this,MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PREV);
+        Intent prevIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PREV);
         PendingIntent prevPendingIntent = PendingIntent.getService(this,
                 0, prevIntent, 0);
         // Build the notification with all of the parameters using helper
@@ -149,19 +150,22 @@ public class MediaPlaybackService extends Service implements
         NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
 
         notifyBuilder.addAction(R.drawable.ic_skip_previous, "Previous", prevPendingIntent);
-        if (isPlaying()) notifyBuilder.addAction(R.drawable.ic_pause_circle,"Pause", pausePendingIntent);
+        if (isPlaying())
+            notifyBuilder.addAction(R.drawable.ic_pause_circle, "Pause", pausePendingIntent);
         else notifyBuilder.addAction(R.drawable.ic_play_circle, "Play", playPendingIntent);
         notifyBuilder.addAction(R.drawable.ic_skip_next, "Next", nextPendingIntent);
         // Deliver the notification.
-        NotificationCompat.Builder notifyBuilderq =  new NotificationCompat
+        NotificationCompat.Builder notifyBuilderq = new NotificationCompat
                 .Builder(this, PRIMARY_CHANNEL_ID)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
                 .setSmallIcon(R.mipmap.ic_launcher_music)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setDefaults(NotificationCompat.DEFAULT_ALL);;
+                .setDefaults(NotificationCompat.DEFAULT_ALL);
+        ;
         return notifyBuilderq.build();
     }
+
     private NotificationCompat.Builder getNotificationBuilder() {
 
         Intent notificationIntent = new Intent(this, MediaPlaybackService.class);
@@ -180,6 +184,7 @@ public class MediaPlaybackService extends Service implements
                 .setDefaults(NotificationCompat.DEFAULT_ALL);
         return notifyBuilder;
     }
+
     public void createNotificationChannel() {
 
         // Create a notification manager object.
@@ -206,6 +211,7 @@ public class MediaPlaybackService extends Service implements
             mNotifyManager.createNotificationChannel(notificationChannel);
         }
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -220,7 +226,7 @@ public class MediaPlaybackService extends Service implements
         currentSongPosition++;
         if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
-        intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE,String.valueOf(currentSongPosition));
+        intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, String.valueOf(currentSongPosition));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
@@ -232,6 +238,10 @@ public class MediaPlaybackService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
+        if(mp.getDuration() != -1){
+            //your code when when something is loading
+            isPrepare = true;
+        }
     }
 
     public int getCurrentSongPosition() {
@@ -250,6 +260,10 @@ public class MediaPlaybackService extends Service implements
         return mSongData;
     }
 
+    public boolean isPrepare() {
+        return isPrepare;
+    }
+
     public void start() {
         mPlayer.start();
     }
@@ -265,11 +279,12 @@ public class MediaPlaybackService extends Service implements
         mPlayerThread.play(song);
     }
 
-    public void sendMessage(){
+    public void sendMessage() {
         Intent intent = new Intent(SONG_PLAY_CHANGE);
-        intent.putExtra(MESSAGE_SONG_PLAY_CHANGE,String.valueOf(currentSongPosition));
+        intent.putExtra(MESSAGE_SONG_PLAY_CHANGE, String.valueOf(currentSongPosition));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
+
     public void pause() {
         if (mPlayer != null) {
             mPlayer.pause();
@@ -342,6 +357,7 @@ public class MediaPlaybackService extends Service implements
                 public void run() {
                     if (mPlayer != null) {
                         mPlayer.reset();
+                        isPrepare = false;
                         try {
                             mPlayer.setDataSource(song.getData());
                             mPlayer.prepareAsync();
@@ -352,14 +368,6 @@ public class MediaPlaybackService extends Service implements
                     }
                 }
             });
-        }
-
-        public void prepareNext() {
-
-        }
-
-        public void exit() {
-            mHandler.getLooper().quit();
         }
     }
 }
