@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="170dp">
+
+    <ImageView
+        android:id="@+id/notify_song_art"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/background_transparent" />
+    <TextView
+        android:id="@+id/notify_song_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/notify_song_art"
+        android:singleLine="true"
+        android:layout_marginTop="10dp"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:text="Ten bai hat"/>
+    <TextView
+        android:id="@+id/notify_song_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textSize="20dp"
+        android:layout_toRightOf="@id/notify_song_art"
+        android:layout_below="@+id/notify_song_title"
+        android:text="nhac si"/>
+    <TextView
+        android:id="@+id/text_music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/notify_song_art"
+        android:layout_below="@+id/notify_song_artist"
+        android:textSize="20dp"
+        android:text="Music"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_toRightOf="@id/notify_song_art"
+        android:layout_above="@+id/notify_layout_play"
+        android:layout_marginRight="10dp"
+        android:background="#E8E7E7"/>
+    <LinearLayout
+        android:id="@+id/notify_layout_play"
+        android:layout_toRightOf="@id/notify_song_art"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/notify_skip_previous"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@id/notify_play_button"
+            android:background="#0000"
+            android:src="@drawable/ic_skip_previous" />
+
+        <ImageView
+            android:id="@+id/notify_play_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@+id/notify_skip_next"
+            android:background="#0000"
+            android:src="@drawable/ic_pause_circle" />
+
+        <ImageButton
+            android:id="@+id/notify_skip_next"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:background="#0000"
+            android:src="@drawable/ic_skip_next" />
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -99,8 +99,7 @@ public class LandLayoutController extends LayoutController {
         mAllSongsFragment.setPlaying(true);
         mAllSongsFragment.updateUILand();
         Log.d(TAG, "onSongItemClick: " );
-        Toast.makeText(mActivity, String.valueOf(mediaPlaybackService.isPlaying()), Toast.LENGTH_SHORT).show();
-//        mAllSongsFragment.updateUI();
+        mediaPlaybackService.startForegroundService(pos);
         if (isConnected)
         mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,true);
         mMediaPlaybackFragment.setSongCurrentStreamPossition(0);

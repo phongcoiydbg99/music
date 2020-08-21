@@ -111,8 +111,9 @@ public class ActivityMusic extends AppCompatActivity {
         playIntent = new Intent(ActivityMusic.this, MediaPlaybackService.class);
         Log.d(TAG,"onStart: ");
         playIntent.setAction("");
+        startService(playIntent);
         bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        ContextCompat.startForegroundService(this.getApplicationContext(),playIntent);
+//        ContextCompat.startForegroundService(this.getApplicationContext(),playIntent);
     }
 
     @Override

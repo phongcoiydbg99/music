@@ -76,6 +76,7 @@ public class PortLayoutController extends LayoutController {
         mAllSongsFragment.setSongCurrentPosition(pos);
         mediaPlaybackService.play(pos);
         mediaPlaybackService.setCurrentSongPosition(pos);
+        mediaPlaybackService.startForegroundService(pos);
         mAllSongsFragment.setPlaying(true);
         Log.d(TAG, "onSongItemClick: " );
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();

@@ -18,9 +18,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.music.R;
@@ -83,6 +86,8 @@ public class MediaPlaybackService extends Service implements
         }
     }
 
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: " + intent.getAction());
@@ -96,70 +101,62 @@ public class MediaPlaybackService extends Service implements
                 break;
             case MUSIC_SERVICE_ACTION_NEXT:
                 playNext();
-                Log.d(TAG, "onStartCommand: "+ currentSongPosition);
                 sendMessage();
                 break;
             case MUSIC_SERVICE_ACTION_PREV:
                 playPrev();
                 sendMessage();
                 break;
+            case MUSIC_SERVICE_ACTION_STOP:
+                stop();
+                stopForeground(true);
+                stopSelf();
             default:
                 Log.d(TAG, "onStartCommand: default");
                 break;
         }
 
-        startForeground(NOTIFICATION_CHANNEL,  showNotification());
-
         return START_STICKY;
     }
 
-    private Notification showNotification() {
+    public void startForegroundService(int currentSongPosition) {
+//        startForeground(NOTIFICATION_CHANNEL, showNotification());
+//        mNotifyManager.notify(NOTIFICATION_ID, showNotification());
+        showNotification();
+    }
+
+    private void showNotification() {
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        MediaSessionCompat mediaSessionCompat = new MediaSessionCompat( this, "tag");
         Intent playIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PLAY);
         PendingIntent playPendingIntent = PendingIntent.getService(this,
-                0, playIntent, 0);
+                0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent pauseIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PAUSE);
         PendingIntent pausePendingIntent = PendingIntent.getService(this,
-                0, pauseIntent, 0);
+                0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent nextIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_NEXT);
         PendingIntent nextPendingIntent = PendingIntent.getService(this,
-                0, nextIntent, 0);
+                0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent prevIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PREV);
         PendingIntent prevPendingIntent = PendingIntent.getService(this,
-                0, prevIntent, 0);
-        // Build the notification with all of the parameters using helper
-        // method.
-        NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
+                0, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        notifyBuilder.addAction(R.drawable.ic_skip_previous, "Previous", prevPendingIntent);
-        if (isPlaying())
-            notifyBuilder.addAction(R.drawable.ic_pause_circle, "Pause", pausePendingIntent);
-        else notifyBuilder.addAction(R.drawable.ic_play_circle, "Play", playPendingIntent);
-        notifyBuilder.addAction(R.drawable.ic_skip_next, "Next", nextPendingIntent);
-        // Deliver the notification.
+        Intent stopIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_STOP);
+        PendingIntent stopPendingIntent = PendingIntent.getService(this,
+                0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        return notifyBuilder.build();
-    }
-
-    private NotificationCompat.Builder getNotificationBuilder() {
-
-        Intent notificationIntent = new Intent(this, MediaPlaybackService.class);
-        PendingIntent notificationPendingIntent = PendingIntent.getActivity
-                (this, NOTIFICATION_ID, notificationIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Build the notification with all of the parameters.
+        RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
+        RemoteViews notificationLayoutExpanded = new RemoteViews(getPackageName(), R.layout.notification_large);
         NotificationCompat.Builder notifyBuilder = new NotificationCompat
                 .Builder(this, PRIMARY_CHANNEL_ID)
-                .setContentTitle(getString(R.string.notification_title))
-                .setContentText(getString(R.string.notification_text))
                 .setSmallIcon(R.drawable.ic_play_circle)
-                .setAutoCancel(true).setContentIntent(notificationPendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setDefaults(Notification.DEFAULT_ALL);
-        return notifyBuilder;
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setCustomContentView(notificationLayout)
+                .setCustomBigContentView(notificationLayoutExpanded);
+        notificationManagerCompat.notify(NOTIFICATION_ID, notifyBuilder.build());
     }
 
     public void createNotificationChannel() {
@@ -192,6 +189,9 @@ public class MediaPlaybackService extends Service implements
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy Music Service");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotifyManager.cancelAll();
+        }
         mPlayer.stop();
         mPlayer.release();
     }
