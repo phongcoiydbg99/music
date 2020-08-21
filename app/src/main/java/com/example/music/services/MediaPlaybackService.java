@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -35,8 +36,8 @@ public class MediaPlaybackService extends Service implements
     public static final String SONG_PLAY_CHANGE = "song_play_change";
     public static final String MESSAGE_SONG_PLAY_COMPLETE = "message_song_play_complete";
     public static final String MESSAGE_SONG_PLAY_CHANGE = "message_song_play_change";
-    public static final String NOTIFICATION_CHANNEL = "notification_channel";
-    public static final int NOTIFICATION_ID = 123;
+    public static final int NOTIFICATION_CHANNEL = 112;
+    public static final int NOTIFICATION_ID = 111;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     private static final String MUSIC_SERVICE_ACTION_PAUSE = "music_service_action_pause";
     private static final String MUSIC_SERVICE_ACTION_PLAY = "music_service_action_play";
@@ -51,7 +52,6 @@ public class MediaPlaybackService extends Service implements
     private MediaPlayer mPlayer;
     private Song mCurrentSong;
     private SongData mSongData;
-//    PlayerThread mPlayerThread;
     private int currentSongPosition;
 
     public MediaPlaybackService() {
@@ -62,8 +62,6 @@ public class MediaPlaybackService extends Service implements
         super.onCreate();
         mPlayer = new MediaPlayer();
         mSongData = new SongData(this);
-//        mPlayerThread = new PlayerThread();
-//        mPlayerThread.start();
         // init service
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(this);
@@ -88,29 +86,30 @@ public class MediaPlaybackService extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: " + intent.getAction());
-        startForeground(NOTIFICATION_ID, showNotification());
 
-//        switch (intent.getAction()){
-//            case MUSIC_SERVICE_ACTION_PLAY:
-//                start();
-//                mNotifyManager.notify(NOTIFICATION_ID, showNotification());
-//                break;
-//            case MUSIC_SERVICE_ACTION_PAUSE:
-//                pause();
-//                mNotifyManager.notify(NOTIFICATION_ID, showNotification());
-//                break;
-//            case MUSIC_SERVICE_ACTION_NEXT:
-//                playNext();
-//                mNotifyManager.notify(NOTIFICATION_ID, showNotification());
-//                break;
-//            case MUSIC_SERVICE_ACTION_PREV:
-//                playPrev();
-//                mNotifyManager.notify(NOTIFICATION_ID, showNotification());
-//                break;
-//            default:
-//                Log.d(TAG, "onStartCommand: default");
-//                break;
-//        }
+        switch (intent.getAction()){
+            case MUSIC_SERVICE_ACTION_PLAY:
+                start();
+                break;
+            case MUSIC_SERVICE_ACTION_PAUSE:
+                pause();
+                break;
+            case MUSIC_SERVICE_ACTION_NEXT:
+                playNext();
+                Log.d(TAG, "onStartCommand: "+ currentSongPosition);
+                sendMessage();
+                break;
+            case MUSIC_SERVICE_ACTION_PREV:
+                playPrev();
+                sendMessage();
+                break;
+            default:
+                Log.d(TAG, "onStartCommand: default");
+                break;
+        }
+
+        startForeground(NOTIFICATION_CHANNEL,  showNotification());
+
         return START_STICKY;
     }
 
@@ -140,14 +139,8 @@ public class MediaPlaybackService extends Service implements
         else notifyBuilder.addAction(R.drawable.ic_play_circle, "Play", playPendingIntent);
         notifyBuilder.addAction(R.drawable.ic_skip_next, "Next", nextPendingIntent);
         // Deliver the notification.
-        NotificationCompat.Builder notifyBuilderq = new NotificationCompat
-                .Builder(this, PRIMARY_CHANNEL_ID)
-                .setContentTitle(getString(R.string.notification_title))
-                .setContentText(getString(R.string.notification_text))
-                .setSmallIcon(R.mipmap.ic_launcher_music)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setDefaults(NotificationCompat.DEFAULT_ALL);
-        return notifyBuilderq.build();
+
+        return notifyBuilder.build();
     }
 
     private NotificationCompat.Builder getNotificationBuilder() {
@@ -162,10 +155,10 @@ public class MediaPlaybackService extends Service implements
                 .Builder(this, PRIMARY_CHANNEL_ID)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
-                .setSmallIcon(R.mipmap.ic_launcher_music)
+                .setSmallIcon(R.drawable.ic_play_circle)
                 .setAutoCancel(true).setContentIntent(notificationPendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setDefaults(NotificationCompat.DEFAULT_ALL);
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setDefaults(Notification.DEFAULT_ALL);
         return notifyBuilder;
     }
 
@@ -174,11 +167,10 @@ public class MediaPlaybackService extends Service implements
         // Create a notification manager object.
         mNotifyManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         // Notification channels are only available in OREO and higher.
         // So, add a check on SDK version.
         if (android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.O) {
+                Build.VERSION_CODES.O) {
 
             // Create the NotificationChannel with all the parameters.
             NotificationChannel notificationChannel = new NotificationChannel
@@ -252,7 +244,6 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void play(Song song) {
-//        mPlayerThread.play(song);
         if (mPlayer != null) {
             mPlayer.reset();
             try {
@@ -324,35 +315,4 @@ public class MediaPlaybackService extends Service implements
         sendMessage();
     }
 
-//    public class PlayerThread extends Thread {
-//        private Handler mHandler;
-//
-//        @Override
-//        public void run() {
-//            super.run();
-//            Looper.prepare();
-//            mHandler = new Handler();
-//            Looper.loop();
-//        }
-//
-//        public void play(final Song song) {
-//            mCurrentSong = song;
-//
-//            mHandler.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    if (mPlayer != null) {
-//                        mPlayer.reset();
-//                        try {
-//                            mPlayer.setDataSource(song.getData());
-//                            mPlayer.prepareAsync();
-//
-//                        } catch (Exception e) {
-//                            Log.e(TAG, "Error playing from data source", e);
-//                        }
-//                    }
-//                }
-//            });
-//        }
-//    }
 }

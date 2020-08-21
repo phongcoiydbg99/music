@@ -112,7 +112,6 @@ public class ActivityMusic extends AppCompatActivity {
         Log.d(TAG,"onStart: ");
         playIntent.setAction("");
         bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-//        mActivity.startService(playIntent);
         ContextCompat.startForegroundService(this.getApplicationContext(),playIntent);
     }
 
@@ -147,7 +146,6 @@ public class ActivityMusic extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 isPermission = true;
-//                mSongList = getAllSongs(this);
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
             }

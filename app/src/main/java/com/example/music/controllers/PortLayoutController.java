@@ -21,7 +21,7 @@ import com.example.music.fragments.MediaPlaybackFragment;
 public class PortLayoutController extends LayoutController {
     public static final String TAG = "PortLayoutController";
     private SongData songData;
-
+    private boolean isPlaying;
     public PortLayoutController(AppCompatActivity activity) {
         super(activity);
     }
@@ -33,6 +33,7 @@ public class PortLayoutController extends LayoutController {
             mAllSongsFragment = AllSongsFragment.newInstance(true);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
+            this.isPlaying = isPlaying;
             if (songPos >= 0) mAllSongsFragment.setSongCurrentPosition(songPos);
             Log.d("TAGG", "onCreate: " + isConnected);
             songData = new SongData(mActivity);
@@ -44,7 +45,16 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onConnection() {
-        if (isConnected) mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+        if (isConnected) {
+            mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+            if (isPlaying) {
+                mAllSongsFragment.setPlaying(true);
+                mAllSongsFragment.setSongCurrentPosition(mediaPlaybackService.getCurrentSongPosition());
+                Log.d(TAG, "onSongItemClick: " );
+                Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
+                mAllSongsFragment.updateUI();
+            }
+        }
 
     }
 

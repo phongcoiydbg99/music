@@ -136,6 +136,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
                     updateUILand();
                 }
+                else {
+                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                    Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                    isPlaying = true;
+                    updateUI();
+                }
             }
         }
     };
@@ -281,10 +287,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return false;
     }
 
-    public SongData getSongData() {
-        return mSongData;
-    }
-
     public Song getSong() {
         return mSongData.getSongAt(mSongCurrentPosition);
     }
@@ -295,10 +297,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public void setSongCurrentPosition(int mSongCurrentPosition) {
         this.mSongCurrentPosition = mSongCurrentPosition;
-    }
-
-    public boolean isPlaying() {
-        return isPlaying;
     }
 
     public void setPlaying(boolean playing) {
