@@ -51,7 +51,7 @@ public class MediaPlaybackService extends Service implements
     private MediaPlayer mPlayer;
     private Song mCurrentSong;
     private SongData mSongData;
-    PlayerThread mPlayerThread;
+//    PlayerThread mPlayerThread;
     private int currentSongPosition;
 
     public MediaPlaybackService() {
@@ -62,8 +62,8 @@ public class MediaPlaybackService extends Service implements
         super.onCreate();
         mPlayer = new MediaPlayer();
         mSongData = new SongData(this);
-        mPlayerThread = new PlayerThread();
-        mPlayerThread.start();
+//        mPlayerThread = new PlayerThread();
+//        mPlayerThread.start();
         // init service
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(this);
@@ -252,7 +252,17 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void play(Song song) {
-        mPlayerThread.play(song);
+//        mPlayerThread.play(song);
+        if (mPlayer != null) {
+            mPlayer.reset();
+            try {
+                mPlayer.setDataSource(song.getData());
+                mPlayer.prepareAsync();
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error playing from data source", e);
+            }
+        }
     }
 
     public void sendMessage() {
@@ -314,35 +324,35 @@ public class MediaPlaybackService extends Service implements
         sendMessage();
     }
 
-    public class PlayerThread extends Thread {
-        private Handler mHandler;
-
-        @Override
-        public void run() {
-            super.run();
-            Looper.prepare();
-            mHandler = new Handler();
-            Looper.loop();
-        }
-
-        public void play(final Song song) {
-            mCurrentSong = song;
-
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (mPlayer != null) {
-                        mPlayer.reset();
-                        try {
-                            mPlayer.setDataSource(song.getData());
-                            mPlayer.prepareAsync();
-
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error playing from data source", e);
-                        }
-                    }
-                }
-            });
-        }
-    }
+//    public class PlayerThread extends Thread {
+//        private Handler mHandler;
+//
+//        @Override
+//        public void run() {
+//            super.run();
+//            Looper.prepare();
+//            mHandler = new Handler();
+//            Looper.loop();
+//        }
+//
+//        public void play(final Song song) {
+//            mCurrentSong = song;
+//
+//            mHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (mPlayer != null) {
+//                        mPlayer.reset();
+//                        try {
+//                            mPlayer.setDataSource(song.getData());
+//                            mPlayer.prepareAsync();
+//
+//                        } catch (Exception e) {
+//                            Log.e(TAG, "Error playing from data source", e);
+//                        }
+//                    }
+//                }
+//            });
+//        }
+//    }
 }
