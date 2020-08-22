@@ -36,7 +36,7 @@
         android:layout_below="@+id/notify_song_artist"
         android:textSize="20dp"
         android:text="Music"/>
-    <View
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_toRightOf="@id/notify_song_art"
@@ -59,8 +59,9 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center_vertical"
             android:layout_toLeftOf="@id/notify_play_button"
-            android:background="#0000"
-            android:src="@drawable/ic_skip_previous" />
+            android:src="@drawable/ic_skip_previous"
+            android:background="@android:color/white"
+            />
 
         <ImageView
             android:id="@+id/notify_play_button"
@@ -70,7 +71,7 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center_vertical"
             android:layout_toLeftOf="@+id/notify_skip_next"
-            android:background="#0000"
+            android:background="@android:color/white"
             android:src="@drawable/ic_pause_circle" />
 
         <ImageButton
@@ -80,7 +81,7 @@
             android:layout_weight="1"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
-            android:background="#0000"
+            android:background="@android:color/white"
             android:src="@drawable/ic_skip_next" />
     </LinearLayout>
 

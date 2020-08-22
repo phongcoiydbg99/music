@@ -33,14 +33,14 @@ public class LandLayoutController extends LayoutController {
     @Override
     public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
-            Log.d(TAG, "onCreate: " + songPos);
+            Log.d(TAG, "onCreate: " + songPos+" "+isPlaying);
             mSongPos = songPos;
             mIsPlaying = isPlaying;
             mSongDuration = (int) songDuration;
             mSongData = new SongData(mActivity.getApplicationContext());
             if (songPos < 0) songPos = 0;
             mSong = mSongData.getSongAt(songPos);
-            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(mSong.getTitle(),mSong.getArtistName(),mSong.getData(),mSong.getDuration(),mSongData.getCurrentSongPossition(),songDuration,isPlaying);
+            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(mSong.getTitle(),mSong.getArtistName(),mSong.getData(),mSong.getDuration(),songPos,songDuration,isPlaying);
 
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = AllSongsFragment.newInstance(false);
@@ -63,14 +63,6 @@ public class LandLayoutController extends LayoutController {
             if (mIsPlaying) {
                 mAllSongsFragment.setOnSongPlay(true);
                 mAllSongsFragment.setSongCurrentPosition(mSongPos);
-//                try {
-//                    mediaPlaybackService.play(mSongPos);
-//                    Thread.sleep(2000);
-//                    Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getDuration());
-//                    mediaPlaybackService.seekTo(mSongDuration);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
                 mAllSongsFragment.setPlaying(true);
                 mAllSongsFragment.updateUILand();
                 mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mSongPos),mSongPos,true);

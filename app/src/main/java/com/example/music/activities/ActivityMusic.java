@@ -44,7 +44,7 @@ public class ActivityMusic extends AppCompatActivity {
     private LayoutController mLayoutController;
     private int mSongLastPossition = -1;
     private long mSongLastDuration = -1;
-    private Boolean mSongLastIsPlaying = true;
+    private Boolean mSongLastIsPlaying = false;
     private ServiceConnection mServiceConnection;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +95,9 @@ public class ActivityMusic extends AppCompatActivity {
 
 
     private void permission() {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
             isPermission = true;
@@ -148,7 +148,7 @@ public class ActivityMusic extends AppCompatActivity {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 isPermission = true;
             } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
             }
         }
     }

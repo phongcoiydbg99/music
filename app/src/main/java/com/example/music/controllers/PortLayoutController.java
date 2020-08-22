@@ -30,12 +30,13 @@ public class PortLayoutController extends LayoutController {
     public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
+            Log.d(TAG, "onCreate: "+ songPos);
             mAllSongsFragment = AllSongsFragment.newInstance(true);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
             this.isPlaying = isPlaying;
-            if (songPos >= 0) mAllSongsFragment.setSongCurrentPosition(songPos);
-            Log.d("TAGG", "onCreate: " + isConnected);
+            mAllSongsFragment.setSongCurrentPosition(songPos);
+            mAllSongsFragment.setPlaying(isPlaying);
             songData = new SongData(mActivity);
             // Add the fragment to the 'fragment_container' FrameLayout
             mActivity.getSupportFragmentManager().beginTransaction()
@@ -50,7 +51,7 @@ public class PortLayoutController extends LayoutController {
             if (isPlaying) {
                 mAllSongsFragment.setPlaying(true);
                 mAllSongsFragment.setSongCurrentPosition(mediaPlaybackService.getCurrentSongPosition());
-                Log.d(TAG, "onSongItemClick: " );
+                Log.d(TAG, "onConnection: " );
                 Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
                 mAllSongsFragment.updateUI();
             }

@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.MediaSession;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -29,6 +31,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
+
+import static android.support.v4.media.session.MediaSessionCompat.*;
 
 public class MediaPlaybackService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -122,9 +126,12 @@ public class MediaPlaybackService extends Service implements
     public void startForegroundService(int currentSongPosition) {
 //        startForeground(NOTIFICATION_CHANNEL, showNotification());
 //        mNotifyManager.notify(NOTIFICATION_ID, showNotification());
-        showNotification();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            showNotification();
+        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void showNotification() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         MediaSessionCompat mediaSessionCompat = new MediaSessionCompat( this, "tag");
@@ -153,9 +160,9 @@ public class MediaPlaybackService extends Service implements
         NotificationCompat.Builder notifyBuilder = new NotificationCompat
                 .Builder(this, PRIMARY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_play_circle)
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setCustomContentView(notificationLayout)
                 .setCustomBigContentView(notificationLayoutExpanded);
+
         notificationManagerCompat.notify(NOTIFICATION_ID, notifyBuilder.build());
     }
 

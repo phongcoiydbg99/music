@@ -217,6 +217,7 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaDislikeButton = view.findViewById(R.id.media_thumb_down);
         mMediaSeekBar = view.findViewById(R.id.media_seek_bar);
         mMediaSeekBar.setMax((int) (mSongCurrentDuration));
+        mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition);
     }
 
     public void updateSongCurrentData(Song song, int pos, boolean isplaying) {
@@ -229,7 +230,7 @@ public class MediaPlaybackFragment extends Fragment {
     }
 
     public void updateUI() {
-        Log.d(TAG, "updateUI: " + mSongCurrentArtist);
+
         mSongName.setText(mSongCurrentTitle);
         mSongArtist.setText(mSongCurrentArtist);
         mStartTime.setText(formattedTime(mSongCurrentStreamPossition));
@@ -239,6 +240,7 @@ public class MediaPlaybackFragment extends Fragment {
         } else mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
         ;
         byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
+        Log.d(TAG, String.valueOf("updateUI: " + albumArt == null));
         Log.d(TAG, "updateUI: " + albumArt);
         if (albumArt != null) {
             Glide.with(view.getContext()).asBitmap()
@@ -266,11 +268,13 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: " + mediaPlaybackService.isPlaying() + " " + String.valueOf(mediaPlaybackService == null));
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
                 } else {
                     mediaPlaybackService.start();
+                    updateSeekBarThread.updateSeekBar();
                     mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
                     ;
                 }
@@ -360,29 +364,30 @@ public class MediaPlaybackFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        while (mediaPlaybackService.getmPlayer() != null) {
-                            try {
-                                long current = -1;
+                        if (mediaPlaybackService.isPlaying()) {
+                            while (mediaPlaybackService.getmPlayer() != null) {
                                 try {
-                                    current = mediaPlaybackService.getCurrentStreamPosition();
-                                }
-                                catch (IllegalStateException e) {
+                                    long current = -1;
+                                    try {
+                                        current = mediaPlaybackService.getCurrentStreamPosition();
+                                    } catch (IllegalStateException e) {
 //                                    e.printStackTrace();
+                                    }
+                                    if (getActivity() != null) {
+                                        final long finalCurrent = current;
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
+                                                mMediaSeekBar.setProgress((int) (finalCurrent));
+                                                mStartTime.setText(formattedTime(finalCurrent));
+                                            }
+                                        });
+                                    }
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
                                 }
-                                if (getActivity() != null) {
-                                    final long finalCurrent = current;
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
-                                            mMediaSeekBar.setProgress((int) (finalCurrent));
-                                            mStartTime.setText(formattedTime(finalCurrent));
-                                        }
-                                    });
-                                }
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
                             }
                         }
                     }
@@ -390,8 +395,7 @@ public class MediaPlaybackFragment extends Fragment {
             }
         }
 
-        public void exit()
-        {
+        public void exit() {
             handler.getLooper().quit();
         }
     }

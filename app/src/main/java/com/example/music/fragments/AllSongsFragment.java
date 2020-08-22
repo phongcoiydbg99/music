@@ -88,7 +88,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     Intent playIntent;
     private boolean isPlaying = true;
 
-
     public AllSongsFragment() {
     }
 
@@ -207,7 +206,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 //            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
         }
-
+        if (mSongCurrentPosition >= 0 && isPortrait) updateUI();
         mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
