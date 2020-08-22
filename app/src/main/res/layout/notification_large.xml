@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="170dp">
+    android:layout_height="150dp">
 
     <ImageView
         android:id="@+id/notify_song_art"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_margin="10dp"
         android:src="@drawable/background_transparent" />
     <TextView
@@ -16,7 +16,7 @@
         android:layout_toRightOf="@id/notify_song_art"
         android:singleLine="true"
         android:layout_marginTop="10dp"
-        android:textSize="25dp"
+        android:textSize="20dp"
         android:textStyle="bold"
         android:text="Ten bai hat"/>
     <TextView
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:layout_toRightOf="@id/notify_song_art"
         android:layout_below="@+id/notify_song_title"
         android:text="nhac si"/>
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/notify_song_art"
         android:layout_below="@+id/notify_song_artist"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:text="Music"/>
     <ImageView
         android:layout_width="match_parent"

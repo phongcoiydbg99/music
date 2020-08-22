@@ -46,8 +46,8 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
 
     public void onSaveInstanceState(Bundle outState) {
         int pos = mediaPlaybackService.getCurrentSongPosition() != -1 ?  mediaPlaybackService.getCurrentSongPosition() : 0;
-        boolean isPlaying = mediaPlaybackService == null || mediaPlaybackService.isPlaying();
-        long currentStreamPos = isPlaying ?  mediaPlaybackService.getCurrentStreamPosition() : 0;
+        boolean isPlaying = mediaPlaybackService != null ? mediaPlaybackService.isPlaying() : false;
+        long currentStreamPos = mediaPlaybackService != null ?  mediaPlaybackService.getCurrentStreamPosition() : 0;
         outState.putInt(LAST_SONG_POS_EXTRA, pos );
         outState.putLong(LAST_SONG_DURATION_EXTRA, currentStreamPos);
         outState.putBoolean(LAST_SONG_ISPLAYING_EXTRA, isPlaying);

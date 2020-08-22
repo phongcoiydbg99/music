@@ -120,6 +120,25 @@ public class MediaPlaybackFragment extends Fragment {
                     Log.d(TAG, "song complete: " + song.getTitle() + " " + mSongCurrentPosition);
                 }
             }
+            if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
+                String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
+                if (state == "song_state_play") {
+                    isPlaying = true;
+                    updateUI();
+                } else if (state == "song_state_pause") {
+                    isPlaying = false;
+                    updateUI();
+                } else {
+                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                    Log.d(TAG, "onReceive: song play change " + String.valueOf(mediaPlaybackService==null));
+                    isPlaying = true;
+                    if(mediaPlaybackService != null){
+                        Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+                        updateSongCurrentData(song, mSongCurrentPosition, true);
+                        updateUI();
+                    }
+                }
+            }
         }
     };
 
@@ -135,6 +154,7 @@ public class MediaPlaybackFragment extends Fragment {
         Log.d(TAG, "onStart: ");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
     }
 
@@ -272,11 +292,12 @@ public class MediaPlaybackFragment extends Fragment {
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),false);
                 } else {
                     mediaPlaybackService.start();
                     updateSeekBarThread.updateSeekBar();
                     mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
-                    ;
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),true);
                 }
             }
         });
@@ -286,10 +307,7 @@ public class MediaPlaybackFragment extends Fragment {
             public void onClick(View v) {
                 mediaPlaybackService.playNext();
                 mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
-                Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                updateSongCurrentData(song, mSongCurrentPosition, true);
-                updateUI();
-                Log.d(TAG, "onClickNext: " + song.getTitle() + " " + mSongCurrentPosition);
+                mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
             }
         });
 
@@ -298,10 +316,7 @@ public class MediaPlaybackFragment extends Fragment {
             public void onClick(View v) {
                 mediaPlaybackService.playPrev();
                 mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
-                Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                updateSongCurrentData(song, mSongCurrentPosition, true);
-                updateUI();
-                Log.d(TAG, "onClickPre " + song.getTitle() + " " + mSongCurrentPosition);
+                mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
             }
         });
 

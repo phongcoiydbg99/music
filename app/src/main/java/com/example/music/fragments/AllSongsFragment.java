@@ -84,8 +84,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private int visible = View.GONE;
     private int mSongCurrentPosition = -1;
     private boolean onSongPlay = false;
-    ServiceConnection serviceConnection;
-    Intent playIntent;
     private boolean isPlaying = true;
 
     public AllSongsFragment() {
@@ -111,12 +109,11 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "onReceive: " + intent.getStringExtra(SONG_POSSITION));
             if (intent.getAction() == SONG_POSSITION) {
-                if (onSongPlay) {
-                    Log.d(TAG, "onReceive: on song play " + onSongPlay);
+
+                    Log.d(TAG, "onReceive: on song play " + mediaPlaybackService.isPlaying());
                     mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(SONG_POSSITION));
                     isPlaying = mediaPlaybackService.isPlaying();
                     updateUI();
-                }
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MESSAGE_SONG_PLAY_COMPLETE));
@@ -130,17 +127,26 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 }
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
-                if (!isPortrait) {
-                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
-                    Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-                    updateUILand();
-                }
-                else {
-                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
-                    Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
+                if (state == "song_state_play") {
                     isPlaying = true;
                     updateUI();
+                } else if (state == "song_state_pause") {
+                    isPlaying = false;
+                    updateUI();
+                } else {
+                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                    if (!isPortrait) {
+                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                        updateUILand();
+                    }
+                    else {
+                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                        isPlaying = true;
+                        updateUI();
+                    }
                 }
+
             }
         }
     };
@@ -214,11 +220,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     mediaPlaybackService.pause();
                     isPlaying = false;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),false);
                 } else {
                     mediaPlaybackService.start();
                     isPlaying = true;
-
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),true);
                 }
                 ;
             }
@@ -342,7 +349,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     }
 
     public interface SongPlayClickListener {
-        void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying);
+        void    onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying);
     }
 
     public void setOnSongPlayClickListener(SongPlayClickListener songPlayClickListener) {

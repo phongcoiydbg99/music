@@ -5,6 +5,7 @@
 
     <ImageView
         android:id="@+id/notify_song_art"
+        android:scaleType="fitXY"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_margin="10dp"

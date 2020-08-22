@@ -91,7 +91,7 @@ public class LandLayoutController extends LayoutController {
         mAllSongsFragment.setPlaying(true);
         mAllSongsFragment.updateUILand();
         Log.d(TAG, "onSongItemClick: " );
-        mediaPlaybackService.startForegroundService(pos);
+        mediaPlaybackService.startForegroundService(pos,true);
         if (isConnected)
         mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,true);
         mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
