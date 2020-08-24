@@ -75,7 +75,7 @@ public class MediaPlaybackService extends Service implements
     public void onCreate() {
         super.onCreate();
         mPlayer = new MediaPlayer();
-        mSongData = new SongData(this);
+//        mSongData = new SongData(this);
         // init service
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(this);
@@ -274,6 +274,10 @@ public class MediaPlaybackService extends Service implements
 
     public SongData getSongData() {
         return mSongData;
+    }
+
+    public void setSongData(SongData mSongData) {
+        this.mSongData = mSongData;
     }
 
     public void start() {

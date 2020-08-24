@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.example.music.SongData;
 import com.example.music.controllers.LayoutController;
 import com.example.music.controllers.PortLayoutController;
 import com.example.music.controllers.LandLayoutController;
@@ -46,26 +47,34 @@ public class ActivityMusic extends AppCompatActivity {
     private long mSongLastDuration = -1;
     private Boolean mSongLastIsPlaying = false;
     private ServiceConnection mServiceConnection;
+    private boolean isFirst = true;
+    private boolean isPortrait;
+    private Bundle savedInstanceState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_music);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        isPortrait = getResources().getBoolean(R.bool.isPortrait);
 
-        float density = getResources().getDisplayMetrics().density;
-        System.out.println(density);
         permission();
+
         mServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
                 mediaPlaybackService = binder.getMediaPlaybackService();
-                mLayoutController.setMediaPlaybackService(mediaPlaybackService);
-                mLayoutController.setConnected(true);
-                mLayoutController.onConnection();
                 isConnected = true;
+                if (isPermission){
+                    mediaPlaybackService.setSongData(new SongData(getApplicationContext()));
+                    mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+                    mLayoutController.setConnected(true);
+                    mLayoutController.onConnection();
+                }
                 Log.d(TAG, "onServiceConnected() ");
             }
 
@@ -85,14 +94,14 @@ public class ActivityMusic extends AppCompatActivity {
 
         }
 
-        boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
         if (isPermission){
+            isFirst = false;
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying);
         }
-    }
 
+    }
 
     private void permission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
@@ -119,7 +128,19 @@ public class ActivityMusic extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: ");
+        if (isPermission && isConnected && isFirst){
+            isFirst = false;
+            mediaPlaybackService.setSongData(new SongData(getApplicationContext()));
+            mLayoutController = isPortrait ? new PortLayoutController(this)
+                    : new LandLayoutController(this);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastDuration, mSongLastIsPlaying);
+
+            mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+            mLayoutController.setConnected(true);
+            mLayoutController.onConnection();
+        }
+
+        Log.d(TAG, "onResume: "+isConnected);
     }
 
     @Override
