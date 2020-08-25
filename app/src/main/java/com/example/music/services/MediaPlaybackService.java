@@ -66,6 +66,9 @@ public class MediaPlaybackService extends Service implements
     private MediaPlayer mPlayer;
     private Song mCurrentSong;
     private SongData mSongData;
+    private boolean isRepeat = false;
+    private boolean isShuffle = false;
+
     private int currentSongPosition;
 
     public MediaPlaybackService() {
@@ -243,8 +246,17 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        currentSongPosition++;
-        if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+        if (isShuffle){
+            currentSongPosition = mSongData.getRandomSongPos();
+        }
+        else if (isRepeat){
+
+        }
+        else {
+            currentSongPosition++;
+            if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+        }
+
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
         intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, String.valueOf(currentSongPosition));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -278,6 +290,22 @@ public class MediaPlaybackService extends Service implements
 
     public void setSongData(SongData mSongData) {
         this.mSongData = mSongData;
+    }
+
+    public boolean isRepeat() {
+        return isRepeat;
+    }
+
+    public boolean isShuffle() {
+        return isShuffle;
+    }
+
+    public void setRepeat(boolean repeat) {
+        isRepeat = repeat;
+    }
+
+    public void setShuffle(boolean shuffle) {
+        isShuffle = shuffle;
     }
 
     public void start() {

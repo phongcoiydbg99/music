@@ -258,7 +258,18 @@ public class MediaPlaybackFragment extends Fragment {
         if (isPlaying) {
             mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
         } else mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
-        ;
+//        if (mediaPlaybackService.isRepeat()){
+//            mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
+//        }
+//        else{
+//            mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
+//        }
+//        if (mediaPlaybackService.isShuffle()){
+//            mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
+//        }
+//        else {
+//            mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
+//        }
         byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
         Log.d(TAG, String.valueOf("updateUI: " + albumArt == null));
         Log.d(TAG, "updateUI: " + albumArt);
@@ -331,6 +342,34 @@ public class MediaPlaybackFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        mMediaRepeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlaybackService.isRepeat()){
+                    mediaPlaybackService.setRepeat(false);
+                    mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
+                }
+                else{
+                    mediaPlaybackService.setRepeat(true);
+                    mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
+                }
+            }
+        });
+
+        mMediaShuffleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlaybackService.isShuffle()){
+                    mediaPlaybackService.setShuffle(false);
+                    mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
+                }
+                else {
+                    mediaPlaybackService.setShuffle(true);
+                    mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
+                }
             }
         });
 

@@ -40,7 +40,10 @@ public class SongData {
         Random r = new Random();
         return mSongList.get(r.nextInt(mSongList.size() - 1));
     }
-
+    public int getRandomSongPos() {
+        Random r = new Random();
+        return r.nextInt(mSongList.size() - 1);
+    }
     public LinkedList<Song> getSongList() {
         return mSongList;
     }

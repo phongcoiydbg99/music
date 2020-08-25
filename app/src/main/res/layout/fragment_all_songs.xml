@@ -49,6 +49,7 @@
                 android:layout_toLeftOf="@+id/media_popup_button"
                 android:layout_toRightOf="@+id/song_image"
                 android:orientation="vertical"
+                android:layout_centerVertical="true"
                 android:padding="10dp">
                 <TextView
                     android:id="@+id/song_name_play"
@@ -57,9 +58,8 @@
                     android:text="Bai hat jsjkhdkjashdkjashdkjhksjadhkjajsdhj"
                     android:singleLine="true"
                     android:maxEms="10"
-                    android:paddingBottom="5dp"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
+                    android:textColor="@color/song_lable"
+                    android:textSize="@dimen/song_lable_size"
                     android:layout_centerVertical="true"
                     />
                 <TextView
@@ -68,7 +68,8 @@
                     android:layout_height="wrap_content"
                     android:text="ten sa si"
                     android:layout_toRightOf="@+id/song_id"
-                    android:textSize="15dp"
+                    android:textSize="@dimen/song_sublable_size"
+                    android:textColor="@color/song_sublable"
                     android:layout_centerVertical="true"
                     />
             </LinearLayout>
