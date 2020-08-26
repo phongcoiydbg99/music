@@ -42,6 +42,7 @@ public class SongData {
     public SongData(Context context) {
         mSongList = getAllSongs(context);
         mCurrentSongPossition = -1;
+        mSongCurrentId = -1;
         mContext = context;
     }
 

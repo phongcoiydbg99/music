@@ -120,6 +120,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MESSAGE_SONG_PLAY_COMPLETE));
                 Log.d(TAG, "onReceive: song play complete " + mSongCurrentPosition);
                 if (mediaPlaybackService != null) {
+                    mSongCurrentId = mediaPlaybackService.getCurrentSongId();
                     mediaPlaybackService.play(mSongCurrentPosition);
                     if (isPortrait) {
                         updateUI();
@@ -136,7 +137,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     isPlaying = false;
                     updateUI();
                 } else {
-                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                    mSongCurrentId = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
                     if (!isPortrait) {
                         Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
                         updateUILand();
@@ -208,7 +209,10 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mRecyclerView.setHasFixedSize(true);
         mSongList = mSongData.getSongList();
         if (mSongList.size() > 0) {
-            if (mSongCurrentPosition >= 0) mSongData.setCurrentSongPossition(mSongCurrentPosition);
+            if (mSongCurrentPosition >= 0) {
+                mSongData.setCurrentSongPossition(mSongCurrentPosition);
+                mSongData.setmSongCurrentId(mSongCurrentId);
+            }
             mAdapter = new SongListAdapter(view.getContext(), mSongData);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -218,6 +222,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         Log.d(TAG, String.valueOf(mediaPlaybackService != null));
         if (mediaPlaybackService != null) {
             mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
+            mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             isPlaying = mediaPlaybackService.isPlaying();
             updateUI();
         }
@@ -312,6 +317,8 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public void setSongCurrentPosition(int mSongCurrentPosition) {
         this.mSongCurrentPosition = mSongCurrentPosition;
+        if (mSongData != null)
+        this.mSongCurrentId = (mSongCurrentPosition == -1) ? -1 : mSongData.getSongList().get(mSongCurrentPosition).getId() ;
     }
 
     public void setPlaying(boolean playing) {
@@ -324,13 +331,17 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public void updateUILand() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
+        mSongData.setmSongCurrentId(mSongCurrentId);
         mAdapter.setCurrentPos(mSongCurrentPosition);
+        mAdapter.setCurrentId(mSongCurrentId);
         mAdapter.notifyDataSetChanged();
     }
 
     public void updateUI() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
+        mSongData.setmSongCurrentId(mSongCurrentId);
         mAdapter.setCurrentPos(mSongCurrentPosition);
+        mAdapter.setCurrentId(mSongCurrentId);
         mAdapter.notifyDataSetChanged();
         updatePlaySongLayout(mSongCurrentPosition);
     }

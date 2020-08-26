@@ -36,7 +36,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private Context mContext;
     private LayoutInflater mInflater;
     private int currentPos;
-    private int mPos = -1;
+    private int currentId;
     private MediaPlaybackService mediaPlaybackService;
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
@@ -55,6 +55,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: ");
         currentPos = mSongData.getCurrentSongPossition();
+        currentId = mSongData.getmSongCurrentId();
         View mItemView = mInflater.inflate(R.layout.song_list_item, parent, false);
         return new SongViewHolder(mItemView, this);
     }
@@ -74,9 +75,9 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         holder.iconPlay.setVisibility(View.INVISIBLE);
         holder.songItemView.setTypeface(null, Typeface.NORMAL);
         try {
-            Log.d(TAG, "onBindViewHolder: " +  currentPos + " * "+ mediaPlaybackService.getCurrentSongId() + " * "+mCurrent.getId() );
+            Log.d(TAG, "onBindViewHolder: " +  currentId + " * "+ mediaPlaybackService.getCurrentSongId() + " * "+mCurrent.getId() );
         } catch (Exception e ){}
-        if (mediaPlaybackService!= null && mCurrent.getId() == mediaPlaybackService.getCurrentSongId())
+        if (mCurrent.getId() == currentId)
         {
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
@@ -171,6 +172,10 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     public void setCurrentPos(int currentPos) {
         this.currentPos = currentPos;
+    }
+
+    public void setCurrentId(int currentId) {
+        this.currentId = currentId;
     }
 
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {

@@ -257,7 +257,8 @@ public class MediaPlaybackService extends Service implements
             currentSongPosition++;
             if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
         }
-
+        currentSongId = mSongData.getSongAt(currentSongPosition).getId();
+        startForegroundService(currentSongPosition,true);
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
         intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, String.valueOf(currentSongPosition));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -347,7 +348,7 @@ public class MediaPlaybackService extends Service implements
 
     public void sendMessageChangePos() {
         Intent intent = new Intent(SONG_PLAY_CHANGE);
-        intent.putExtra(MESSAGE_SONG_PLAY_CHANGE, String.valueOf(currentSongPosition));
+        intent.putExtra(MESSAGE_SONG_PLAY_CHANGE, String.valueOf(currentSongId));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
     public void sendMessageChangeState(String state) {

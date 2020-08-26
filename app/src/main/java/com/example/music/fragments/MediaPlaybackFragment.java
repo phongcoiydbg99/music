@@ -129,10 +129,10 @@ public class MediaPlaybackFragment extends Fragment {
                     isPlaying = false;
                     updateUI();
                 } else {
-                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
                     Log.d(TAG, "onReceive: song play change " + String.valueOf(mediaPlaybackService==null));
                     isPlaying = true;
                     if(mediaPlaybackService != null){
+                        mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                         Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
                         updateSongCurrentData(song, mSongCurrentPosition, true);
                         updateUI();
