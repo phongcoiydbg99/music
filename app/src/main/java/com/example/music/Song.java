@@ -3,7 +3,7 @@ package com.example.music;
 import javax.xml.datatype.Duration;
 
 public class Song {
-
+    private int pos;
     private int id;
     private int trackNumber;
     private long duration;
@@ -25,12 +25,13 @@ public class Song {
 
 
     public static Song EMPTY() {
-        return new Song(0,"","","","","",0,0);
+        return new Song(-1,0,"","","","","",0,0);
     }
 
 
-    public Song(int id, String title, String artistName,
+    public Song(int pos, int id, String title, String artistName,
                      String composer, String albumName, String data, int trackNumber,long duration) {
+        this.pos = pos;
         this.id = id;
         this.title = title;
         this.artistName = artistName;
@@ -73,6 +74,15 @@ public class Song {
     public long getDuration() {
         return duration;
     }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+
     public String formattedTime() {
         String seconds = String.valueOf((duration/1000) % 60);
         String minutes = String.valueOf((duration/1000) / 60);

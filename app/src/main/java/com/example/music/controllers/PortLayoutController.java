@@ -27,7 +27,7 @@ public class PortLayoutController extends LayoutController {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying) {
+    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
             Log.d(TAG, "onCreate: "+ songPos);
@@ -76,7 +76,6 @@ public class PortLayoutController extends LayoutController {
         mAllSongsFragment.setOnSongPlay(true);
         mAllSongsFragment.setSongCurrentPosition(pos);
         mediaPlaybackService.play(pos);
-        mediaPlaybackService.setCurrentSongPosition(pos);
         mediaPlaybackService.startForegroundService(pos,true);
         mAllSongsFragment.setPlaying(true);
         Log.d(TAG, "onSongItemClick: " );

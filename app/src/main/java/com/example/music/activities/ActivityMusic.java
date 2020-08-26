@@ -50,6 +50,8 @@ public class ActivityMusic extends AppCompatActivity {
     private boolean isFirst = true;
     private boolean isPortrait;
     private Bundle savedInstanceState;
+    private boolean mSongLastIsRepeat = false;
+    private boolean mSongLastIsShuffle = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,17 +90,15 @@ public class ActivityMusic extends AppCompatActivity {
             mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
             mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
             mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
-            Log.d(TAG, "onCreate: "+mSongLastPossition);
-            Log.d(TAG, "onCreate: "+mSongLastDuration);
-            Log.d(TAG, "onCreate: "+mSongLastIsPlaying);
-
+            mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
+            mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
         }
 
         if (isPermission){
             isFirst = false;
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
         }
 
     }
@@ -133,8 +133,7 @@ public class ActivityMusic extends AppCompatActivity {
             mediaPlaybackService.setSongData(new SongData(getApplicationContext()));
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastDuration, mSongLastIsPlaying);
-
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
             mLayoutController.setMediaPlaybackService(mediaPlaybackService);
             mLayoutController.setConnected(true);
             mLayoutController.onConnection();
@@ -177,6 +176,7 @@ public class ActivityMusic extends AppCompatActivity {
     public static LinkedList<Song> getAllSongs(Context context) {
         LinkedList<Song> songList = new LinkedList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        int pos = 0;
         String[] projection = {
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TRACK,
@@ -199,35 +199,36 @@ public class ActivityMusic extends AppCompatActivity {
                 String albumName = cursor.getString(6);
                 String data = cursor.getString(7);
 
-                Song song = new Song(id,title,artistName,composer,albumName,data,trackNumber,duration);
+                Song song = new Song(pos,id,title,artistName,composer,albumName,data,trackNumber,duration);
                 Log.d(TAG, "Data: "+ data + " Album: " + albumName);
                 songList.add(song);
+                pos++;
             }
             cursor.close();
         }
         return  songList;
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_search) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_search) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     public void onBackPressed() {

@@ -70,6 +70,7 @@ public class MediaPlaybackService extends Service implements
     private boolean isShuffle = false;
 
     private int currentSongPosition;
+    private int currentSongId = -1;
 
     public MediaPlaybackService() {
     }
@@ -130,7 +131,7 @@ public class MediaPlaybackService extends Service implements
                 break;
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     public void startForegroundService(int currentSongPosition, boolean isPlaying) {
@@ -170,7 +171,7 @@ public class MediaPlaybackService extends Service implements
             byte[] albumArt = SongData.getAlbumArt(song.getData());
             bitmap = BitmapFactory.decodeByteArray(albumArt , 0, albumArt .length);
         } catch (Exception e) {
-            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background_shadow);
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art_song_default);
         }
         Log.d(TAG, "showNotification: "+ bitmap);
         RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
@@ -246,11 +247,11 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        if (isRepeat){
+
+        } else
         if (isShuffle){
             currentSongPosition = mSongData.getRandomSongPos();
-        }
-        else if (isRepeat){
-
         }
         else {
             currentSongPosition++;
@@ -278,6 +279,10 @@ public class MediaPlaybackService extends Service implements
 
     public void setCurrentSongPosition(int currentSongPosition) {
         this.currentSongPosition = currentSongPosition;
+    }
+
+    public int getCurrentSongId() {
+        return currentSongId;
     }
 
     public MediaPlayer getmPlayer() {
@@ -316,10 +321,17 @@ public class MediaPlaybackService extends Service implements
         mPlayer.reset();
         currentSongPosition = songPos;
         Song playSong = mSongData.getSongAt(songPos);
+        currentSongId = playSong.getId();
         Log.d(TAG, playSong.getData());
         play(playSong);
     }
-
+    public void playPos(int songPos) {
+        mPlayer.reset();
+        currentSongPosition = songPos;
+        Song playSong = mSongData.getSongAt(songPos);
+        Log.d(TAG, playSong.getData());
+        play(playSong);
+    }
     public void play(Song song) {
         if (mPlayer != null) {
             mPlayer.reset();

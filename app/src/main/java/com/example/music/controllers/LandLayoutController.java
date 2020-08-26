@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.music.R;
 import com.example.music.Song;
@@ -15,7 +14,6 @@ import com.example.music.SongData;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
-import com.example.music.fragments.SongPlayFragment;
 
 public class LandLayoutController extends LayoutController {
     private static final String TAG = "LandLayoutController";
@@ -31,7 +29,7 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying) {
+    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
             Log.d(TAG, "onCreate: " + songPos+" "+isPlaying);
             mSongPos = songPos;

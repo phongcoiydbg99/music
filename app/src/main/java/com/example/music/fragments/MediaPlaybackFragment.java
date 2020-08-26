@@ -165,9 +165,9 @@ public class MediaPlaybackFragment extends Fragment {
 
         mServiceStatus = false;
         // gui message toi allsongsFragment khi back
-        Intent intent = new Intent(SONG_POSSITON);
-        intent.putExtra(SONG_POSSITON, String.valueOf(mSongCurrentPosition));
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(intent);
+//        Intent intent = new Intent(SONG_POSSITON);
+//        intent.putExtra(SONG_POSSITON, String.valueOf(mSongCurrentPosition));
+//        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(intent);
         // unregister receiver
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
@@ -258,18 +258,20 @@ public class MediaPlaybackFragment extends Fragment {
         if (isPlaying) {
             mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
         } else mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
-//        if (mediaPlaybackService.isRepeat()){
-//            mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
-//        }
-//        else{
-//            mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
-//        }
-//        if (mediaPlaybackService.isShuffle()){
-//            mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
-//        }
-//        else {
-//            mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
-//        }
+        if (mediaPlaybackService != null){
+            if (mediaPlaybackService.isRepeat()){
+                mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
+            }
+            else{
+                mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
+            }
+            if (mediaPlaybackService.isShuffle()){
+                mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
+            }
+            else {
+                mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
+            }
+        }
         byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
         Log.d(TAG, String.valueOf("updateUI: " + albumArt == null));
         Log.d(TAG, "updateUI: " + albumArt);
@@ -282,10 +284,10 @@ public class MediaPlaybackFragment extends Fragment {
                     .into(mMediaSongImage);
         } else {
             Glide.with(view.getContext())
-                    .load(R.drawable.background_transparent)
+                    .load(R.drawable.art_song_default)
                     .into(mSongImage);
             Glide.with(view.getContext())
-                    .load(R.drawable.background_transparent)
+                    .load(R.drawable.art_song_default)
                     .into(mMediaSongImage);
         }
 
@@ -319,6 +321,7 @@ public class MediaPlaybackFragment extends Fragment {
                 mediaPlaybackService.playNext();
                 mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                 mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
+                mSongCurrentStreamPossition = 0;
             }
         });
 
@@ -328,6 +331,7 @@ public class MediaPlaybackFragment extends Fragment {
                 mediaPlaybackService.playPrev();
                 mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                 mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
+                mSongCurrentStreamPossition = 0;
             }
         });
 

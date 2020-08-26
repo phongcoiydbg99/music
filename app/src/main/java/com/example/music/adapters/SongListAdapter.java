@@ -22,6 +22,7 @@ import com.example.music.Song;
 import com.example.music.SongData;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.interfaces.SongItemClickListener;
+import com.example.music.services.MediaPlaybackService;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,6 +36,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private Context mContext;
     private LayoutInflater mInflater;
     private int currentPos;
+    private int mPos = -1;
+    private MediaPlaybackService mediaPlaybackService;
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
 
@@ -63,15 +66,17 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     @Override
     public void onBindViewHolder(@NonNull final SongViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder: " + currentPos + " * "+position );
         final Song mCurrent = mSongList.get(position);
-        holder.itemId.setText(String.valueOf(position + 1));
+        holder.itemId.setText(String.valueOf(mCurrent.getPos() + 1));
         holder.songItemView.setText(mCurrent.getTitle());
         holder.songDurationView.setText(mCurrent.formattedTime());
         holder.itemId.setVisibility(View.VISIBLE);
         holder.iconPlay.setVisibility(View.INVISIBLE);
         holder.songItemView.setTypeface(null, Typeface.NORMAL);
-        if (position == currentPos)
+        try {
+            Log.d(TAG, "onBindViewHolder: " +  currentPos + " * "+ mediaPlaybackService.getCurrentSongId() + " * "+mCurrent.getId() );
+        } catch (Exception e ){}
+        if (mediaPlaybackService!= null && mCurrent.getId() == mediaPlaybackService.getCurrentSongId())
         {
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
@@ -119,7 +124,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
                 filteredList.addAll(mSongListFull);
             } else {
                 for (Song songName : mSongListFull) {
-                    if (songName.getAlbumName().toLowerCase().contains(constraint.toString().toLowerCase().trim())) {
+                    if (songName.getTitle().toLowerCase().contains(constraint.toString().toLowerCase().trim())) {
                         filteredList.addLast(songName);
                     }
                 }
@@ -166,6 +171,10 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     public void setCurrentPos(int currentPos) {
         this.currentPos = currentPos;
+    }
+
+    public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
+        this.mediaPlaybackService = mediaPlaybackService;
     }
 
     public interface SongBtnClickListener {
