@@ -326,20 +326,14 @@ public class MediaPlaybackService extends Service implements
         Log.d(TAG, playSong.getData());
         play(playSong);
     }
-    public void playPos(int songPos) {
-        mPlayer.reset();
-        currentSongPosition = songPos;
-        Song playSong = mSongData.getSongAt(songPos);
-        Log.d(TAG, playSong.getData());
-        play(playSong);
-    }
+
     public void play(Song song) {
         if (mPlayer != null) {
             mPlayer.reset();
+            Log.d(TAG, String.valueOf("play: "+ mPlayer == null));
             try {
                 mPlayer.setDataSource(song.getData());
                 mPlayer.prepareAsync();
-
             } catch (Exception e) {
                 Log.e(TAG, "Error playing from data source", e);
             }

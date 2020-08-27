@@ -140,11 +140,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     mSongCurrentId = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
                     if (!isPortrait) {
                         Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                        mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                         updateUILand();
                     }
                     else {
                         Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
                         isPlaying = true;
+                        mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                         updateUI();
                     }
                 }
@@ -198,7 +200,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: " + mSongCurrentPosition);
+        Log.d(TAG, "onCreateView: " + mSongCurrentPosition + " *" + mSongCurrentId);
         view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         mLinearLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
@@ -218,7 +220,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
             mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 //            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
         }
-        if (mSongCurrentPosition >= 0 && isPortrait) updateUI();
+        if (mSongCurrentPosition >= 0){
+            if (isPortrait) {
+                updateUI();
+            } else {
+                updateUILand();
+            }
+        }
         Log.d(TAG, String.valueOf(mediaPlaybackService != null));
         if (mediaPlaybackService != null) {
             mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
@@ -315,10 +323,15 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return mSongCurrentPosition;
     }
 
-    public void setSongCurrentPosition(int mSongCurrentPosition) {
-        this.mSongCurrentPosition = mSongCurrentPosition;
+    public void setSongCurrentPosition(int position) {
+        this.mSongCurrentPosition = position;
         if (mSongData != null)
-        this.mSongCurrentId = (mSongCurrentPosition == -1) ? -1 : mSongData.getSongList().get(mSongCurrentPosition).getId() ;
+        this.mSongCurrentId = (position == -1) ? -1 : mSongData.getSongList().get(mSongCurrentPosition).getId() ;
+        Log.d(TAG, "setSongCurrentPosition: "+mSongCurrentId+" * "+mSongCurrentPosition);
+    }
+
+    public void setSongCurrentId(int mSongCurrentId) {
+        this.mSongCurrentId = mSongCurrentId;
     }
 
     public void setPlaying(boolean playing) {

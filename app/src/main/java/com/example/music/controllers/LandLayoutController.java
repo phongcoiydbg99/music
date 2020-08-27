@@ -29,9 +29,9 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
+    public void onCreate(Bundle savedInstanceState, int songPos, int id, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
-            Log.d(TAG, "onCreate: " + songPos+" "+isPlaying);
+            Log.d(TAG, "onCreate: " + id+" * "+ songPos+" "+isPlaying);
             mSongPos = songPos;
             mIsPlaying = isPlaying;
             mSongDuration = (int) songDuration;
@@ -43,6 +43,7 @@ public class LandLayoutController extends LayoutController {
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = AllSongsFragment.newInstance(false);
             mAllSongsFragment.setSongCurrentPosition(songPos);
+            mAllSongsFragment.setSongCurrentId(id);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
             mActivity.getSupportFragmentManager().beginTransaction()

@@ -129,14 +129,13 @@ public class MediaPlaybackFragment extends Fragment {
                     isPlaying = false;
                     updateUI();
                 } else {
-                    Log.d(TAG, "onReceive: song play change " + String.valueOf(mediaPlaybackService==null));
-                    isPlaying = true;
-                    if(mediaPlaybackService != null){
-                        mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
-                        Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                        updateSongCurrentData(song, mSongCurrentPosition, true);
-                        updateUI();
-                    }
+//                    if(mediaPlaybackService != null){
+//                        mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
+//                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+//                        Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+//                        updateSongCurrentData(song, mSongCurrentPosition, true);
+//                        updateUI();
+//                    }
                 }
             }
         }
@@ -200,6 +199,7 @@ public class MediaPlaybackFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_media_playback, container, false);
         initView();
         updateUI();
+        clickView();
         return view;
     }
 
@@ -240,57 +240,7 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition);
     }
 
-    public void updateSongCurrentData(Song song, int pos, boolean isplaying) {
-        mSongCurrentTitle = song.getTitle();
-        mSongCurrentArtist = song.getArtistName();
-        mSongCurrentData = song.getData();
-        mSongCurrentDuration = song.getDuration();
-        isPlaying = isplaying;
-        mSongCurrentPosition = pos;
-    }
-
-    public void updateUI() {
-
-        mSongName.setText(mSongCurrentTitle);
-        mSongArtist.setText(mSongCurrentArtist);
-        mStartTime.setText(formattedTime(mSongCurrentStreamPossition));
-        mEndTime.setText(formattedTime(mSongCurrentDuration));
-        if (isPlaying) {
-            mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
-        } else mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
-        if (mediaPlaybackService != null){
-            if (mediaPlaybackService.isRepeat()){
-                mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
-            }
-            else{
-                mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
-            }
-            if (mediaPlaybackService.isShuffle()){
-                mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
-            }
-            else {
-                mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
-            }
-        }
-        byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
-        Log.d(TAG, String.valueOf("updateUI: " + albumArt == null));
-        Log.d(TAG, "updateUI: " + albumArt);
-        if (albumArt != null) {
-            Glide.with(view.getContext()).asBitmap()
-                    .load(albumArt)
-                    .into(mSongImage);
-            Glide.with(view.getContext()).asBitmap()
-                    .load(albumArt)
-                    .into(mMediaSongImage);
-        } else {
-            Glide.with(view.getContext())
-                    .load(R.drawable.art_song_default)
-                    .into(mSongImage);
-            Glide.with(view.getContext())
-                    .load(R.drawable.art_song_default)
-                    .into(mMediaSongImage);
-        }
-
+    public void clickView (){
         mMediaQueueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -304,10 +254,12 @@ public class MediaPlaybackFragment extends Fragment {
                 Log.d(TAG, "onClick: " + mediaPlaybackService.isPlaying() + " " + String.valueOf(mediaPlaybackService == null));
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
+                    isPlaying = false;
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),false);
                 } else {
                     mediaPlaybackService.start();
+                    isPlaying = true;
                     updateSeekBarThread.updateSeekBar();
                     mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),true);
@@ -320,8 +272,11 @@ public class MediaPlaybackFragment extends Fragment {
             public void onClick(View v) {
                 mediaPlaybackService.playNext();
                 mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
+                Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+                updateSongCurrentData(song, mSongCurrentPosition, true);
+                updateUI();
                 mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
-                mSongCurrentStreamPossition = 0;
             }
         });
 
@@ -330,8 +285,11 @@ public class MediaPlaybackFragment extends Fragment {
             public void onClick(View v) {
                 mediaPlaybackService.playPrev();
                 mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
+                Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+                updateSongCurrentData(song, mSongCurrentPosition, true);
+                updateUI();
                 mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
-                mSongCurrentStreamPossition = 0;
             }
         });
 
@@ -395,7 +353,62 @@ public class MediaPlaybackFragment extends Fragment {
 
             }
         });
+    }
+
+    public void updateSongCurrentData(Song song, int pos, boolean isplaying) {
+        mSongCurrentTitle = song.getTitle();
+        mSongCurrentArtist = song.getArtistName();
+        mSongCurrentData = song.getData();
+        mSongCurrentDuration = song.getDuration();
+        isPlaying = isplaying;
+        mSongCurrentPosition = pos;
+    }
+
+    public void updateUI() {
+
+        mSongName.setText(mSongCurrentTitle);
+        mSongArtist.setText(mSongCurrentArtist);
+        mStartTime.setText(formattedTime(mSongCurrentStreamPossition));
+        mEndTime.setText(formattedTime(mSongCurrentDuration));
+        if (isPlaying) {
+            mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
+        } else mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
+        if (mediaPlaybackService != null){
+            if (mediaPlaybackService.isRepeat()){
+                mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
+            }
+            else{
+                mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
+            }
+            if (mediaPlaybackService.isShuffle()){
+                mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
+            }
+            else {
+                mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
+            }
+        }
         updateSeekBarThread.updateSeekBar();
+
+        byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
+        Log.d(TAG, String.valueOf("updateUI: " + albumArt == null));
+        Log.d(TAG, "updateUI: " + albumArt);
+        if (albumArt != null) {
+            Glide.with(view.getContext()).asBitmap()
+                    .load(albumArt)
+                    .into(mSongImage);
+            Glide.with(view.getContext()).asBitmap()
+                    .load(albumArt)
+                    .into(mMediaSongImage);
+        } else {
+            Glide.with(view.getContext())
+                    .load(R.drawable.art_song_default)
+                    .into(mSongImage);
+            Glide.with(view.getContext())
+                    .load(R.drawable.art_song_default)
+                    .into(mMediaSongImage);
+        }
+
+
     }
 
     public String formattedTime(long duration) {
@@ -422,7 +435,8 @@ public class MediaPlaybackFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (mediaPlaybackService.isPlaying()) {
+                        Log.d(TAG, "runis: "+  mediaPlaybackService.isPlaying());
+                        if (isPlaying) {
                             while (mediaPlaybackService.getmPlayer() != null) {
                                 try {
                                     long current = -1;
@@ -433,6 +447,7 @@ public class MediaPlaybackFragment extends Fragment {
                                     }
                                     if (getActivity() != null) {
                                         final long finalCurrent = current;
+                                        Log.d(TAG, "run: "+  finalCurrent);
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {

@@ -37,7 +37,6 @@ public class ActivityMusic extends AppCompatActivity {
 
     public static final String TAG = "ActivityMusic";
     public static final int REQUEST_CODE = 1;
-    public static LinkedList<Song> mSongList = new LinkedList<>();
     private boolean isPermission = false;
     private MediaPlaybackService mediaPlaybackService;
     private Intent playIntent;
@@ -52,6 +51,7 @@ public class ActivityMusic extends AppCompatActivity {
     private Bundle savedInstanceState;
     private boolean mSongLastIsRepeat = false;
     private boolean mSongLastIsShuffle = false;
+    private int mSongLastId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +88,7 @@ public class ActivityMusic extends AppCompatActivity {
 
         if (savedInstanceState != null){
             mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
+            mSongLastId = savedInstanceState.getInt(LayoutController.LAST_SONG_ID_EXTRA);
             mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
             mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
             mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
@@ -98,7 +99,7 @@ public class ActivityMusic extends AppCompatActivity {
             isFirst = false;
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition ,mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
         }
 
     }
@@ -133,7 +134,7 @@ public class ActivityMusic extends AppCompatActivity {
             mediaPlaybackService.setSongData(new SongData(getApplicationContext()));
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition ,mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
             mLayoutController.setMediaPlaybackService(mediaPlaybackService);
             mLayoutController.setConnected(true);
             mLayoutController.onConnection();
@@ -173,62 +174,26 @@ public class ActivityMusic extends AppCompatActivity {
         }
     }
 
-    public static LinkedList<Song> getAllSongs(Context context) {
-        LinkedList<Song> songList = new LinkedList<>();
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        int pos = 0;
-        String[] projection = {
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TRACK,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.COMPOSER,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DATA
-        };
-        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                int id = cursor.getInt(0);
-                int trackNumber = cursor.getInt(1);
-                long duration = cursor.getInt(2);
-                String title = cursor.getString(3);
-                String artistName = cursor.getString(4);
-                String composer = cursor.getString(5);
-                String albumName = cursor.getString(6);
-                String data = cursor.getString(7);
-
-                Song song = new Song(pos,id,title,artistName,composer,albumName,data,trackNumber,duration);
-                Log.d(TAG, "Data: "+ data + " Album: " + albumName);
-                songList.add(song);
-                pos++;
-            }
-            cursor.close();
-        }
-        return  songList;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        return true;
     }
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_search) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_search) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onBackPressed() {
