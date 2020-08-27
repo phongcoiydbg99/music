@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -36,6 +37,9 @@ import java.util.LinkedList;
 public class ActivityMusic extends AppCompatActivity {
 
     public static final String TAG = "ActivityMusic";
+    private String sharedPrefFile =
+            "com.example.music";
+    SharedPreferences mPreferences ;
     public static final int REQUEST_CODE = 1;
     private boolean isPermission = false;
     private MediaPlaybackService mediaPlaybackService;
@@ -86,14 +90,20 @@ public class ActivityMusic extends AppCompatActivity {
             }
         };
 
-        if (savedInstanceState != null){
-            mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
-            mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
-            mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
-            mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
-            mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
-        }
-
+//        if (savedInstanceState != null){
+//            mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
+//            mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
+//            mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
+//            mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
+//            mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
+//        }
+        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+        mSongLastPossition = mPreferences.getInt(LayoutController.LAST_SONG_POS_EXTRA,-1);
+        mSongLastDuration = mPreferences.getLong(LayoutController.LAST_SONG_DURATION_EXTRA,-1);
+        mSongLastIsPlaying = mPreferences.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA,false);
+        mSongLastIsRepeat = mPreferences.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA,false);
+        mSongLastIsShuffle = mPreferences.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA,false);
+                Log.d(TAG, String.valueOf(mSongLastPossition));
         if (isPermission){
             isFirst = false;
             mLayoutController = isPortrait ? new PortLayoutController(this)
@@ -140,6 +150,30 @@ public class ActivityMusic extends AppCompatActivity {
         }
 
         Log.d(TAG, "onResume: "+isConnected);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+        int pos = mediaPlaybackService.getCurrentSongPosition() != -1 ?  mediaPlaybackService.getCurrentSongPosition() : 0;
+        boolean isPlaying = mediaPlaybackService != null ? mediaPlaybackService.isPlaying() : false;
+        boolean isRepeat = mediaPlaybackService != null ? mediaPlaybackService.isRepeat() : false;
+        boolean isShuffle = mediaPlaybackService != null ? mediaPlaybackService.isShuffle() : false;
+        long currentStreamPos = mediaPlaybackService != null ?  mediaPlaybackService.getCurrentStreamPosition() : 0;
+        SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+        preferencesEditor.putInt(LayoutController.LAST_SONG_POS_EXTRA, pos );
+        preferencesEditor.putLong(LayoutController.LAST_SONG_DURATION_EXTRA, currentStreamPos);
+        preferencesEditor.putBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA, isPlaying);
+        preferencesEditor.putBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
+        preferencesEditor.putBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
+        preferencesEditor.apply();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
     }
 
     @Override

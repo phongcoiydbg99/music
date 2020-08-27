@@ -67,6 +67,7 @@ public class MediaPlaybackService extends Service implements
     private Song mCurrentSong;
     private SongData mSongData;
     private boolean isRepeat = false;
+    private boolean isRepeatAll = false;
     private boolean isShuffle = false;
 
     private int currentSongPosition;
@@ -247,19 +248,24 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        String state = "play_normal";
         if (isRepeat){
-
+            play(currentSongPosition);
+            state = "play_repeat";
+        } else if (isRepeatAll){
+            currentSongPosition++;
+            if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+            play(currentSongPosition);
+            state = "play_repeat_all";
         } else
         if (isShuffle){
             currentSongPosition = mSongData.getRandomSongPos();
-        }
-        else {
-            currentSongPosition++;
-            if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+            play(currentSongPosition);
+            state = "play_is_shuffe";
         }
         startForegroundService(currentSongPosition,true);
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
-        intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, String.valueOf(currentSongPosition));
+        intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, state);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
@@ -303,6 +309,14 @@ public class MediaPlaybackService extends Service implements
 
     public boolean isShuffle() {
         return isShuffle;
+    }
+
+    public boolean isRepeatAll() {
+        return isRepeatAll;
+    }
+
+    public void setRepeatAll(boolean repeatAll) {
+        isRepeatAll = repeatAll;
     }
 
     public void setRepeat(boolean repeat) {
@@ -397,8 +411,11 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void playPrev() {
-        currentSongPosition--;
-        if (currentSongPosition < 0) currentSongPosition = mSongData.getSongList().size() - 1;
+        int seconds = getCurrentStreamPosition() / 1000 % 60;
+        if ( seconds <= 3){
+            currentSongPosition--;
+            if (currentSongPosition < 0) currentSongPosition = mSongData.getSongList().size() - 1;
+        }
         play(currentSongPosition);
         sendMessageChangePos();
     }

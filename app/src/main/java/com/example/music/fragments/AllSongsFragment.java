@@ -117,10 +117,15 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 //                    updateUI();
 //            }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
-                mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MESSAGE_SONG_PLAY_COMPLETE));
+                String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
+                if (state == "play_normal") {
+                    isPlaying = false;
+                } else isPlaying = true;
                 Log.d(TAG, "onReceive: song play complete " + mSongCurrentPosition);
                 if (mediaPlaybackService != null) {
-                    mediaPlaybackService.play(mSongCurrentPosition);
+//                    mediaPlaybackService.play(mSongCurrentPosition);
+//                    mediaPlaybackService.pause();
+                    mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                     if (isPortrait) {
                         updateUI();
                     } else updateUILand();

@@ -111,13 +111,17 @@ public class MediaPlaybackFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
-                mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE));
+                String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
+                if (state == "play_normal") {
+                   isPlaying = false;
+                } else isPlaying = true;
                 if (mediaPlaybackService != null) {
-                    mediaPlaybackService.play(mSongCurrentPosition);
+                    mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                     Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                    updateSongCurrentData(song, mSongCurrentPosition, true);
+                    updateSongCurrentData(song, mSongCurrentPosition, isPlaying);
+                    mSongCurrentPosition = 0;
                     updateUI();
-                    Log.d(TAG, "song complete: " + song.getTitle() + " " + mSongCurrentPosition);
+                    Log.d(TAG, "song complete: " + isPlaying + " " + mSongCurrentPosition);
                 }
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
@@ -301,11 +305,17 @@ public class MediaPlaybackFragment extends Fragment {
             public void onClick(View v) {
                 if (mediaPlaybackService.isRepeat()){
                     mediaPlaybackService.setRepeat(false);
+                    mediaPlaybackService.setRepeatAll(false);
                     mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
                 }
-                else{
+                else if (mediaPlaybackService.isRepeatAll()){
                     mediaPlaybackService.setRepeat(true);
+                    mediaPlaybackService.setRepeatAll(false);
                     mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
+                }else {
+                    mediaPlaybackService.setRepeatAll(true);
+                    mediaPlaybackService.setRepeat(false);
+                    mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_all_24);
                 }
             }
         });
@@ -366,7 +376,9 @@ public class MediaPlaybackFragment extends Fragment {
             if (mediaPlaybackService.isRepeat()){
                 mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
             }
-            else{
+            else if (mediaPlaybackService.isRepeatAll()){
+                mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_all_24);
+            }else {
                 mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
             }
             if (mediaPlaybackService.isShuffle()){
