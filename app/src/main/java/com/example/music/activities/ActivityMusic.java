@@ -88,7 +88,6 @@ public class ActivityMusic extends AppCompatActivity {
 
         if (savedInstanceState != null){
             mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
-            mSongLastId = savedInstanceState.getInt(LayoutController.LAST_SONG_ID_EXTRA);
             mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
             mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
             mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
@@ -99,7 +98,7 @@ public class ActivityMusic extends AppCompatActivity {
             isFirst = false;
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition ,mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
         }
 
     }
@@ -134,7 +133,7 @@ public class ActivityMusic extends AppCompatActivity {
             mediaPlaybackService.setSongData(new SongData(getApplicationContext()));
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition ,mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition , mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
             mLayoutController.setMediaPlaybackService(mediaPlaybackService);
             mLayoutController.setConnected(true);
             mLayoutController.onConnection();

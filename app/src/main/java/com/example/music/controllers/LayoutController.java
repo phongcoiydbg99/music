@@ -50,19 +50,17 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: "+ mediaPlaybackService.getCurrentSongPosition());
         int pos = mediaPlaybackService.getCurrentSongPosition() != -1 ?  mediaPlaybackService.getCurrentSongPosition() : 0;
-        int id = mediaPlaybackService.getCurrentSongId() != -1 ?  mediaPlaybackService.getCurrentSongId() : 0;
         boolean isPlaying = mediaPlaybackService != null ? mediaPlaybackService.isPlaying() : false;
         boolean isRepeat = mediaPlaybackService != null ? mediaPlaybackService.isRepeat() : false;
         boolean isShuffle = mediaPlaybackService != null ? mediaPlaybackService.isShuffle() : false;
         long currentStreamPos = mediaPlaybackService != null ?  mediaPlaybackService.getCurrentStreamPosition() : 0;
         outState.putInt(LAST_SONG_POS_EXTRA, pos );
-        outState.putInt(LAST_SONG_ID_EXTRA, id );
         outState.putLong(LAST_SONG_DURATION_EXTRA, currentStreamPos);
         outState.putBoolean(LAST_SONG_ISPLAYING_EXTRA, isPlaying);
         outState.putBoolean(LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
         outState.putBoolean(LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
     }
     
-    public abstract void onCreate(Bundle savedInstanceState, int songPos, int id, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle);
+    public abstract void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle);
     public abstract void onConnection();
 }

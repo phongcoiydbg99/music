@@ -129,13 +129,14 @@ public class MediaPlaybackFragment extends Fragment {
                     isPlaying = false;
                     updateUI();
                 } else {
-//                    if(mediaPlaybackService != null){
-//                        mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
-//                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-//                        Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-//                        updateSongCurrentData(song, mSongCurrentPosition, true);
-//                        updateUI();
-//                    }
+                    if(mediaPlaybackService != null){
+                        mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                        Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+                        updateSongCurrentData(song, mSongCurrentPosition, true);
+                        updateUI();
+                        mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
+                    }
                 }
             }
         }
@@ -271,12 +272,6 @@ public class MediaPlaybackFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mediaPlaybackService.playNext();
-                mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
-                Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-                Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                updateSongCurrentData(song, mSongCurrentPosition, true);
-                updateUI();
-                mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
             }
         });
 
@@ -284,12 +279,6 @@ public class MediaPlaybackFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mediaPlaybackService.playPrev();
-                mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
-                Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-                Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                updateSongCurrentData(song, mSongCurrentPosition, true);
-                updateUI();
-                mediaPlaybackService.startForegroundService(mSongCurrentPosition,true);
             }
         });
 

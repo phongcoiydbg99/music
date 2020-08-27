@@ -77,7 +77,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         try {
             Log.d(TAG, "onBindViewHolder: " +  currentId + " * "+ mediaPlaybackService.getCurrentSongId() + " * "+mCurrent.getId() );
         } catch (Exception e ){}
-        if (mCurrent.getId() == currentId)
+        if (mCurrent.getPos() == currentPos)
         {
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
@@ -89,7 +89,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             public void onClick(View view) {
                 Log.d(TAG, "onClick: "+position);
                 if (songItemClickListener != null) {
-                    songItemClickListener.onSongItemClick(holder, position);
+                    songItemClickListener.onSongItemClick(holder, mCurrent.getPos());
                 }
             }
         });
@@ -144,6 +144,10 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
         }
     };
+
+    public LinkedList<Song> getSongList() {
+        return mSongListFull;
+    }
 
     public class SongViewHolder extends RecyclerView.ViewHolder {
         public final RelativeLayout relativeLayout;
