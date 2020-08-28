@@ -292,6 +292,10 @@ public class MediaPlaybackService extends Service implements
         return currentSongId;
     }
 
+    public void setCurrentSongId(int currentSongId) {
+        this.currentSongId = currentSongId;
+    }
+
     public MediaPlayer getmPlayer() {
         return mPlayer;
     }

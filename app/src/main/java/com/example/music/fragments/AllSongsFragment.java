@@ -194,7 +194,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
         this.mediaPlaybackService = mediaPlaybackService;
-        mAdapter.setMediaPlaybackService(mediaPlaybackService);
         Log.d(TAG, "setMediaPlaybackService: " + this.mediaPlaybackService.isPlaying());
     }
 
@@ -210,7 +209,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
-//        mSongList = mSongData.getSongList();
 
         if (mSongCurrentPosition >= 0) {
             mSongData.setCurrentSongPossition(mSongCurrentPosition);
@@ -242,6 +240,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: start"+mediaPlaybackService.isPlaying());
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     isPlaying = false;
@@ -253,9 +252,9 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
                 }
-                ;
             }
         });
+
         // chuyen dang media fragment
         mLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -266,6 +265,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 songPlayClickListener.onSongPlayClickListener(v, mSong, mSongCurrentPosition, mediaPlaybackService.getCurrentStreamPosition(), mediaPlaybackService.isPlaying());
             }
         });
+
         // song menu click listener
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
             @Override

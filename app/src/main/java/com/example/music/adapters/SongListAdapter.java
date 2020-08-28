@@ -37,7 +37,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private LayoutInflater mInflater;
     private int currentPos;
     private int currentId;
-    private MediaPlaybackService mediaPlaybackService;
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
 
@@ -73,9 +72,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         holder.itemId.setVisibility(View.VISIBLE);
         holder.iconPlay.setVisibility(View.INVISIBLE);
         holder.songItemView.setTypeface(null, Typeface.NORMAL);
-        try {
-            Log.d(TAG, "onBindViewHolder: " +  currentId + " * "+ mediaPlaybackService.getCurrentSongId() + " * "+mCurrent.getId() );
-        } catch (Exception e ){}
         if (mCurrent.getPos() == currentPos)
         {
             holder.itemId.setVisibility(View.INVISIBLE);
@@ -179,10 +175,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     public void setCurrentId(int currentId) {
         this.currentId = currentId;
-    }
-
-    public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
-        this.mediaPlaybackService = mediaPlaybackService;
     }
 
     public interface SongBtnClickListener {

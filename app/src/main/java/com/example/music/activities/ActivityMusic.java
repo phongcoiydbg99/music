@@ -56,6 +56,7 @@ public class ActivityMusic extends AppCompatActivity {
     private boolean mSongLastIsRepeat = false;
     private boolean mSongLastIsShuffle = false;
     private int mSongLastId = -1;
+    private SongData mSongData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,6 @@ public class ActivityMusic extends AppCompatActivity {
         setContentView(R.layout.activity_music);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         isPortrait = getResources().getBoolean(R.bool.isPortrait);
 
         permission();
@@ -76,12 +76,24 @@ public class ActivityMusic extends AppCompatActivity {
                 mediaPlaybackService = binder.getMediaPlaybackService();
                 isConnected = true;
                 if (isPermission){
-                    mediaPlaybackService.setSongData(new SongData(getApplicationContext()));
+                    mediaPlaybackService.setSongData(mSongData);
                     mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+                    if (mediaPlaybackService.isFirst()){
+                        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+                        mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA,-1);
+                        Log.d(TAG, "onCreate: "+mSongLastId);
+                        Log.d(TAG, "onServiceConnected() "+mSongLastPossition);
+                        mediaPlaybackService.setCurrentSongPosition(mSongLastPossition);
+                        mediaPlaybackService.setCurrentSongId(mSongLastId);
+                        mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos():-1;
+                        mediaPlaybackService.play(mSongLastPossition);
+                        Log.d(TAG, "onServiceConnected() "+mediaPlaybackService.isPlaying());
+                        mSongLastIsPlaying = false;
+                        mediaPlaybackService.setFirst(false);
+                    }
                     mLayoutController.setConnected(true);
                     mLayoutController.onConnection();
                 }
-                Log.d(TAG, "onServiceConnected() ");
             }
 
             @Override
@@ -90,21 +102,18 @@ public class ActivityMusic extends AppCompatActivity {
             }
         };
 
-//        if (savedInstanceState != null){
-//            mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
-//            mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
-//            mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
-//            mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
-//            mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
-//        }
-        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-        mSongLastPossition = mPreferences.getInt(LayoutController.LAST_SONG_POS_EXTRA,-1);
-        mSongLastDuration = mPreferences.getLong(LayoutController.LAST_SONG_DURATION_EXTRA,-1);
-        mSongLastIsPlaying = mPreferences.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA,false);
-        mSongLastIsRepeat = mPreferences.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA,false);
-        mSongLastIsShuffle = mPreferences.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA,false);
-                Log.d(TAG, String.valueOf(mSongLastPossition));
+        if (savedInstanceState != null){
+            mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
+            mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
+            mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
+            mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
+            mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
+        }
         if (isPermission){
+            mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+            mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA,-1);
+            Log.d(TAG, "onCreate: "+mSongLastId);
+            mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos():-1;
             isFirst = false;
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
@@ -119,8 +128,8 @@ public class ActivityMusic extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+            mSongData = new SongData(getApplicationContext());
             isPermission = true;
-//            mSongList = getAllSongs(this);
         }
     }
 
@@ -132,7 +141,6 @@ public class ActivityMusic extends AppCompatActivity {
         playIntent.setAction("");
         startService(playIntent);
         bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-//        ContextCompat.startForegroundService(this.getApplicationContext(),playIntent);
     }
 
     @Override
@@ -156,18 +164,12 @@ public class ActivityMusic extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
-        int pos = mediaPlaybackService.getCurrentSongPosition() != -1 ?  mediaPlaybackService.getCurrentSongPosition() : 0;
-        boolean isPlaying = mediaPlaybackService != null ? mediaPlaybackService.isPlaying() : false;
-        boolean isRepeat = mediaPlaybackService != null ? mediaPlaybackService.isRepeat() : false;
-        boolean isShuffle = mediaPlaybackService != null ? mediaPlaybackService.isShuffle() : false;
-        long currentStreamPos = mediaPlaybackService != null ?  mediaPlaybackService.getCurrentStreamPosition() : 0;
-        SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-        preferencesEditor.putInt(LayoutController.LAST_SONG_POS_EXTRA, pos );
-        preferencesEditor.putLong(LayoutController.LAST_SONG_DURATION_EXTRA, currentStreamPos);
-        preferencesEditor.putBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA, isPlaying);
-        preferencesEditor.putBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
-        preferencesEditor.putBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
-        preferencesEditor.apply();
+        if (isConnected && isPermission){
+            int id = mediaPlaybackService.getCurrentSongId() != -1 ? mediaPlaybackService.getCurrentSongId() : -1;
+            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+            preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, id);
+            preferencesEditor.apply();
+        }
     }
 
     @Override
@@ -185,7 +187,6 @@ public class ActivityMusic extends AppCompatActivity {
             isConnected = false;
         }
 //        stopService(playIntent);
-//        mLayoutController.onDestroy();
     }
 
     @Override
@@ -201,6 +202,7 @@ public class ActivityMusic extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 isPermission = true;
+                mSongData = new SongData(getApplicationContext());
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
             }
