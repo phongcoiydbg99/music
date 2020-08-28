@@ -201,7 +201,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: " + mSongCurrentPosition + " *" + mSongCurrentId);
+        Log.d(TAG, "onCreateView: " + mSongCurrentPosition );
         view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         mLinearLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
@@ -352,7 +352,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     public void updateUI() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mAdapter.setCurrentPos(mSongCurrentPosition);
-
         mAdapter.notifyDataSetChanged();
         updatePlaySongLayout(mSongCurrentPosition);
     }

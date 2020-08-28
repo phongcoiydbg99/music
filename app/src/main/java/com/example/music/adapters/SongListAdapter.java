@@ -55,7 +55,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: ");
         currentPos = mSongData.getCurrentSongPossition();
-        currentId = mSongData.getmSongCurrentId();
         View mItemView = mInflater.inflate(R.layout.song_list_item, parent, false);
         return new SongViewHolder(mItemView, this);
     }

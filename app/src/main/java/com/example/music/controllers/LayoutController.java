@@ -48,7 +48,7 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState: "+ mediaPlaybackService.getCurrentSongPosition());
+//        Log.d(TAG, "onSaveInstanceState: "+ mediaPlaybackService.getCurrentSongPosition());
         int pos = mediaPlaybackService.getCurrentSongPosition() != -1 ?  mediaPlaybackService.getCurrentSongPosition() : 0;
         boolean isPlaying = mediaPlaybackService != null ? mediaPlaybackService.isPlaying() : false;
         boolean isRepeat = mediaPlaybackService != null ? mediaPlaybackService.isRepeat() : false;

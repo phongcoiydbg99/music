@@ -69,6 +69,7 @@ public class MediaPlaybackService extends Service implements
     private boolean isRepeat = false;
     private boolean isRepeatAll = false;
     private boolean isShuffle = false;
+    private boolean isFirst = true;
 
     private int currentSongPosition;
     private int currentSongId = -1;
@@ -313,6 +314,14 @@ public class MediaPlaybackService extends Service implements
 
     public boolean isRepeatAll() {
         return isRepeatAll;
+    }
+
+    public boolean isFirst() {
+        return isFirst;
+    }
+
+    public void setFirst(boolean first) {
+        isFirst = first;
     }
 
     public void setRepeatAll(boolean repeatAll) {
