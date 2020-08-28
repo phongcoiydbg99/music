@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,7 +76,6 @@ public class MediaPlaybackFragment extends Fragment {
     private ImageButton mMediaDislikeButton;
     private SeekBar mMediaSeekBar;
     private View view;
-    private boolean mServiceStatus = false;
     private MediaPlaybackService mediaPlaybackService;
     private UpdateSeekBarThread updateSeekBarThread;
 
@@ -166,8 +164,6 @@ public class MediaPlaybackFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
-
-        mServiceStatus = false;
         // gui message toi allsongsFragment khi back
 //        Intent intent = new Intent(SONG_POSSITON);
 //        intent.putExtra(SONG_POSSITON, String.valueOf(mSongCurrentPosition));
@@ -263,7 +259,11 @@ public class MediaPlaybackFragment extends Fragment {
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),false);
                 } else {
-                    mediaPlaybackService.start();
+                    if (mediaPlaybackService.isFirst()) {
+                        mediaPlaybackService.play(mSongCurrentPosition);
+                        mediaPlaybackService.setFirst(false);
+                    }else
+                        mediaPlaybackService.start();
                     isPlaying = true;
                     updateSeekBarThread.updateSeekBar();
                     mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
@@ -391,7 +391,6 @@ public class MediaPlaybackFragment extends Fragment {
         updateSeekBarThread.updateSeekBar();
 
         byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
-        Log.d(TAG, String.valueOf("updateUI: " + albumArt == null));
         Log.d(TAG, "updateUI: " + albumArt);
         if (albumArt != null) {
             Glide.with(view.getContext()).asBitmap()

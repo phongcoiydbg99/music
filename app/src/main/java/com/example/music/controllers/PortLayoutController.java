@@ -4,7 +4,6 @@ package com.example.music.controllers;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.music.R;
 import com.example.music.Song;
-import com.example.music.SongData;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
@@ -20,9 +18,9 @@ import com.example.music.fragments.MediaPlaybackFragment;
 
 public class PortLayoutController extends LayoutController {
     public static final String TAG = "PortLayoutController";
-    private SongData songData;
     private boolean isPlaying;
     private int mCurrentSongPossion;
+
     public PortLayoutController(AppCompatActivity activity) {
         super(activity);
     }
@@ -39,7 +37,6 @@ public class PortLayoutController extends LayoutController {
             this.isPlaying = isPlaying;
             mAllSongsFragment.setSongCurrentPosition(songPos);
             mAllSongsFragment.setPlaying(isPlaying);
-            songData = new SongData(mActivity);
             // Add the fragment to the 'fragment_container' FrameLayout
             mActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_all_songs, mAllSongsFragment).commit();
@@ -50,6 +47,9 @@ public class PortLayoutController extends LayoutController {
     public void onConnection() {
         if (isConnected) {
             mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+            Log.d(TAG, "onConnection: "+mediaPlaybackService.isPlaying());
+            if (mCurrentSongPossion >= 0)
+            mediaPlaybackService.startForegroundService(mCurrentSongPossion,isPlaying);
             if (isPlaying) {
                 mAllSongsFragment.setPlaying(true);
                 mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
@@ -75,7 +75,6 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, int pos) {
-        mAllSongsFragment.setOnSongPlay(true);
         mAllSongsFragment.setSongCurrentPosition(pos);
         mediaPlaybackService.play(pos);
         mediaPlaybackService.startForegroundService(pos,true);

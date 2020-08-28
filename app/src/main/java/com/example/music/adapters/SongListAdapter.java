@@ -27,6 +27,7 @@ import com.example.music.services.MediaPlaybackService;
 import java.util.Collection;
 import java.util.LinkedList;
 
+@SuppressWarnings("unchecked")
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder> implements Filterable {
 
     private static final String TAG = SongListAdapter.class.getSimpleName();

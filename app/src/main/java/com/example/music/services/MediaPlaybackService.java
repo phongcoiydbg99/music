@@ -105,10 +105,14 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        switch (intent.getAction()){
+        switch (intent.getAction()) {
             case MUSIC_SERVICE_ACTION_PLAY:
-                start();
-                startForegroundService(currentSongPosition,true);
+                if (isFirst()) {
+                    play(currentSongPosition);
+                    setFirst(false);
+                } else
+                    start();
+                startForegroundService(currentSongPosition, true);
                 sendMessageChangeState("song_state_play");
                 break;
             case MUSIC_SERVICE_ACTION_PAUSE:
@@ -122,7 +126,7 @@ public class MediaPlaybackService extends Service implements
                 break;
             case MUSIC_SERVICE_ACTION_PREV:
                 playPrev();
-                startForegroundService(currentSongPosition,true);
+                startForegroundService(currentSongPosition, true);
                 break;
             case MUSIC_SERVICE_ACTION_STOP:
                 stop();
@@ -147,7 +151,7 @@ public class MediaPlaybackService extends Service implements
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void showNotification(Song song, Boolean isPlaying) {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        MediaSessionCompat mediaSessionCompat = new MediaSessionCompat( this, "tag");
+        MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(this, "tag");
         Intent playIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PLAY);
         PendingIntent playPendingIntent = PendingIntent.getService(this,
                 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -171,11 +175,11 @@ public class MediaPlaybackService extends Service implements
         Bitmap bitmap = null;
         try {
             byte[] albumArt = SongData.getAlbumArt(song.getData());
-            bitmap = BitmapFactory.decodeByteArray(albumArt , 0, albumArt .length);
+            bitmap = BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length);
         } catch (Exception e) {
             bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art_song_default);
         }
-        Log.d(TAG, "showNotification: "+ bitmap);
+        Log.d(TAG, "showNotification: " + bitmap);
         RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
         RemoteViews notificationLayoutExpanded = new RemoteViews(getPackageName(), R.layout.notification_large);
 
@@ -183,21 +187,20 @@ public class MediaPlaybackService extends Service implements
         notificationLayoutExpanded.setImageViewBitmap(R.id.notify_song_art, bitmap);
         notificationLayoutExpanded.setTextViewText(R.id.notify_song_title, song.getTitle());
         notificationLayoutExpanded.setTextViewText(R.id.notify_song_artist, song.getArtistName());
-        notificationLayout.setOnClickPendingIntent(R.id.notify_skip_next,nextPendingIntent);
-        notificationLayout.setOnClickPendingIntent(R.id.notify_skip_previous,prevPendingIntent);
-        notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_skip_next,nextPendingIntent);
-        notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_skip_previous,prevPendingIntent);
+        notificationLayout.setOnClickPendingIntent(R.id.notify_skip_next, nextPendingIntent);
+        notificationLayout.setOnClickPendingIntent(R.id.notify_skip_previous, prevPendingIntent);
+        notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_skip_next, nextPendingIntent);
+        notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_skip_previous, prevPendingIntent);
         if (isPlaying) {
             notificationLayout.setImageViewResource(R.id.notify_play_button, R.drawable.ic_pause_circle);
-            notificationLayout.setOnClickPendingIntent(R.id.notify_play_button,pausePendingIntent);
+            notificationLayout.setOnClickPendingIntent(R.id.notify_play_button, pausePendingIntent);
             notificationLayoutExpanded.setImageViewResource(R.id.notify_play_button, R.drawable.ic_pause_circle);
-            notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_play_button,pausePendingIntent);
-        }
-        else {
+            notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_play_button, pausePendingIntent);
+        } else {
             notificationLayout.setImageViewResource(R.id.notify_play_button, R.drawable.ic_play_circle);
-            notificationLayout.setOnClickPendingIntent(R.id.notify_play_button,playPendingIntent);
+            notificationLayout.setOnClickPendingIntent(R.id.notify_play_button, playPendingIntent);
             notificationLayoutExpanded.setImageViewResource(R.id.notify_play_button, R.drawable.ic_play_circle);
-            notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_play_button,playPendingIntent);
+            notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_play_button, playPendingIntent);
         }
 
         NotificationCompat.Builder notifyBuilder = new NotificationCompat
@@ -208,6 +211,10 @@ public class MediaPlaybackService extends Service implements
                 .setCustomBigContentView(notificationLayoutExpanded);
 
         notificationManagerCompat.notify(NOTIFICATION_ID, notifyBuilder.build());
+    }
+
+    public void cancelNotification() {
+        mNotifyManager.cancel(NOTIFICATION_ID);
     }
 
     public void createNotificationChannel() {
@@ -250,21 +257,20 @@ public class MediaPlaybackService extends Service implements
     @Override
     public void onCompletion(MediaPlayer mp) {
         String state = "play_normal";
-        if (isRepeat){
+        if (isRepeat) {
             play(currentSongPosition);
             state = "play_repeat";
-        } else if (isRepeatAll){
+        } else if (isRepeatAll) {
             currentSongPosition++;
             if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
             play(currentSongPosition);
             state = "play_repeat_all";
-        } else
-        if (isShuffle){
+        } else if (isShuffle) {
             currentSongPosition = mSongData.getRandomSongPos();
             play(currentSongPosition);
             state = "play_is_shuffe";
         }
-        startForegroundService(currentSongPosition,true);
+        startForegroundService(currentSongPosition, true);
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
         intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, state);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -356,7 +362,7 @@ public class MediaPlaybackService extends Service implements
     public void play(Song song) {
         if (mPlayer != null) {
             mPlayer.reset();
-            Log.d(TAG, String.valueOf("play: "+ mPlayer == null));
+            Log.d(TAG, String.valueOf("play: " + mPlayer == null));
             try {
                 mPlayer.setDataSource(song.getData());
                 mPlayer.prepareAsync();
@@ -371,9 +377,10 @@ public class MediaPlaybackService extends Service implements
         intent.putExtra(MESSAGE_SONG_PLAY_CHANGE, String.valueOf(currentSongPosition));
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
+
     public void sendMessageChangeState(String state) {
         Intent intent = new Intent(SONG_PLAY_CHANGE);
-        intent.putExtra(MESSAGE_SONG_PLAY_CHANGE,state);
+        intent.putExtra(MESSAGE_SONG_PLAY_CHANGE, state);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
@@ -407,7 +414,7 @@ public class MediaPlaybackService extends Service implements
         if (mPlayer != null) {
             return mPlayer.getDuration();
         } else {
-            return 0;
+            return -1;
         }
     }
 
@@ -425,7 +432,7 @@ public class MediaPlaybackService extends Service implements
 
     public void playPrev() {
         int seconds = getCurrentStreamPosition() / 1000 % 60;
-        if ( seconds <= 3){
+        if (seconds <= 3) {
             currentSongPosition--;
             if (currentSongPosition < 0) currentSongPosition = mSongData.getSongList().size() - 1;
         }

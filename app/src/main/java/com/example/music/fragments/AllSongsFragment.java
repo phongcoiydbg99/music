@@ -1,27 +1,19 @@
 package com.example.music.fragments;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.IBinder;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -65,7 +57,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     // TODO: Rename and change types of parameters
     private Boolean isPortrait;
     private LinkedList<Song> mSongList = new LinkedList<>();
-    private RecyclerView mRecyclerView;
     private SongListAdapter mAdapter;
     private SongPlayClickListener songPlayClickListener;
     private SongItemClickListener mSongItemClickListener;
@@ -81,10 +72,8 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private ImageView mSongPlayBtn;
     private boolean songPlay = false;
     private MediaPlaybackService mediaPlaybackService;
-    private int visible = View.GONE;
     private int mSongCurrentPosition = -1;
     private int mSongCurrentId = -1;
-    private boolean onSongPlay = false;
     private boolean isPlaying = true;
 
     public AllSongsFragment() {
@@ -123,8 +112,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 } else isPlaying = true;
                 Log.d(TAG, "onReceive: song play complete " + mSongCurrentPosition);
                 if (mediaPlaybackService != null) {
-//                    mediaPlaybackService.play(mSongCurrentPosition);
-//                    mediaPlaybackService.pause();
                     mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                     if (isPortrait) {
                         updateUI();
@@ -136,22 +123,19 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
                 if (state == "song_state_play") {
                     isPlaying = true;
-                    updateUI();
                 } else if (state == "song_state_pause") {
                     isPlaying = false;
-                    updateUI();
                 } else {
                     mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
-                    if (!isPortrait) {
-                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-                        updateUILand();
-                    } else {
-                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-                        isPlaying = true;
-                        updateUI();
-                    }
                 }
-
+                if (!isPortrait) {
+                    Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+                    updateUILand();
+                } else {
+                    Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
+//                    isPlaying = true;
+                    updateUI();
+                }
             }
         }
     };
@@ -200,14 +184,14 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: " + mSongCurrentPosition );
+        Log.d(TAG, "onCreateView: " + mSongCurrentPosition);
         view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         mLinearLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
         mSongName = view.findViewById(R.id.song_name_play);
         mSongArtist = view.findViewById(R.id.song_artist_name);
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
-        mRecyclerView = view.findViewById(R.id.song_recyclerview);
+        RecyclerView mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
 
         if (mSongCurrentPosition >= 0) {
@@ -219,7 +203,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 //            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
 
-        if (mAdapter != null){
+        if (mAdapter != null) {
             mAdapter.setOnSongItemClickListener(mSongItemClickListener);
         }
 
@@ -240,14 +224,18 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: start"+mediaPlaybackService.isPlaying());
+                Log.d(TAG, "onClick: start" + mediaPlaybackService.isPlaying());
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     isPlaying = false;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), false);
                 } else {
-                    mediaPlaybackService.start();
+                    if (mediaPlaybackService.isFirst()) {
+                        mediaPlaybackService.play(mSongCurrentPosition);
+                        mediaPlaybackService.setFirst(false);
+                    } else
+                        mediaPlaybackService.start();
                     isPlaying = true;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
@@ -318,29 +306,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return false;
     }
 
-    public Song getSong() {
-        return mSongData.getSongAt(mSongCurrentPosition);
-    }
-
-    public int getSongCurrentPosition() {
-        return mSongCurrentPosition;
-    }
-
     public void setSongCurrentPosition(int position) {
         this.mSongCurrentPosition = position;
         Log.d(TAG, "setSongCurrentPosition: " + mSongCurrentId + " * " + mSongCurrentPosition);
     }
 
-    public void setSongCurrentId(int mSongCurrentId) {
-        this.mSongCurrentId = mSongCurrentId;
-    }
-
     public void setPlaying(boolean playing) {
         isPlaying = playing;
-    }
-
-    public void setOnSongPlay(boolean onSongPlay) {
-        this.onSongPlay = onSongPlay;
     }
 
     public void updateUILand() {
@@ -357,7 +329,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     }
 
     public void updatePlaySongLayout(int pos) {
-        visible = View.VISIBLE;
+        int visible = View.VISIBLE;
         mLinearLayout.setVisibility(visible);
         mSong = mSongList.get(pos);
         mSongName.setText(mSong.getTitle());
@@ -365,7 +337,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         if (isPlaying) {
             mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
         } else mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
-        ;
         byte[] albumArt = SongData.getAlbumArt(mSong.getData());
         if (albumArt != null) {
             Glide.with(view.getContext()).asBitmap()
