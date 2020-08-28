@@ -83,6 +83,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     private MediaPlaybackService mediaPlaybackService;
     private int visible = View.GONE;
     private int mSongCurrentPosition = -1;
+    private int mSongCurrentId = -1;
     private boolean onSongPlay = false;
     private boolean isPlaying = true;
 
@@ -108,18 +109,23 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "onReceive: " + intent.getStringExtra(SONG_POSSITION));
-            if (intent.getAction() == SONG_POSSITION) {
-
-                    Log.d(TAG, "onReceive: on song play " + mediaPlaybackService.isPlaying());
-                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(SONG_POSSITION));
-                    isPlaying = mediaPlaybackService.isPlaying();
-                    updateUI();
-            }
+//            if (intent.getAction() == SONG_POSSITION) {
+//
+//                    Log.d(TAG, "onReceive: on song play " + mediaPlaybackService.isPlaying());
+//                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(SONG_POSSITION));
+//                    isPlaying = mediaPlaybackService.isPlaying();
+//                    updateUI();
+//            }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
-                mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MESSAGE_SONG_PLAY_COMPLETE));
+                String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
+                if (state == "play_normal") {
+                    isPlaying = false;
+                } else isPlaying = true;
                 Log.d(TAG, "onReceive: song play complete " + mSongCurrentPosition);
                 if (mediaPlaybackService != null) {
-                    mediaPlaybackService.play(mSongCurrentPosition);
+//                    mediaPlaybackService.play(mSongCurrentPosition);
+//                    mediaPlaybackService.pause();
+                    mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                     if (isPortrait) {
                         updateUI();
                     } else updateUILand();
@@ -139,8 +145,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     if (!isPortrait) {
                         Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
                         updateUILand();
-                    }
-                    else {
+                    } else {
                         Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
                         isPlaying = true;
                         updateUI();
@@ -195,7 +200,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: " + mSongCurrentPosition);
+        Log.d(TAG, "onCreateView: " + mSongCurrentPosition );
         view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         mLinearLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
@@ -204,33 +209,52 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
-        mSongList = mSongData.getSongList();
-        if (mSongList.size() > 0) {
-            if (mSongCurrentPosition >= 0) mSongData.setCurrentSongPossition(mSongCurrentPosition);
-            mAdapter = new SongListAdapter(view.getContext(), mSongData);
-            mRecyclerView.setAdapter(mAdapter);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-//            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
+
+        if (mSongCurrentPosition >= 0) {
+            mSongData.setCurrentSongPossition(mSongCurrentPosition);
         }
-        if (mSongCurrentPosition >= 0 && isPortrait) updateUI();
+        mAdapter = new SongListAdapter(view.getContext(), mSongData);
+        mSongList = mAdapter.getSongList();
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+//            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
+
+        if (mAdapter != null){
+            mAdapter.setOnSongItemClickListener(mSongItemClickListener);
+        }
+
+        if (mSongCurrentPosition >= 0) {
+            if (isPortrait) {
+                updateUI();
+            } else {
+                updateUILand();
+            }
+        }
+        Log.d(TAG, String.valueOf(mediaPlaybackService != null));
+        if (mediaPlaybackService != null) {
+            mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
+            isPlaying = mediaPlaybackService.isPlaying();
+            updateUI();
+        }
+
         mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: start"+mediaPlaybackService.isPlaying());
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     isPlaying = false;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
-                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),false);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), false);
                 } else {
                     mediaPlaybackService.start();
                     isPlaying = true;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
-                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),true);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
                 }
-                ;
             }
         });
-        mAdapter.setOnSongItemClickListener(mSongItemClickListener);
+
         // chuyen dang media fragment
         mLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -241,6 +265,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 songPlayClickListener.onSongPlayClickListener(v, mSong, mSongCurrentPosition, mediaPlaybackService.getCurrentStreamPosition(), mediaPlaybackService.isPlaying());
             }
         });
+
         // song menu click listener
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
             @Override
@@ -301,8 +326,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         return mSongCurrentPosition;
     }
 
-    public void setSongCurrentPosition(int mSongCurrentPosition) {
-        this.mSongCurrentPosition = mSongCurrentPosition;
+    public void setSongCurrentPosition(int position) {
+        this.mSongCurrentPosition = position;
+        Log.d(TAG, "setSongCurrentPosition: " + mSongCurrentId + " * " + mSongCurrentPosition);
+    }
+
+    public void setSongCurrentId(int mSongCurrentId) {
+        this.mSongCurrentId = mSongCurrentId;
     }
 
     public void setPlaying(boolean playing) {
@@ -343,13 +373,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     .into(mSongImage);
         } else {
             Glide.with(view.getContext())
-                    .load(R.drawable.background_transparent)
+                    .load(R.drawable.art_song_default)
                     .into(mSongImage);
         }
     }
 
     public interface SongPlayClickListener {
-        void    onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying);
+        void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying);
     }
 
     public void setOnSongPlayClickListener(SongPlayClickListener songPlayClickListener) {

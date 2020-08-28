@@ -1,86 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/song_recyclerview"
-        android:background="#FFFFFF"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <FrameLayout
+        android:id="@+id/sdasdasd"
         android:layout_alignWithParentIfMissing="true"
         android:layout_above="@+id/play_song_layout"
-        android:layout_marginBottom="0dp">
-    </androidx.recyclerview.widget.RecyclerView>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/song_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="0dp"
+                android:background="#FFFFFF">
+            </androidx.recyclerview.widget.RecyclerView>
+        </RelativeLayout>
+    </FrameLayout>
+
+
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/play_song_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:elevation="10dp"
-        android:orientation="vertical">
-<!--        <View-->
-<!--            android:id="@+id/shadow_layout"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:background="@drawable/background_shadow"-->
-<!--            android:layout_height="4.5dp"/>-->
+        android:orientation="vertical"
+        android:visibility="gone">
+        <!--        <View-->
+        <!--            android:id="@+id/shadow_layout"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:background="@drawable/background_shadow"-->
+        <!--            android:layout_height="4.5dp"/>-->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF">
+
             <ImageView
                 android:id="@+id/song_image"
-                android:src="@drawable/ic_launcher_background"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_margin="10dp"
-                />
+                android:src="@drawable/ic_launcher_background" />
+
             <LinearLayout
                 android:id="@+id/song_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/media_popup_button"
                 android:layout_toRightOf="@+id/song_image"
                 android:orientation="vertical"
                 android:padding="10dp">
+
                 <TextView
                     android:id="@+id/song_name_play"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Bai hat jsjkhdkjashdkjashdkjhksjadhkjajsdhj"
-                    android:singleLine="true"
-                    android:maxEms="10"
-                    android:paddingBottom="5dp"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
                     android:layout_centerVertical="true"
-                    />
+                    android:maxEms="10"
+                    android:singleLine="true"
+                    android:text="Bai hat jsjkhdkjashdkjashdkjhksjadhkjajsdhj"
+                    android:textColor="@color/song_lable"
+                    android:textSize="@dimen/song_lable_size" />
+
                 <TextView
                     android:id="@+id/song_artist_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ten sa si"
-                    android:layout_toRightOf="@+id/song_id"
-                    android:textSize="15dp"
                     android:layout_centerVertical="true"
-                    />
+                    android:layout_toRightOf="@+id/song_id"
+                    android:text="ten sa si"
+                    android:textColor="@color/song_sublable"
+                    android:textSize="@dimen/song_sublable_size" />
             </LinearLayout>
+
             <ImageView
                 android:id="@+id/song_play_button"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentRight="true"
-                android:background="#0000"
-                android:layout_marginRight="20dp"
                 android:layout_centerVertical="true"
-                />
+                android:layout_marginRight="20dp"
+                android:background="#0000"
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

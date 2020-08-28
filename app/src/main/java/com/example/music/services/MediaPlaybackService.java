@@ -66,7 +66,13 @@ public class MediaPlaybackService extends Service implements
     private MediaPlayer mPlayer;
     private Song mCurrentSong;
     private SongData mSongData;
+    private boolean isRepeat = false;
+    private boolean isRepeatAll = false;
+    private boolean isShuffle = false;
+    private boolean isFirst = true;
+
     private int currentSongPosition;
+    private int currentSongId = -1;
 
     public MediaPlaybackService() {
     }
@@ -127,7 +133,7 @@ public class MediaPlaybackService extends Service implements
                 break;
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     public void startForegroundService(int currentSongPosition, boolean isPlaying) {
@@ -167,7 +173,7 @@ public class MediaPlaybackService extends Service implements
             byte[] albumArt = SongData.getAlbumArt(song.getData());
             bitmap = BitmapFactory.decodeByteArray(albumArt , 0, albumArt .length);
         } catch (Exception e) {
-            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background_shadow);
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art_song_default);
         }
         Log.d(TAG, "showNotification: "+ bitmap);
         RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
@@ -243,10 +249,24 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        currentSongPosition++;
-        if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+        String state = "play_normal";
+        if (isRepeat){
+            play(currentSongPosition);
+            state = "play_repeat";
+        } else if (isRepeatAll){
+            currentSongPosition++;
+            if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+            play(currentSongPosition);
+            state = "play_repeat_all";
+        } else
+        if (isShuffle){
+            currentSongPosition = mSongData.getRandomSongPos();
+            play(currentSongPosition);
+            state = "play_is_shuffe";
+        }
+        startForegroundService(currentSongPosition,true);
         Intent intent = new Intent(SONG_PLAY_COMPLETE);
-        intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, String.valueOf(currentSongPosition));
+        intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, state);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
@@ -268,6 +288,14 @@ public class MediaPlaybackService extends Service implements
         this.currentSongPosition = currentSongPosition;
     }
 
+    public int getCurrentSongId() {
+        return currentSongId;
+    }
+
+    public void setCurrentSongId(int currentSongId) {
+        this.currentSongId = currentSongId;
+    }
+
     public MediaPlayer getmPlayer() {
         return mPlayer;
     }
@@ -280,6 +308,38 @@ public class MediaPlaybackService extends Service implements
         this.mSongData = mSongData;
     }
 
+    public boolean isRepeat() {
+        return isRepeat;
+    }
+
+    public boolean isShuffle() {
+        return isShuffle;
+    }
+
+    public boolean isRepeatAll() {
+        return isRepeatAll;
+    }
+
+    public boolean isFirst() {
+        return isFirst;
+    }
+
+    public void setFirst(boolean first) {
+        isFirst = first;
+    }
+
+    public void setRepeatAll(boolean repeatAll) {
+        isRepeatAll = repeatAll;
+    }
+
+    public void setRepeat(boolean repeat) {
+        isRepeat = repeat;
+    }
+
+    public void setShuffle(boolean shuffle) {
+        isShuffle = shuffle;
+    }
+
     public void start() {
         mPlayer.start();
     }
@@ -288,6 +348,7 @@ public class MediaPlaybackService extends Service implements
         mPlayer.reset();
         currentSongPosition = songPos;
         Song playSong = mSongData.getSongAt(songPos);
+        currentSongId = playSong.getId();
         Log.d(TAG, playSong.getData());
         play(playSong);
     }
@@ -295,10 +356,10 @@ public class MediaPlaybackService extends Service implements
     public void play(Song song) {
         if (mPlayer != null) {
             mPlayer.reset();
+            Log.d(TAG, String.valueOf("play: "+ mPlayer == null));
             try {
                 mPlayer.setDataSource(song.getData());
                 mPlayer.prepareAsync();
-
             } catch (Exception e) {
                 Log.e(TAG, "Error playing from data source", e);
             }
@@ -363,8 +424,11 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void playPrev() {
-        currentSongPosition--;
-        if (currentSongPosition < 0) currentSongPosition = mSongData.getSongList().size() - 1;
+        int seconds = getCurrentStreamPosition() / 1000 % 60;
+        if ( seconds <= 3){
+            currentSongPosition--;
+            if (currentSongPosition < 0) currentSongPosition = mSongData.getSongList().size() - 1;
+        }
         play(currentSongPosition);
         sendMessageChangePos();
     }

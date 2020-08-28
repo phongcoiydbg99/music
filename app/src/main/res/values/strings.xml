@@ -22,4 +22,5 @@
     <string name="notification_channel_description">Notification channel description</string>
     <string name="notification_title">Music player</string>
     <string name="notification_text">text</string>
+    <string name="todo">TODO</string>
 </resources>

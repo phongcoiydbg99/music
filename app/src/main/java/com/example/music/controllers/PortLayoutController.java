@@ -22,15 +22,17 @@ public class PortLayoutController extends LayoutController {
     public static final String TAG = "PortLayoutController";
     private SongData songData;
     private boolean isPlaying;
+    private int mCurrentSongPossion;
     public PortLayoutController(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying) {
+    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
             Log.d(TAG, "onCreate: "+ songPos);
+            mCurrentSongPossion = songPos;
             mAllSongsFragment = AllSongsFragment.newInstance(true);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
@@ -50,7 +52,7 @@ public class PortLayoutController extends LayoutController {
             mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             if (isPlaying) {
                 mAllSongsFragment.setPlaying(true);
-                mAllSongsFragment.setSongCurrentPosition(mediaPlaybackService.getCurrentSongPosition());
+                mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
                 Log.d(TAG, "onConnection: " );
                 Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
                 mAllSongsFragment.updateUI();
@@ -76,7 +78,6 @@ public class PortLayoutController extends LayoutController {
         mAllSongsFragment.setOnSongPlay(true);
         mAllSongsFragment.setSongCurrentPosition(pos);
         mediaPlaybackService.play(pos);
-        mediaPlaybackService.setCurrentSongPosition(pos);
         mediaPlaybackService.startForegroundService(pos,true);
         mAllSongsFragment.setPlaying(true);
         Log.d(TAG, "onSongItemClick: " );

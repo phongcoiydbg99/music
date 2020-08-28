@@ -20,6 +20,15 @@ public class SongData {
     private Context mContext;
     private LinkedList<Song> mSongList;
     private int mCurrentSongPossition;
+    private int mSongCurrentId;
+
+    public int getmSongCurrentId() {
+        return mSongCurrentId;
+    }
+
+    public void setmSongCurrentId(int mSongCurrentId) {
+        this.mSongCurrentId = mSongCurrentId;
+    }
 
     public int getCurrentSongPossition() {
         return mCurrentSongPossition;
@@ -33,6 +42,7 @@ public class SongData {
     public SongData(Context context) {
         mSongList = getAllSongs(context);
         mCurrentSongPossition = -1;
+        mSongCurrentId = -1;
         mContext = context;
     }
 
@@ -40,7 +50,10 @@ public class SongData {
         Random r = new Random();
         return mSongList.get(r.nextInt(mSongList.size() - 1));
     }
-
+    public int getRandomSongPos() {
+        Random r = new Random();
+        return r.nextInt(mSongList.size() - 1);
+    }
     public LinkedList<Song> getSongList() {
         return mSongList;
     }
@@ -69,6 +82,7 @@ public class SongData {
     }
     public static LinkedList<Song> getAllSongs(Context context) {
         LinkedList<Song> songList = new LinkedList<>();
+        int pos = 0;
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {
                 MediaStore.Audio.Media._ID,
@@ -92,9 +106,10 @@ public class SongData {
                 String albumName = cursor.getString(6);
                 String data = cursor.getString(7);
 
-                Song song = new Song(id,title,artistName,composer,albumName,data,trackNumber,duration);
-                Log.d("TAG", "Data: "+ data + " Album: " + albumName);
+                Song song = new Song(pos,id,title,artistName,composer,albumName,data,trackNumber,duration);
+                Log.d("TAG", "Data: "+ id + " Album: " + albumName);
                 songList.add(song);
+                pos++;
             }
             cursor.close();
         }
