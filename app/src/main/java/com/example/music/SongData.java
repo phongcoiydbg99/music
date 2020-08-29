@@ -21,6 +21,7 @@ public class SongData {
     private LinkedList<Song> mSongList;
     private int mCurrentSongPossition;
     private int mSongCurrentId;
+    private boolean isPlaying;
 
     public int getmSongCurrentId() {
         return mSongCurrentId;
@@ -128,5 +129,13 @@ public class SongData {
         }
         
         return albumArt;
+    }
+
+    public void setPlaying(boolean isPlaying) {
+        this.isPlaying = isPlaying;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
     }
 }

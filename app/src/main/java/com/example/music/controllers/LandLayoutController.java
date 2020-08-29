@@ -43,6 +43,7 @@ public class LandLayoutController extends LayoutController {
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = AllSongsFragment.newInstance(false);
             mAllSongsFragment.setSongCurrentPosition(songPos);
+            mAllSongsFragment.setPlaying(mIsPlaying);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
             mActivity.getSupportFragmentManager().beginTransaction()
@@ -62,7 +63,6 @@ public class LandLayoutController extends LayoutController {
             mediaPlaybackService.startForegroundService(mCurrentSongPossion,mIsPlaying);
             if (mIsPlaying) {
                 mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
-                mAllSongsFragment.setPlaying(true);
                 mAllSongsFragment.updateUILand();
                 mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion),mCurrentSongPossion,true);
                 mMediaPlaybackFragment.updateUI();

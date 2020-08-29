@@ -14,7 +14,7 @@
             android:icon="@drawable/ic_menu_music_library"
             android:title="@string/music_library" />
     </group>
-    <item>
+    <item android:title="@string/todo">
         <menu>
             <item
                 android:id="@+id/nav_setting"

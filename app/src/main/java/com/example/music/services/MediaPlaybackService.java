@@ -348,6 +348,7 @@ public class MediaPlaybackService extends Service implements
 
     public void start() {
         mPlayer.start();
+        sendMessageChangeState("song_state_play");
     }
 
     public void play(int songPos) {
@@ -387,6 +388,7 @@ public class MediaPlaybackService extends Service implements
     public void pause() {
         if (mPlayer != null) {
             mPlayer.pause();
+            sendMessageChangeState("song_state_pause");
         }
     }
 

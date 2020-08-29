@@ -197,6 +197,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         if (mSongCurrentPosition >= 0) {
             mSongData.setCurrentSongPossition(mSongCurrentPosition);
         }
+        mSongData.setPlaying(isPlaying);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mSongList = mAdapter.getSongList();
         mRecyclerView.setAdapter(mAdapter);
@@ -227,18 +228,22 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                 Log.d(TAG, "onClick: start" + mediaPlaybackService.isPlaying());
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
-                    isPlaying = false;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), false);
+                    isPlaying = false;
+                    mSongData.setPlaying(isPlaying);
+                    mAdapter.notifyDataSetChanged();
                 } else {
                     if (mediaPlaybackService.isFirst()) {
                         mediaPlaybackService.play(mSongCurrentPosition);
                         mediaPlaybackService.setFirst(false);
                     } else
                         mediaPlaybackService.start();
-                    isPlaying = true;
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
+                    isPlaying = true;
+                    mSongData.setPlaying(isPlaying);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -308,7 +313,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public void setSongCurrentPosition(int position) {
         this.mSongCurrentPosition = position;
-        Log.d(TAG, "setSongCurrentPosition: " + mSongCurrentId + " * " + mSongCurrentPosition);
     }
 
     public void setPlaying(boolean playing) {
@@ -317,15 +321,19 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     public void updateUILand() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
+        mSongData.setPlaying(isPlaying);
         mAdapter.setCurrentPos(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
+        Log.d(TAG, "updateUILand: "+isPlaying);
     }
 
     public void updateUI() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
+        mSongData.setPlaying(isPlaying);
         mAdapter.setCurrentPos(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
         updatePlaySongLayout(mSongCurrentPosition);
+        Log.d(TAG, "updateUI: "+isPlaying);
     }
 
     public void updatePlaySongLayout(int pos) {

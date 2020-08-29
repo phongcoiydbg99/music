@@ -27,6 +27,8 @@ import com.example.music.services.MediaPlaybackService;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import es.claucookie.miniequalizerlibrary.EqualizerView;
+
 @SuppressWarnings("unchecked")
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder> implements Filterable {
 
@@ -38,6 +40,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private LayoutInflater mInflater;
     private int currentPos;
     private int currentId;
+    private boolean isPlaying;
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
 
@@ -53,8 +56,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder: ");
-        currentPos = mSongData.getCurrentSongPossition();
         View mItemView = mInflater.inflate(R.layout.song_list_item, parent, false);
         return new SongViewHolder(mItemView, this);
     }
@@ -67,14 +68,20 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     @Override
     public void onBindViewHolder(@NonNull final SongViewHolder holder, final int position) {
         final Song mCurrent = mSongList.get(position);
+        isPlaying = mSongData.isPlaying();
+        currentPos = mSongData.getCurrentSongPossition();
         holder.itemId.setText(String.valueOf(mCurrent.getPos() + 1));
         holder.songItemView.setText(mCurrent.getTitle());
         holder.songDurationView.setText(mCurrent.formattedTime());
         holder.itemId.setVisibility(View.VISIBLE);
         holder.iconPlay.setVisibility(View.INVISIBLE);
         holder.songItemView.setTypeface(null, Typeface.NORMAL);
+//        Log.d(TAG, "onBindViewHolder: "+ currentPos+"*"+isPlaying);
         if (mCurrent.getPos() == currentPos)
         {
+            Log.d(TAG, "onBindViewHolder: "+ mCurrent.getPos()+"*"+isPlaying);
+            if (isPlaying) holder.iconPlay.animateBars();
+            else holder.iconPlay.stopBars();
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
             holder.songItemView.setTypeface(null, Typeface.BOLD);
@@ -145,13 +152,18 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         return mSongListFull;
     }
 
+    public void setPlaying(boolean isPlaying) {
+        this.isPlaying = isPlaying;
+    }
+
     public class SongViewHolder extends RecyclerView.ViewHolder {
         public final RelativeLayout relativeLayout;
         public final TextView itemId;
         public final TextView songItemView;
         public final TextView songDurationView;
         public final ImageButton imageButton;
-        public final ImageView iconPlay;
+//        public final ImageView iconPlay;
+        public EqualizerView iconPlay;
         final SongListAdapter mAdapter;
 
         public SongViewHolder(@NonNull final View itemView, SongListAdapter adapter) {
@@ -161,7 +173,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             songDurationView = itemView.findViewById(R.id.song_duration);
             imageButton = itemView.findViewById(R.id.popup_button);
             relativeLayout = itemView.findViewById(R.id.song_list_item);
-            iconPlay = itemView.findViewById(R.id.icon_play);
+//            iconPlay = itemView.findViewById(R.id.icon_play);
+            iconPlay = (EqualizerView) itemView.findViewById(R.id.equalizer_view);
             this.mAdapter = adapter;
         }
     }
