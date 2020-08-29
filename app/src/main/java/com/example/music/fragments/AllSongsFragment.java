@@ -49,10 +49,8 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final int VERTICAL_ITEM_SPACE = 150;
     private static final String IS_PORTRAIT = "is_portrait";
-    private static final String ARG_PARAM2 = "param2";
     private static final String TAG = AllSongsFragment.class.getSimpleName();
     public static final String SONG_POSSITION = "song_possion";
-    private static final String MESSAGE_SONG_PLAY_COMPLETE = "message_song_play_complete";
 
     // TODO: Rename and change types of parameters
     private Boolean isPortrait;
@@ -63,14 +61,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     private SongData mSongData;
     private Song mSong;
-    private Fragment fragment;
     private View view;
     private LinearLayout mLinearLayout;
     private ImageView mSongImage;
     private TextView mSongName;
     private TextView mSongArtist;
     private ImageView mSongPlayBtn;
-    private boolean songPlay = false;
     private MediaPlaybackService mediaPlaybackService;
     private int mSongCurrentPosition = -1;
     private int mSongCurrentId = -1;

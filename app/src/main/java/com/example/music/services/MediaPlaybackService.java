@@ -141,7 +141,6 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void startForegroundService(int currentSongPosition, boolean isPlaying) {
-//        startForeground(NOTIFICATION_CHANNEL, showNotification());
         Song song = mSongData.getSongAt(currentSongPosition);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             showNotification(song, isPlaying);
@@ -256,24 +255,32 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        Log.d(TAG, "onCompletion:1 "+ mPlayer.getDuration()+" * "+mPlayer.getCurrentPosition());
+        Log.d(TAG, "onCompletion:2 "+ mp.getDuration()+" * "+mp.getCurrentPosition());
         String state = "play_normal";
-        if (isRepeat) {
-            play(currentSongPosition);
-            state = "play_repeat";
-        } else if (isRepeatAll) {
-            currentSongPosition++;
-            if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
-            play(currentSongPosition);
-            state = "play_repeat_all";
-        } else if (isShuffle) {
-            currentSongPosition = mSongData.getRandomSongPos();
-            play(currentSongPosition);
-            state = "play_is_shuffe";
+        if (mp.getCurrentPosition() > 0){
+            if (isRepeat) {
+                play(currentSongPosition);
+                state = "play_repeat";
+                startForegroundService(currentSongPosition, true);
+            } else if (isRepeatAll) {
+                currentSongPosition++;
+                if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
+                play(currentSongPosition);
+                state = "play_repeat_all";
+                startForegroundService(currentSongPosition, true);
+            } else if (isShuffle) {
+                currentSongPosition = mSongData.getRandomSongPos();
+                play(currentSongPosition);
+                state = "play_is_shuffe";
+                startForegroundService(currentSongPosition, true);
+            } else {
+                startForegroundService(currentSongPosition, false);
+            }
+            Intent intent = new Intent(SONG_PLAY_COMPLETE);
+            intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, state);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         }
-        startForegroundService(currentSongPosition, true);
-        Intent intent = new Intent(SONG_PLAY_COMPLETE);
-        intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, state);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
     @Override
