@@ -123,13 +123,13 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
                     isPlaying = false;
                 } else {
                     mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                    isPlaying = true;
                 }
                 if (!isPortrait) {
                     Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
                     updateUILand();
                 } else {
                     Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-//                    isPlaying = true;
                     updateUI();
                 }
             }

@@ -256,6 +256,7 @@ public class MediaPlaybackFragment extends Fragment {
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     isPlaying = false;
+                    mediaPlaybackService.sendMessageChangeState("song_state_pause");
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),false);
                 } else {
@@ -265,6 +266,7 @@ public class MediaPlaybackFragment extends Fragment {
                     }else
                         mediaPlaybackService.start();
                     isPlaying = true;
+                    mediaPlaybackService.sendMessageChangeState("song_state_play");
                     updateSeekBarThread.updateSeekBar();
                     mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(),true);
