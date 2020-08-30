@@ -6,13 +6,9 @@
             android:icon="@drawable/ic_menu_listen_now"
             android:title="@string/listen_now" />
         <item
-            android:id="@+id/nav_recent"
-            android:icon="@drawable/ic_menu_recent"
-            android:title="@string/recent" />
-        <item
-            android:id="@+id/nav_music_library"
+            android:id="@+id/nav_favorite_songs"
             android:icon="@drawable/ic_menu_music_library"
-            android:title="@string/music_library" />
+            android:title="@string/favorite_songs" />
     </group>
     <item android:title="@string/todo">
         <menu>
