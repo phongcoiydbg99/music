@@ -12,5 +12,7 @@
         android:name="com.example.music.AllSongsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
         tools:layout="@layout/fragment_all_songs" />
 </RelativeLayout>

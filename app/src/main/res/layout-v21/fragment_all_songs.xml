@@ -34,8 +34,7 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_margin="10dp"
-                android:src="@drawable/ic_launcher_background"
-                android:contentDescription="@string/todo" />
+                android:src="@drawable/ic_launcher_background" />
 
             <LinearLayout
                 android:id="@+id/song_content"
@@ -45,10 +44,7 @@
                 android:layout_toLeftOf="@+id/media_popup_button"
                 android:layout_toRightOf="@+id/song_image"
                 android:orientation="vertical"
-                android:padding="10dp"
-                android:layout_toStartOf="@+id/media_popup_button"
-                android:layout_toEndOf="@+id/song_image"
-                tools:ignore="UnknownIdInLayout">
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/song_name_play"

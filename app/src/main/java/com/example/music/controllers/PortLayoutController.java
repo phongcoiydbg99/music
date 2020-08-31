@@ -68,7 +68,7 @@ public class PortLayoutController extends LayoutController {
             MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
             mediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
             mActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_all_songs, mediaPlaybackFragment).addToBackStack(null).commit();
+                    .add(R.id.fragment_all_songs, mediaPlaybackFragment).addToBackStack(null).commit();
             mActivity.getSupportActionBar().hide();
         }
     }

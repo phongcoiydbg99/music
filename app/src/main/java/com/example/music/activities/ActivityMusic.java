@@ -260,17 +260,20 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         getSupportActionBar().show();
         switch (item.getItemId()){
             case R.id.nav_listen_now:
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
-                        mLayoutController.setMediaPlaybackService(mediaPlaybackService);
-                        mLayoutController.setConnected(true);
-                        mLayoutController.onConnection();
-                    }
-                }, 350);
-
+//                final Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+//                        mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+//                        mLayoutController.setConnected(true);
+//                        mLayoutController.onConnection();
+//                    }
+//                }, 350);
+                if (!isAllSongFrag) {
+                    isAllSongFrag = true;
+                    getSupportFragmentManager().popBackStack();
+                }
                 break;
             case  R.id.nav_favorite_songs:
                 Toast.makeText(this, "Favorite songs", Toast.LENGTH_SHORT).show();
@@ -278,7 +281,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 mFavoriteSongsFragment = new FavoriteSongsFragment();
                 // Add the fragment to the 'fragment_container' FrameLayout
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_all_songs, mFavoriteSongsFragment).addToBackStack(null).commit();
+                        .add(R.id.fragment_all_songs, mFavoriteSongsFragment).addToBackStack(null).commit();
                 break;
             default:
                 break;
