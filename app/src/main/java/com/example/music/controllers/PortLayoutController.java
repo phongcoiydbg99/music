@@ -47,6 +47,7 @@ public class PortLayoutController extends LayoutController {
     public void onConnection() {
         if (isConnected) {
             mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+            isPlaying = mediaPlaybackService.isPlaying();
             Log.d(TAG, "onConnection: "+mediaPlaybackService.isPlaying());
             if (mCurrentSongPossion >= 0)
             mediaPlaybackService.startForegroundService(mCurrentSongPossion,isPlaying);

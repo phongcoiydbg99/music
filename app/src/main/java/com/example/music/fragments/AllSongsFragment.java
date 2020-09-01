@@ -155,9 +155,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public void onStart() {
         super.onStart();
-        if (mediaPlaybackService != null)
-        Log.d(TAG, "onStart: " + mediaPlaybackService.isPlaying());
-        if (mediaPlaybackService != null) isPlaying = mediaPlaybackService.isPlaying();
+        Log.d(TAG, "onStart: ");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SONG_POSSITION);
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);

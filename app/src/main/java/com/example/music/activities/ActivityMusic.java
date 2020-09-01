@@ -95,7 +95,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                     if (mediaPlaybackService.isFirst()) {
                         mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
                         mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA, -1);
-                        Log.d(TAG, "onCreate: " + mSongLastId);
                         Log.d(TAG, "onServiceConnected() " + mSongLastPossition);
                         mediaPlaybackService.setCurrentSongPosition(mSongLastPossition);
                         mediaPlaybackService.setCurrentSongId(mSongLastId);
