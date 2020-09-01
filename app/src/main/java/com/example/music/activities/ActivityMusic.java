@@ -114,7 +114,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 isConnected = false;
             }
         };
-
+        Log.d(TAG, "onCreate: "+mSongLastIsPlaying);
         if (savedInstanceState != null) {
             mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
             mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
@@ -161,7 +161,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onResume();
         if (isPermission && isConnected && isFirst) {
             isFirst = false;
-            mediaPlaybackService.setSongData(new SongData(getApplicationContext()));
+            mediaPlaybackService.setSongData(mSongData);
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
@@ -170,7 +170,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mLayoutController.onConnection();
         }
 
-        Log.d(TAG, "onResume: " + isConnected);
+        Log.d(TAG, "onResume: " + isFirst);
     }
 
     @Override

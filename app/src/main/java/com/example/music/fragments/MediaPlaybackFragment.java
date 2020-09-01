@@ -124,12 +124,16 @@ public class MediaPlaybackFragment extends Fragment {
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
+                if (mediaPlaybackService != null)
+                mSongCurrentStreamPossition = mediaPlaybackService.getCurrentStreamPosition();
                 if (state == "song_state_play") {
                     isPlaying = true;
-                    updateUI();
+                    mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
+                    //                    updateUI();
                 } else if (state == "song_state_pause") {
                     isPlaying = false;
-                    updateUI();
+                    mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
+//                    updateUI();
                 } else {
                     if(mediaPlaybackService != null){
                         mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));

@@ -145,8 +145,7 @@
                 android:layout_alignParentLeft="true"
                 android:paddingLeft="10dp"
                 android:textSize="@dimen/song_sublable_size"
-                android:textColor="@color/song_sublable"
-                android:text="00:00" />
+                android:textColor="@color/song_sublable" />
 
             <TextView
                 android:id="@+id/end_time"
@@ -155,8 +154,7 @@
                 android:layout_alignParentRight="true"
                 android:paddingRight="10dp"
                 android:textSize="@dimen/song_sublable_size"
-                android:textColor="@color/song_sublable"
-                android:text="04:00" />
+                android:textColor="@color/song_sublable" />
         </RelativeLayout>
 
         <LinearLayout

@@ -36,6 +36,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
+import com.example.music.activities.ActivityMusic;
 
 import static android.support.v4.media.session.MediaSessionCompat.*;
 
@@ -59,6 +60,7 @@ public class MediaPlaybackService extends Service implements
     private static final String MUSIC_SERVICE_ACTION_PREV = "music_service_action_prev";
     private static final String MUSIC_SERVICE_ACTION_STOP = "music_service_action_stop";
     private static final String MUSIC_SERVICE_ACTION_START = "music_service_action_start";
+    private static final String MUSIC_SERVICE = "music_service";
 
 
     private NotificationManager mNotifyManager;
@@ -202,10 +204,16 @@ public class MediaPlaybackService extends Service implements
             notificationLayoutExpanded.setOnClickPendingIntent(R.id.notify_play_button, playPendingIntent);
         }
 
+        Intent notificationIntent = new Intent(this, ActivityMusic.class);
+        PendingIntent notificationPendingIntent = PendingIntent.getActivity
+                (this, NOTIFICATION_ID, notificationIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder notifyBuilder = new NotificationCompat
                 .Builder(this, PRIMARY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_play_circle)
 //                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setContentIntent(notificationPendingIntent)
                 .setCustomContentView(notificationLayout)
                 .setCustomBigContentView(notificationLayoutExpanded);
 
@@ -258,7 +266,7 @@ public class MediaPlaybackService extends Service implements
         Log.d(TAG, "onCompletion:1 "+ mPlayer.getDuration()+" * "+mPlayer.getCurrentPosition());
         Log.d(TAG, "onCompletion:2 "+ mp.getDuration()+" * "+mp.getCurrentPosition());
         String state = "play_normal";
-        if (mp.getCurrentPosition() > 0){
+        if (mp.getCurrentPosition() > 0 && currentSongPosition >= 0){
             if (isRepeat) {
                 play(currentSongPosition);
                 state = "play_repeat";

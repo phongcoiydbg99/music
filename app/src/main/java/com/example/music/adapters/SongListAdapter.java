@@ -1,5 +1,6 @@
 package com.example.music.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.icu.text.UFormat;
@@ -70,20 +71,28 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         final Song mCurrent = mSongList.get(position);
         isPlaying = mSongData.isPlaying();
         currentPos = mSongData.getCurrentSongPossition();
+        Log.d(TAG, "onBindViewHolder: "+ currentPos+"*"+isPlaying);
         holder.itemId.setText(String.valueOf(mCurrent.getPos() + 1));
         holder.songItemView.setText(mCurrent.getTitle());
         holder.songDurationView.setText(mCurrent.formattedTime());
         holder.itemId.setVisibility(View.VISIBLE);
         holder.iconPlay.setVisibility(View.INVISIBLE);
         holder.songItemView.setTypeface(null, Typeface.NORMAL);
+        holder.itemId.setTypeface(null, Typeface.NORMAL);
+        holder.itemId.setTextColor(mContext.getResources().getColor(R.color.song_sublable));
 //        Log.d(TAG, "onBindViewHolder: "+ currentPos+"*"+isPlaying);
         if (mCurrent.getPos() == currentPos)
         {
-            Log.d(TAG, "onBindViewHolder: "+ mCurrent.getPos()+"*"+isPlaying);
-            if (isPlaying) holder.iconPlay.animateBars();
-            else holder.iconPlay.stopBars();
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
+            if (isPlaying) holder.iconPlay.animateBars();
+            else {
+                holder.iconPlay.stopBars();
+                holder.itemId.setVisibility(View.VISIBLE);
+                holder.iconPlay.setVisibility(View.INVISIBLE);
+                holder.itemId.setTextColor(mContext.getResources().getColor(R.color.song_lable));
+                holder.itemId.setTypeface(null, Typeface.BOLD);
+            }
             holder.songItemView.setTypeface(null, Typeface.BOLD);
         }
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
