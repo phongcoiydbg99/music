@@ -6,6 +6,8 @@ public class Song {
     private int pos;
     private int id;
     private int trackNumber;
+    private int is_favorite;
+    private int count_play;
     private long duration;
     private String title;
     private String artistName;
@@ -25,20 +27,19 @@ public class Song {
 
 
     public static Song EMPTY() {
-        return new Song(-1,0,"","","","","",0,0);
+        return new Song(-1,0,"","","",0);
+    }
+    public Song(){
+
     }
 
-
     public Song(int pos, int id, String title, String artistName,
-                     String composer, String albumName, String data, int trackNumber,long duration) {
+                    String data,long duration) {
         this.pos = pos;
         this.id = id;
         this.title = title;
         this.artistName = artistName;
-        this.composer = composer;
-        this.albumName = albumName;
         this.data = data;
-        this.trackNumber = trackNumber;
         this.duration = duration;
         isPlaying = false;
     }

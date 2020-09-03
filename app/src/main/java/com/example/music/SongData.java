@@ -19,9 +19,11 @@ import java.util.Random;
 public class SongData {
     private Context mContext;
     private LinkedList<Song> mSongList;
+    private LinkedList<Song> mSongListFavor;
     private int mCurrentSongPossition;
     private int mSongCurrentId;
     private boolean isPlaying;
+    private static String sortOrder = "song_title ASC";
 
     public int getmSongCurrentId() {
         return mSongCurrentId;
@@ -42,6 +44,7 @@ public class SongData {
 
     public SongData(Context context) {
         mSongList = getAllSongs(context);
+        mSongListFavor = getFavorAllSongs(context);
         mCurrentSongPossition = -1;
         mSongCurrentId = -1;
         mContext = context;
@@ -82,39 +85,83 @@ public class SongData {
         return null;
     }
     public static LinkedList<Song> getAllSongs(Context context) {
+
         LinkedList<Song> songList = new LinkedList<>();
+        LinkedList<Song> songListFavor = new LinkedList<>();
         int pos = 0;
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        int posFavor = 0;
+        Uri uri =  Uri.parse(String.valueOf(MusicProvider.CONTENT_URI));;
         String[] projection = {
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TRACK,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.COMPOSER,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DATA
+                MusicDB.ID,
+                MusicDB.ID_PROVIDER,
+                MusicDB.TITLE,
+                MusicDB.ARTIST,
+                MusicDB.DURATION,
+                MusicDB.DATA,
+                MusicDB.IS_FAVORITE,
+                MusicDB.COUNT_OF_PLAY
         };
-        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, sortOrder);
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 int id = cursor.getInt(0);
-                int trackNumber = cursor.getInt(1);
-                long duration = cursor.getInt(2);
-                String title = cursor.getString(3);
-                String artistName = cursor.getString(4);
-                String composer = cursor.getString(5);
-                String albumName = cursor.getString(6);
-                String data = cursor.getString(7);
-
-                Song song = new Song(pos,id,title,artistName,composer,albumName,data,trackNumber,duration);
-                Log.d("TAG", "Data: "+ id + " Album: " + albumName);
+                int id_provider = cursor.getInt(1);
+                String title = cursor.getString(2);
+                String artistName = cursor.getString(3);
+                long duration = cursor.getInt(4);
+                String data = cursor.getString(5);
+                int is_fravorite = cursor.getInt(6);
+                String count_of_play = cursor.getString(7);
+                Song song = new Song(pos,id_provider,title,artistName,data,duration);
+                Log.d("TAG", "Data: "+ id + " Album: " + is_fravorite);
                 songList.add(song);
+                if (is_fravorite == 2 ) {
+                    songListFavor.add(song);
+                    posFavor++;
+                }
                 pos++;
             }
             cursor.close();
         }
         return  songList;
+    }
+    public static LinkedList<Song> getFavorAllSongs(Context context) {
+
+        LinkedList<Song> songListFavor = new LinkedList<>();
+        int pos = 0;
+        int posFavor = 0;
+        Uri uri =  Uri.parse(String.valueOf(MusicProvider.CONTENT_URI));;
+        String[] projection = {
+                MusicDB.ID,
+                MusicDB.ID_PROVIDER,
+                MusicDB.TITLE,
+                MusicDB.ARTIST,
+                MusicDB.DURATION,
+                MusicDB.DATA,
+                MusicDB.IS_FAVORITE,
+                MusicDB.COUNT_OF_PLAY
+        };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, sortOrder);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(0);
+                int id_provider = cursor.getInt(1);
+                String title = cursor.getString(2);
+                String artistName = cursor.getString(3);
+                long duration = cursor.getInt(4);
+                String data = cursor.getString(5);
+                int is_fravorite = cursor.getInt(6);
+                String count_of_play = cursor.getString(7);
+                Log.d("TAG", "Data: "+ id + " Album: " + is_fravorite);
+                if (is_fravorite == 2 ) {
+                    Song song = new Song(posFavor,id_provider,title,artistName,data,duration);
+                    songListFavor.add(song);
+                    posFavor++;
+                }
+            }
+            cursor.close();
+        }
+        return  songListFavor;
     }
     public static byte[] getAlbumArt(String uri)
     {
@@ -137,5 +184,9 @@ public class SongData {
 
     public boolean isPlaying() {
         return isPlaying;
+    }
+
+    public LinkedList<Song> getSongListFavor() {
+        return mSongListFavor;
     }
 }

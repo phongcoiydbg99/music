@@ -178,7 +178,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         public SongViewHolder(@NonNull final View itemView, SongListAdapter adapter) {
             super(itemView);
             itemId = itemView.findViewById(R.id.song_id);
-            songItemView = itemView.findViewById(R.id.song_name);
+            songItemView = itemView.findViewById(R.id.song_name);https://www.googleapis.com/books/v1/volumes?q=pride+prejudice&maxResults=5&printType=books
             songDurationView = itemView.findViewById(R.id.song_duration);
             imageButton = itemView.findViewById(R.id.popup_button);
             relativeLayout = itemView.findViewById(R.id.song_list_item);
@@ -190,6 +190,10 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     public int getCurrentPos() {
         return currentPos;
+    }
+
+    public void setSongList(LinkedList<Song> mSongList) {
+        this.mSongList = mSongList;
     }
 
     public void setCurrentPos(int currentPos) {

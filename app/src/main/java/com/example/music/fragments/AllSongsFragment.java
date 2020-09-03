@@ -1,9 +1,12 @@
 package com.example.music.fragments;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -28,10 +31,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.music.MusicHelper;
+import com.example.music.MusicDB;
+import com.example.music.MusicProvider;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
-import com.example.music.VerticalSpaceItemDecoration;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
@@ -43,7 +48,7 @@ import java.util.LinkedList;
  * Use the {@link AllSongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
+public class AllSongsFragment extends BaseSongListFragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,12 +59,12 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
 
     // TODO: Rename and change types of parameters
     private Boolean isPortrait;
-    private LinkedList<Song> mSongList = new LinkedList<>();
-    private SongListAdapter mAdapter;
+//    private LinkedList<Song> mSongList = new LinkedList<>();
+//    private SongListAdapter mAdapter;
     private SongPlayClickListener songPlayClickListener;
     private SongItemClickListener mSongItemClickListener;
 
-    private SongData mSongData;
+//    private SongData mSongData;
     private Song mSong;
     private View view;
     private LinearLayout mLinearLayout;
@@ -188,7 +193,7 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mSongName = view.findViewById(R.id.song_name_play);
         mSongArtist = view.findViewById(R.id.song_artist_name);
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
-        RecyclerView mRecyclerView = view.findViewById(R.id.song_recyclerview);
+        mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
 
         if (mSongCurrentPosition >= 0) {
@@ -204,7 +209,6 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         if (mAdapter != null) {
             mAdapter.setOnSongItemClickListener(mSongItemClickListener);
         }
-
 
         Log.d(TAG, String.valueOf(mediaPlaybackService != null));
         if (mediaPlaybackService != null&& mSongCurrentPosition >= 0) {
@@ -266,13 +270,25 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
             @Override
             public void onSongBtnClickListener(ImageButton btn, View v, final Song song, final int pos) {
-                Toast.makeText(v.getContext(), song.getAlbumName(), Toast.LENGTH_SHORT).show();
                 PopupMenu popup = new PopupMenu(v.getContext(), v);
                 // Inflate the Popup using XML file.
                 popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.action_add_songs) {
+                            int id =  mSongData.getSongAt(pos).getId();
+                            Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+                            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                                    null);
+                            if (cursor != null){
+                                cursor.moveToFirst();
+                                ContentValues values = new ContentValues();
+                                values.put(MusicDB.IS_FAVORITE, 2);
+                                getContext().getContentResolver().update(uri,values,null,null);
+                                Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)),Toast.LENGTH_SHORT).show();
+                            }
+                        }
                         return false;
                     }
                 });
@@ -342,7 +358,8 @@ public class AllSongsFragment extends Fragment implements SearchView.OnQueryText
     public void updatePlaySongLayout(int pos) {
         int visible = View.VISIBLE;
         mLinearLayout.setVisibility(visible);
-        mSong = mSongList.get(pos);
+        mSong = mSongData.getSongAt(pos);
+
         mSongName.setText(mSong.getTitle());
         mSongArtist.setText(mSong.getArtistName());
         if (isPlaying) {

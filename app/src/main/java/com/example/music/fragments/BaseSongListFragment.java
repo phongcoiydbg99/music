@@ -1,6 +1,7 @@
 package com.example.music.fragments;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
@@ -8,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +21,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.music.R;
+import com.example.music.Song;
+import com.example.music.SongData;
+import com.example.music.adapters.SongListAdapter;
+import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
+
+import java.util.LinkedList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +38,11 @@ public class BaseSongListFragment extends Fragment implements MenuItem.OnActionE
 
     // TODO: Rename and change types of parameters
     public static final String SONG_POSSITION = "song_possion";
+    public LinkedList<Song> mSongList = new LinkedList<>();
+    public SongListAdapter mAdapter;
+
+    public SongData mSongData;
+    public RecyclerView mRecyclerView;
     private BroadcastReceiver mReceiver;
 
     public BaseSongListFragment() {
@@ -52,34 +66,28 @@ public class BaseSongListFragment extends Fragment implements MenuItem.OnActionE
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mSongData = new SongData(context);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_base_song_list, container, false);
-    }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d("TAG", "onStart: ");
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SONG_POSSITION);
-        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
-        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
     }
     
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_main, menu);
     }
 
     @Override

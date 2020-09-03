@@ -3,19 +3,26 @@ package com.example.music.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.music.R;
+import com.example.music.Song;
+import com.example.music.SongData;
+import com.example.music.adapters.SongListAdapter;
+import com.example.music.interfaces.SongItemClickListener;
+
+import java.util.LinkedList;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link FavoriteSongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavoriteSongsFragment extends Fragment {
+public class FavoriteSongsFragment extends BaseSongListFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,6 +32,7 @@ public class FavoriteSongsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private LinkedList<Song> mSongList = new LinkedList<>();
 
     public FavoriteSongsFragment() {
         // Required empty public constructor
@@ -55,12 +63,19 @@ public class FavoriteSongsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mSongData = new SongData(getContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorite_songs, container, false);
+        View view = inflater.inflate(R.layout.fragment_favorite_songs, container, false);
+        mRecyclerView = view.findViewById(R.id.song_recyclerview);
+        mAdapter = new SongListAdapter(view.getContext(), mSongData);
+        mAdapter.setSongList(mSongData.getSongListFavor());
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        return view;
     }
 }

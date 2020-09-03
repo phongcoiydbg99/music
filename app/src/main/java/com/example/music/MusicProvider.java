@@ -100,7 +100,7 @@ public class MusicProvider extends ContentProvider {
                 break;
             case URI_ONE_ITEM_CODE:
                 String id = uri.getPathSegments().get(1);
-                queryBuilder.appendWhere(MusicDB.ID + "=" + id);
+                queryBuilder.appendWhere(MusicDB.ID_PROVIDER + "=" + id);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -126,7 +126,7 @@ public class MusicProvider extends ContentProvider {
                 break;
             case URI_ONE_ITEM_CODE:
                 String id = uri.getPathSegments().get(1);
-                selection = MusicDB.ID + "=" + id
+                selection = MusicDB.ID_PROVIDER + "=" + id
                         + (!TextUtils.isEmpty(selection) ?
                         " AND (" + selection + ')' : "");
                 break;
@@ -151,7 +151,7 @@ public class MusicProvider extends ContentProvider {
                 break;
             case URI_ONE_ITEM_CODE:
                 String id = uri.getPathSegments().get(1);
-                selection = MusicDB.ID + "=" + id
+                selection = MusicDB.ID_PROVIDER + "=" + id
                         + (!TextUtils.isEmpty(selection) ?
                         " AND (" + selection + ')' : "");
                 break;

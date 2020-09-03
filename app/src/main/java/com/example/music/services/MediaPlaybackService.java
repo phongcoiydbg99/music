@@ -371,7 +371,7 @@ public class MediaPlaybackService extends Service implements
         currentSongPosition = songPos;
         Song playSong = mSongData.getSongAt(songPos);
         currentSongId = playSong.getId();
-        Log.d(TAG, playSong.getData());
+        Log.d(TAG, playSong.getTitle());
         play(playSong);
     }
 

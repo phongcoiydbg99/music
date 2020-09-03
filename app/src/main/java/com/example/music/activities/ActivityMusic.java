@@ -312,6 +312,16 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.DATA
         };
+        String[] projectionDB = {
+                MusicDB.ID,
+                MusicDB.ID_PROVIDER,
+                MusicDB.TITLE,
+                MusicDB.ARTIST,
+                MusicDB.DURATION,
+                MusicDB.DATA,
+                MusicDB.IS_FAVORITE,
+                MusicDB.COUNT_OF_PLAY
+        };
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -324,19 +334,26 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 String albumName = cursor.getString(6);
                 String data = cursor.getString(7);
 
-                Song song = new Song(pos,id,title,artistName,composer,albumName,data,trackNumber,duration);
-                Log.d("TAG", "Data: "+ id + " Album: " + albumName);
+                Song song = new Song(pos,id,title,artistName,data,duration);
+                Cursor cursorDB = context.getContentResolver().query(MusicProvider.CONTENT_URI, projectionDB, null, null, null);
+                Log.d(TAG, "getAllSongs: ----------------"+pos);
+                if (cursorDB.moveToPosition(pos)){
+                    Log.d(TAG, "getAllSongs: "+  String.valueOf(cursorDB.getString(cursorDB.getColumnIndexOrThrow(MusicDB.IS_FAVORITE)))+ " " + pos);
+                }
+                else  {
+                    ContentValues values = new ContentValues();
+                    values.put(MusicDB.ID_PROVIDER, id);
+                    values.put(MusicDB.TITLE, title);
+                    values.put(MusicDB.ARTIST, artistName);
+                    values.put(MusicDB.DURATION, duration);
+                    values.put(MusicDB.DATA, data);
+                    values.put(MusicDB.IS_FAVORITE, 0);
+                    values.put(MusicDB.COUNT_OF_PLAY, 0);
+                    // insert a record
+                    Log.d(TAG, "getAllSongs: "+id+" "+data);
+                    context.getContentResolver().insert(MusicProvider.CONTENT_URI,values);
+                }
                 pos++;
-                ContentValues values = new ContentValues();
-                values.put(MusicDB.ID_PROVIDER, id);
-                values.put(MusicDB.TITLE, title);
-                values.put(MusicDB.ARTIST, artistName);
-                values.put(MusicDB.DURATION, duration);
-                values.put(MusicDB.DATA, data);
-                values.put(MusicDB.IS_FAVORITE, 0);
-                values.put(MusicDB.COUNT_OF_PLAY, 0);
-                // insert a record
-                context.getContentResolver().insert(MusicProvider.CONTENT_URI, values);
             }
             cursor.close();
         }
