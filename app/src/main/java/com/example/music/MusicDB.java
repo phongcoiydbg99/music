@@ -6,8 +6,10 @@ import android.util.Log;
 public class MusicDB {
     public static final String ID = "_id";
     public static final String ID_PROVIDER = "is_provider";
-    public static final String SONG_NAME = "song_name";
-    public static final String SONG_DATA = "song_data";
+    public static final String TITLE = "song_title";
+    public static final String ARTIST = "song_artist";
+    public static final String DATA = "song_data";
+    public static final String DURATION = "song_duration";
     public static final String IS_FAVORITE = "is_favorite";
     public static final String COUNT_OF_PLAY = "count_of_play";
 
@@ -18,11 +20,13 @@ public class MusicDB {
             "CREATE TABLE if not exists " + SQLITE_TABLE + " (" +
                     ID + " integer PRIMARY KEY autoincrement," +
                     ID_PROVIDER + "," +
-                    SONG_NAME + "," +
-                    SONG_DATA + "," +
+                    TITLE + "," +
+                    ARTIST + "," +
+                    DURATION + "," +
+                    DATA + "," +
                     IS_FAVORITE + "," +
-                    COUNT_OF_PLAY + "," +
-                    " UNIQUE (" + ID_PROVIDER +"));";
+                    COUNT_OF_PLAY + ");" ;
+//                    " UNIQUE (" + ID_PROVIDER +"));";
 
     public static void onCreate(SQLiteDatabase db) {
         Log.w(LOG_TAG, DATABASE_CREATE);

@@ -2,13 +2,19 @@ package com.example.music.activities;
 
 import android.Manifest;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.example.music.MusicDB;
+import com.example.music.MusicProvider;
+import com.example.music.Song;
 import com.example.music.SongData;
 import com.example.music.controllers.LayoutController;
 import com.example.music.controllers.PortLayoutController;
@@ -30,10 +36,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import java.util.LinkedList;
 
 public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -142,6 +151,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
             mSongData = new SongData(getApplicationContext());
             isPermission = true;
+            getAllSongs(this);
         }
     }
 
@@ -220,6 +230,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 isPermission = true;
                 mSongData = new SongData(getApplicationContext());
+                getAllSongs(this);
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
             }
@@ -287,5 +298,47 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         }
         return true;
+    }
+    public static void getAllSongs(Context context) {
+        int pos = 0;
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TRACK,
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.COMPOSER,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DATA
+        };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(0);
+                int trackNumber = cursor.getInt(1);
+                long duration = cursor.getInt(2);
+                String title = cursor.getString(3);
+                String artistName = cursor.getString(4);
+                String composer = cursor.getString(5);
+                String albumName = cursor.getString(6);
+                String data = cursor.getString(7);
+
+                Song song = new Song(pos,id,title,artistName,composer,albumName,data,trackNumber,duration);
+                Log.d("TAG", "Data: "+ id + " Album: " + albumName);
+                pos++;
+                ContentValues values = new ContentValues();
+                values.put(MusicDB.ID_PROVIDER, id);
+                values.put(MusicDB.TITLE, title);
+                values.put(MusicDB.ARTIST, artistName);
+                values.put(MusicDB.DURATION, duration);
+                values.put(MusicDB.DATA, data);
+                values.put(MusicDB.IS_FAVORITE, 0);
+                values.put(MusicDB.COUNT_OF_PLAY, 0);
+                // insert a record
+                context.getContentResolver().insert(MusicProvider.CONTENT_URI, values);
+            }
+            cursor.close();
+        }
     }
 }

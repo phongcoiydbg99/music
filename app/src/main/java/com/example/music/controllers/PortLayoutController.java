@@ -1,6 +1,7 @@
 
 package com.example.music.controllers;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.music.MusicDB;
+import com.example.music.MusicProvider;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.adapters.SongListAdapter;
