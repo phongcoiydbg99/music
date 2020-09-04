@@ -86,6 +86,7 @@ public class FavoriteSongsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favorite_songs, container, false);
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
+        mSongData.setPlaying(mediaPlaybackService.isPlaying());
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mAdapter.setSongList(mSongData.getSongListFavor());
         mAdapter.setOnSongItemClickIdListener(mSongItemClickIdListener);
