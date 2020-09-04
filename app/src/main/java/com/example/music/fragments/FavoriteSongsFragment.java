@@ -1,9 +1,14 @@
 package com.example.music.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,14 +36,16 @@ public class FavoriteSongsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String TAG = AllSongsFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    public static final String SONG_POSSITION = "song_possion";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     public LinkedList<Song> mSongList = new LinkedList<>();
     public SongListAdapter mAdapter;
+    private boolean isPlaying = true;
 
     public SongData mSongData;
     public RecyclerView mRecyclerView;
@@ -50,6 +57,39 @@ public class FavoriteSongsFragment extends Fragment {
         // Required empty public constructor
     }
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive: " + intent.getStringExtra(SONG_POSSITION));
+//            if (intent.getAction() == SONG_POSSITION) {
+//
+//                    Log.d(TAG, "onReceive: on song play " + mediaPlaybackService.isPlaying());
+//                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(SONG_POSSITION));
+//                    isPlaying = mediaPlaybackService.isPlaying();
+//                    updateUI();
+//            }
+            if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
+                String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
+                if (state == "play_normal") {
+                    isPlaying = false;
+                } else isPlaying = true;
+                if (mediaPlaybackService != null) {
+                }
+            }
+            if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
+                String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
+                if (state == "song_state_play") {
+                    isPlaying = true;
+                } else if (state == "song_state_pause") {
+                    isPlaying = false;
+                } else {
+                    isPlaying = true;
+                }
+//                if ()
+//                updateUi();
+            }
+        }
+    };
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -77,6 +117,16 @@ public class FavoriteSongsFragment extends Fragment {
         }
         mSongData = new SongData(getActivity().getApplicationContext());
         mSongList = mSongData.getSongListFavor();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SONG_POSSITION);
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
     }
 
     @Override
