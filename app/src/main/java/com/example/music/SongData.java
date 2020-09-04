@@ -84,6 +84,20 @@ public class SongData {
         }
         return null;
     }
+    public Song getSongFavorId(int id){
+        int pos = 0;
+        if (mSongListFavor.size() > 0) {
+            for(Song song: mSongListFavor){
+                if (song.getId() == id)
+                {
+                    mCurrentSongPossition = pos;
+                    return song;
+                }
+                pos++;
+            }
+        }
+        return null;
+    }
     public static LinkedList<Song> getAllSongs(Context context) {
 
         LinkedList<Song> songList = new LinkedList<>();

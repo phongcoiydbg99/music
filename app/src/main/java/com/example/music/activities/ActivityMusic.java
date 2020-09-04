@@ -16,12 +16,14 @@ import com.example.music.MusicDB;
 import com.example.music.MusicProvider;
 import com.example.music.Song;
 import com.example.music.SongData;
+import com.example.music.adapters.SongListAdapter;
 import com.example.music.controllers.LayoutController;
 import com.example.music.controllers.PortLayoutController;
 import com.example.music.controllers.LandLayoutController;
 import com.example.music.R;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.fragments.FavoriteSongsFragment;
+import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
 import com.google.android.material.navigation.NavigationView;
 
@@ -44,7 +46,7 @@ import android.widget.Toast;
 
 import java.util.LinkedList;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SongListAdapter.SongItemClickIdListener {
 
     public static final String TAG = "ActivityMusic";
     private String sharedPrefFile =
@@ -57,7 +59,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private LayoutController mLayoutController;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private ActionBarDrawerToggle mActionBarDrawerToggle;
     private FavoriteSongsFragment mFavoriteSongsFragment;
     private int mSongLastPossition = -1;
     private long mSongLastDuration = -1;
@@ -77,13 +78,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         this.savedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_music);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mNavigationView = findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.open,R.string.close);
+        ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         mActionBarDrawerToggle.syncState();
@@ -270,28 +271,22 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         getSupportActionBar().show();
         switch (item.getItemId()){
             case R.id.nav_listen_now:
-//                final Handler handler = new Handler();
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
-//                        mLayoutController.setMediaPlaybackService(mediaPlaybackService);
-//                        mLayoutController.setConnected(true);
-//                        mLayoutController.onConnection();
-//                    }
-//                }, 350);
+                getSupportActionBar().setTitle("Music");
                 if (!isAllSongFrag) {
                     isAllSongFrag = true;
                     getSupportFragmentManager().popBackStack();
                 }
                 break;
             case  R.id.nav_favorite_songs:
-                Toast.makeText(this, "Favorite songs", Toast.LENGTH_SHORT).show();
+                getSupportActionBar().setTitle("Favorite Songs");
+                Toast.makeText(this, "Favorite songs"+mediaPlaybackService.getCurrentSongId(), Toast.LENGTH_SHORT).show();
                 isAllSongFrag = false;
                 mFavoriteSongsFragment = new FavoriteSongsFragment();
+                mFavoriteSongsFragment.setOnSongItemClickIdListener(this);
+                mFavoriteSongsFragment.setMediaPlaybackService(mediaPlaybackService);
                 // Add the fragment to the 'fragment_container' FrameLayout
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_all_songs, mFavoriteSongsFragment).addToBackStack(null).commit();
+                        .replace(R.id.fragment_all_songs, mFavoriteSongsFragment).addToBackStack(null).commit();
                 break;
             default:
                 break;
@@ -357,5 +352,16 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             }
             cursor.close();
         }
+    }
+
+
+    @Override
+    public void onSongItemClickId(SongListAdapter.SongViewHolder holder, int id) {
+        Toast.makeText(this,"Text: "+id+" "+holder.getLayoutPosition(),Toast.LENGTH_SHORT).show();
+        Song song = mSongData.getSongId(id);
+        mediaPlaybackService.play(song.getPos());
+        mediaPlaybackService.startForegroundService(song.getPos(),true);
+//        getSupportFragmentManager().popBackStack();
+        mFavoriteSongsFragment.updateUi(holder.getLayoutPosition(),true);
     }
 }

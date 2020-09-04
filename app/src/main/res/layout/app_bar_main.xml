@@ -24,7 +24,6 @@
                 android:layout_height="60dp"
                 android:background="@color/color_action_bar"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:title="@string/app_name"
                 app:titleTextAppearance="@style/MyTitleTextStyle" />
 
         </com.google.android.material.appbar.AppBarLayout>

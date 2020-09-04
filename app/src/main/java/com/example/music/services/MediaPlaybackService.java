@@ -238,7 +238,7 @@ public class MediaPlaybackService extends Service implements
             NotificationChannel notificationChannel = new NotificationChannel
                     (PRIMARY_CHANNEL_ID,
                             getString(R.string.notification_channel_name),
-                            NotificationManager.IMPORTANCE_LOW);
+                            NotificationManager.IMPORTANCE_DEFAULT);
 
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
@@ -374,6 +374,7 @@ public class MediaPlaybackService extends Service implements
         Log.d(TAG, playSong.getTitle());
         play(playSong);
     }
+
 
     public void play(Song song) {
         if (mPlayer != null) {

@@ -36,7 +36,6 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
         mActivity = activity;
     }
     public MediaPlaybackService mediaPlaybackService;
-    public Intent playIntent;
     public boolean isConnected = false;
 
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {

@@ -44,6 +44,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private boolean isPlaying;
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
+    SongItemClickIdListener songItemClickIdListener;
 
     public SongListAdapter(Context context, SongData songData) {
         this.mSongData = songData;
@@ -102,6 +103,9 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
                 Log.d(TAG, "onClick: "+position);
                 if (songItemClickListener != null) {
                     songItemClickListener.onSongItemClick(holder, mCurrent.getPos());
+                }
+                if (songItemClickIdListener != null) {
+                    songItemClickIdListener.onSongItemClickId(holder, mCurrent.getId());
                 }
             }
         });
@@ -178,7 +182,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         public SongViewHolder(@NonNull final View itemView, SongListAdapter adapter) {
             super(itemView);
             itemId = itemView.findViewById(R.id.song_id);
-            songItemView = itemView.findViewById(R.id.song_name);https://www.googleapis.com/books/v1/volumes?q=pride+prejudice&maxResults=5&printType=books
+            songItemView = itemView.findViewById(R.id.song_name);
             songDurationView = itemView.findViewById(R.id.song_duration);
             imageButton = itemView.findViewById(R.id.popup_button);
             relativeLayout = itemView.findViewById(R.id.song_list_item);
@@ -207,11 +211,16 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     public interface SongBtnClickListener {
         void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);
     }
+    public interface SongItemClickIdListener {
+        void onSongItemClickId(SongListAdapter.SongViewHolder holder, int pos);
+    }
 
     public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
         this.songItemClickListener = songItemClickListener;
     }
-
+    public void setOnSongItemClickIdListener(SongItemClickIdListener songItemClickIdListener) {
+        this.songItemClickIdListener = songItemClickIdListener;
+    }
     public void setOnSongBtnClickListener(SongBtnClickListener songBtnClickListener) {
         this.songBtnClickListener = songBtnClickListener;
     }

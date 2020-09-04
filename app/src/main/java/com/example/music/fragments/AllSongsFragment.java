@@ -48,7 +48,7 @@ import java.util.LinkedList;
  * Use the {@link AllSongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AllSongsFragment extends BaseSongListFragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
+public class AllSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,13 +58,15 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
     public static final String SONG_POSSITION = "song_possion";
 
     // TODO: Rename and change types of parameters
-    private Boolean isPortrait;
-//    private LinkedList<Song> mSongList = new LinkedList<>();
-//    private SongListAdapter mAdapter;
+    protected Boolean isPortrait;
     private SongPlayClickListener songPlayClickListener;
     private SongItemClickListener mSongItemClickListener;
 
-//    private SongData mSongData;
+    public LinkedList<Song> mSongList = new LinkedList<>();
+    public SongListAdapter mAdapter;
+
+    public SongData mSongData;
+    public RecyclerView mRecyclerView;
     private Song mSong;
     private View view;
     private LinearLayout mLinearLayout;
@@ -169,6 +171,18 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onStop()");
@@ -201,6 +215,7 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
         mSongData.setPlaying(isPlaying);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mSongList = mAdapter.getSongList();
+        Log.d(TAG, "onCreateView: " + isPlaying);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 //            mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
@@ -210,14 +225,15 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
         }
 
         Log.d(TAG, String.valueOf(mediaPlaybackService != null));
-        if (mediaPlaybackService != null&& mSongCurrentPosition >= 0) {
+        if (mediaPlaybackService != null && mSongCurrentPosition >= 0) {
             mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
             isPlaying = mediaPlaybackService.isPlaying();
             if (isPortrait) {
                 updateUI();
             } else {
                 updateUILand();
-            };
+            }
+            ;
         }
         if (mSongCurrentPosition >= 0) {
             if (isPortrait) {
@@ -260,8 +276,8 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
                     Log.d(TAG, String.valueOf(mediaPlaybackService == null));
                 isPlaying = mediaPlaybackService.isPlaying();
                 int mCurrentStreamPosition = mediaPlaybackService.getCurrentStreamPosition() > mSong.getDuration() ? 0 : mediaPlaybackService.getCurrentStreamPosition();
-                Log.d(TAG, "onClick: "+String.valueOf(mediaPlaybackService.getDuration())+" "+ mSong.getDuration());
-                songPlayClickListener.onSongPlayClickListener(v, mSong, mSongCurrentPosition, mCurrentStreamPosition , mediaPlaybackService.isPlaying());
+                Log.d(TAG, "onClick: " + String.valueOf(mediaPlaybackService.getDuration()) + " " + mSong.getDuration());
+                songPlayClickListener.onSongPlayClickListener(v, mSong, mSongCurrentPosition, mCurrentStreamPosition, mediaPlaybackService.isPlaying());
             }
         });
 
@@ -276,16 +292,16 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.action_add_songs) {
-                            int id =  mSongData.getSongAt(pos).getId();
+                            int id = mSongData.getSongAt(pos).getId();
                             Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
                             Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
                                     null);
-                            if (cursor != null){
+                            if (cursor != null) {
                                 cursor.moveToFirst();
                                 ContentValues values = new ContentValues();
                                 values.put(MusicDB.IS_FAVORITE, 2);
-                                getContext().getContentResolver().update(uri,values,null,null);
-                                Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)),Toast.LENGTH_SHORT).show();
+                                getContext().getContentResolver().update(uri, values, null, null);
+                                Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                             }
                         }
                         return false;
@@ -341,25 +357,25 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mSongData.setPlaying(isPlaying);
         mAdapter.setCurrentPos(mSongCurrentPosition);
-        mRecyclerView.smoothScrollToPosition(mSongCurrentPosition);
+        mRecyclerView.scrollToPosition(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
-        Log.d(TAG, "updateUILand: "+isPlaying);
+        Log.d(TAG, "updateUILand: " + isPlaying);
     }
 
     public void updateUI() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mSongData.setPlaying(isPlaying);
         mAdapter.setCurrentPos(mSongCurrentPosition);
-        mRecyclerView.smoothScrollToPosition(mSongCurrentPosition);
+        mRecyclerView.scrollToPosition(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
         updatePlaySongLayout(mSongCurrentPosition);
-        Log.d(TAG, "updateUI: "+isPlaying);
+        Log.d(TAG, "updateUI: " + isPlaying);
     }
 
     public void updatePlaySongLayout(int pos) {
         int visible = View.VISIBLE;
         mLinearLayout.setVisibility(visible);
-        mSong = mSongData.getSongAt(pos);
+        mSong = mSongList.get(pos);
 
         mSongName.setText(mSong.getTitle());
         mSongArtist.setText(mSong.getArtistName());
