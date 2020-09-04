@@ -195,7 +195,6 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
-
         if (mSongCurrentPosition >= 0) {
             mSongData.setCurrentSongPossition(mSongCurrentPosition);
         }
@@ -342,6 +341,7 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mSongData.setPlaying(isPlaying);
         mAdapter.setCurrentPos(mSongCurrentPosition);
+        mRecyclerView.smoothScrollToPosition(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
         Log.d(TAG, "updateUILand: "+isPlaying);
     }
@@ -350,6 +350,7 @@ public class AllSongsFragment extends BaseSongListFragment implements SearchView
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mSongData.setPlaying(isPlaying);
         mAdapter.setCurrentPos(mSongCurrentPosition);
+        mRecyclerView.smoothScrollToPosition(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
         updatePlaySongLayout(mSongCurrentPosition);
         Log.d(TAG, "updateUI: "+isPlaying);

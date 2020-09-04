@@ -149,9 +149,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-            mSongData = new SongData(getApplicationContext());
             isPermission = true;
             getAllSongs(this);
+            mSongData = new SongData(getApplicationContext());
         }
     }
 
@@ -229,8 +229,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 isPermission = true;
-                mSongData = new SongData(getApplicationContext());
                 getAllSongs(this);
+                mSongData = new SongData(getApplicationContext());
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
             }
