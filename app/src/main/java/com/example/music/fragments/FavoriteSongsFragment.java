@@ -46,6 +46,7 @@ public class FavoriteSongsFragment extends Fragment {
     public LinkedList<Song> mSongList = new LinkedList<>();
     public SongListAdapter mAdapter;
     private boolean isPlaying = true;
+    private int mSongCurrentPosition = -1;
 
     public SongData mSongData;
     public RecyclerView mRecyclerView;
@@ -61,32 +62,37 @@ public class FavoriteSongsFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "onReceive: " + intent.getStringExtra(SONG_POSSITION));
-//            if (intent.getAction() == SONG_POSSITION) {
-//
-//                    Log.d(TAG, "onReceive: on song play " + mediaPlaybackService.isPlaying());
-//                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(SONG_POSSITION));
-//                    isPlaying = mediaPlaybackService.isPlaying();
-//                    updateUI();
-//            }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
                 if (state == "play_normal") {
                     isPlaying = false;
                 } else isPlaying = true;
                 if (mediaPlaybackService != null) {
+                    Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
+                    if (song != null) {
+                        mSongCurrentPosition = mSongData.getCurrentSongPossition();
+                    } else  mSongCurrentPosition = -1;
+                    updateUi(mSongCurrentPosition,isPlaying);
                 }
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
                 if (state == "song_state_play") {
                     isPlaying = true;
+                    updateUi(mSongCurrentPosition,isPlaying);
                 } else if (state == "song_state_pause") {
                     isPlaying = false;
+                    updateUi(mSongCurrentPosition,isPlaying);
                 } else {
                     isPlaying = true;
+                    Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
+                    Log.d(TAG, String.valueOf("onReceive: "+song == null));
+                    if (song != null) {
+                        mSongCurrentPosition = mSongData.getCurrentSongPossition();
+                    } else  mSongCurrentPosition = -1;
+                    updateUi(mSongCurrentPosition,isPlaying);
+
                 }
-//                if ()
-//                updateUi();
             }
         }
     };
@@ -136,6 +142,9 @@ public class FavoriteSongsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favorite_songs, container, false);
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
+        if (song != null) {
+            mSongCurrentPosition = mSongData.getCurrentSongPossition();
+        } else mSongCurrentPosition = -1;
         mSongData.setPlaying(mediaPlaybackService.isPlaying());
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mAdapter.setSongList(mSongData.getSongListFavor());

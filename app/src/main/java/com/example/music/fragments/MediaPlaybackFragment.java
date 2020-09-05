@@ -345,8 +345,8 @@ public class MediaPlaybackFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (mediaPlaybackService != null && fromUser) {
                     mediaPlaybackService.seekTo(progress);
-                    mMediaSeekBar.setProgress(progress);
                 }
+                mMediaSeekBar.setProgress(progress);
             }
 
             @Override
