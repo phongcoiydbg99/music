@@ -86,7 +86,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mNavigationView = findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-        mNavigationView.setCheckedItem(R.id.nav_listen_now);
+//        mNavigationView.setCheckedItem(R.id.nav_listen_now);
         Log.d(TAG, "onCreate: "+ mNavigationView.getCheckedItem());
         ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);

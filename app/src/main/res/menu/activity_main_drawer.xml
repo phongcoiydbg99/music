@@ -4,10 +4,14 @@
         <item
             android:id="@+id/nav_listen_now"
             android:icon="@drawable/ic_menu_listen_now"
+            android:checkable="true"
+            android:checked="true"
             android:title="@string/listen_now" />
         <item
             android:id="@+id/nav_favorite_songs"
             android:icon="@drawable/ic_menu_music_library"
+            android:checkable="true"
+            android:checked="false"
             android:title="@string/favorite_songs" />
     </group>
     <item android:title="@string/todo">
