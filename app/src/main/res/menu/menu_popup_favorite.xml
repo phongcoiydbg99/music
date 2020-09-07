@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.music.activities.ActivityMusic">
     <item
-        android:id="@+id/action_add_songs"
+        android:id="@+id/action_remove_songs"
         android:orderInCategory="100"
-        android:title="Add favorite"
+        android:title="Remove favorite"
         app:showAsAction="never"
         />
 </menu>

@@ -25,11 +25,11 @@ public class SongData {
     private boolean isPlaying;
     private static String sortOrder = "song_title ASC";
 
-    public int getmSongCurrentId() {
+    public int getSongCurrentId() {
         return mSongCurrentId;
     }
 
-    public void setmSongCurrentId(int mSongCurrentId) {
+    public void setSongCurrentId(int mSongCurrentId) {
         this.mSongCurrentId = mSongCurrentId;
     }
 
@@ -48,6 +48,10 @@ public class SongData {
         mCurrentSongPossition = -1;
         mSongCurrentId = -1;
         mContext = context;
+    }
+
+    public void setSongListFavor(LinkedList<Song> mSongListFavor) {
+        this.mSongListFavor = mSongListFavor;
     }
 
     public Song getRandomSong() {

@@ -72,7 +72,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         final Song mCurrent = mSongList.get(position);
         isPlaying = mSongData.isPlaying();
         currentPos = mSongData.getCurrentSongPossition();
-        Log.d(TAG, "onBindViewHolder: "+ currentPos+"*"+isPlaying);
+        currentId = mSongData.getSongCurrentId();
+        Log.d(TAG, "onBindViewHolder: "+ currentId+"*"+isPlaying);
         holder.itemId.setText(String.valueOf(mCurrent.getPos() + 1));
         holder.songItemView.setText(mCurrent.getTitle());
         holder.songDurationView.setText(mCurrent.formattedTime());
@@ -82,7 +83,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         holder.itemId.setTypeface(null, Typeface.NORMAL);
         holder.itemId.setTextColor(mContext.getResources().getColor(R.color.song_sublable));
 //        Log.d(TAG, "onBindViewHolder: "+ currentPos+"*"+isPlaying);
-        if (mCurrent.getPos() == currentPos)
+        if (mCurrent.getId() == currentId)
         {
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);

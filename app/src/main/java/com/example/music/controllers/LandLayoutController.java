@@ -17,23 +17,24 @@ import com.example.music.fragments.MediaPlaybackFragment;
 
 public class LandLayoutController extends LayoutController {
     private static final String TAG = "LandLayoutController";
-    private MediaPlaybackFragment mMediaPlaybackFragment;
     private SongData mSongData;
     private Song mSong;
     private boolean mIsPlaying;
     private int mCurrentSongPossion;
     private int mSongCurrentStreamPossition;
+    private int mCurrentSongId;
 
     public LandLayoutController(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
+    public void onCreate(Bundle savedInstanceState, int songPos, int songId,  long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
             Log.d(TAG, "onCreate: " +" * "+ songPos+" "+isPlaying);
             mCurrentSongPossion = songPos;
             mIsPlaying = isPlaying;
+            mCurrentSongId = songId;
             mSongCurrentStreamPossition = (int) songDuration;
             mSongData = new SongData(mActivity.getApplicationContext());
             if (songPos < 0) songPos = 0;
@@ -43,6 +44,7 @@ public class LandLayoutController extends LayoutController {
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = AllSongsFragment.newInstance(false);
             mAllSongsFragment.setSongCurrentPosition(songPos);
+            mAllSongsFragment.setSongCurrentId(songId);
             mAllSongsFragment.setPlaying(mIsPlaying);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
@@ -63,6 +65,7 @@ public class LandLayoutController extends LayoutController {
             mediaPlaybackService.startForegroundService(mCurrentSongPossion,mIsPlaying);
             if (mIsPlaying) {
                 mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
+                mAllSongsFragment.setSongCurrentId(mCurrentSongId);
                 mAllSongsFragment.updateUILand();
                 mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion),mCurrentSongPossion,true);
                 mMediaPlaybackFragment.updateUI();
@@ -74,20 +77,17 @@ public class LandLayoutController extends LayoutController {
     public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
         Toast.makeText(mActivity, "Play music "+isConnected, Toast.LENGTH_SHORT).show();
         if (isConnected) {
-//            Bundle args = newBundleFromNewItem(song);
-//            mediaPlaybackFragment.setArguments(args);
             Log.d(TAG, "onSongPlayClickListener: "+ song.getTitle());
-//            mActivity.getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.fragment_media, mMediaPlaybackFragment).commit();
         }
     }
 
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, int pos) {
-        mAllSongsFragment.setSongCurrentPosition(pos);
         mediaPlaybackService.play(pos);
+        mAllSongsFragment.setSongCurrentPosition(pos);
+        mAllSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
         mAllSongsFragment.setPlaying(true);
-        mAllSongsFragment.updateUILand();
+        mAllSongsFragment.updateUI();
         Log.d(TAG, "onSongItemClick: " );
         mediaPlaybackService.startForegroundService(pos,true);
         if (isConnected)

@@ -16,6 +16,7 @@ import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.fragments.AllSongsFragment;
+import com.example.music.fragments.BaseSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
 
 
@@ -23,22 +24,25 @@ public class PortLayoutController extends LayoutController {
     public static final String TAG = "PortLayoutController";
     private boolean isPlaying;
     private int mCurrentSongPossion;
+    private int mCurrentSongId;
 
     public PortLayoutController(AppCompatActivity activity) {
         super(activity);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
+    public void onCreate(Bundle savedInstanceState, int songPos, int songId,  long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
             Log.d(TAG, "onCreate: "+ songPos);
             mCurrentSongPossion = songPos;
-            mAllSongsFragment = AllSongsFragment.newInstance(true);
+            mCurrentSongId = songId;
+            mAllSongsFragment =  AllSongsFragment.newInstance(true);
             mAllSongsFragment.setOnSongPlayClickListener(this);
             mAllSongsFragment.setOnSongItemClickListener(this);
             this.isPlaying = isPlaying;
             mAllSongsFragment.setSongCurrentPosition(songPos);
+            mAllSongsFragment.setSongCurrentId(songId);
             mAllSongsFragment.setPlaying(isPlaying);
             // Add the fragment to the 'fragment_container' FrameLayout
             mActivity.getSupportFragmentManager().beginTransaction()
@@ -57,6 +61,7 @@ public class PortLayoutController extends LayoutController {
             if (isPlaying) {
                 mAllSongsFragment.setPlaying(true);
                 mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
+                mAllSongsFragment.setSongCurrentId(mCurrentSongId);
                 Log.d(TAG, "onConnection: " );
                 Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
                 mAllSongsFragment.updateUI();
@@ -69,19 +74,20 @@ public class PortLayoutController extends LayoutController {
     public void onSongPlayClickListener(View v, Song song, int pos,long current, boolean isPlaying) {
         Log.d(TAG, "onSongPlayClick: " + isPlaying);
         if (isConnected) {
-            MediaPlaybackFragment mediaPlaybackFragment = MediaPlaybackFragment.newInstance(song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
-            mediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
+            mMediaPlaybackFragment  = MediaPlaybackFragment.newInstance(song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
+            mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
             mActivity.getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_all_songs, mediaPlaybackFragment).addToBackStack(null).commit();
+                    .add(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
             mActivity.getSupportActionBar().hide();
         }
     }
 
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, int pos) {
-        mAllSongsFragment.setSongCurrentPosition(pos);
         mediaPlaybackService.play(pos);
         mediaPlaybackService.startForegroundService(pos,true);
+        mAllSongsFragment.setSongCurrentPosition(pos);
+        mAllSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
         mAllSongsFragment.setPlaying(true);
         Log.d(TAG, "onSongItemClick: " + pos);
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();

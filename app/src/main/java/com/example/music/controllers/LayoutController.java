@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.music.Song;
 import com.example.music.fragments.AllSongsFragment;
+import com.example.music.fragments.BaseSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
 import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
@@ -30,7 +31,8 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
 
 
     protected AppCompatActivity mActivity;
-    protected AllSongsFragment mAllSongsFragment;
+    protected BaseSongsFragment mAllSongsFragment;
+    protected MediaPlaybackFragment mMediaPlaybackFragment;
 
     public LayoutController(AppCompatActivity activity) {
         mActivity = activity;
@@ -40,6 +42,10 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
 
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
         this.mediaPlaybackService = mediaPlaybackService;
+    }
+
+    public MediaPlaybackFragment getMediaPlaybackFragment() {
+        return mMediaPlaybackFragment;
     }
 
     public void setConnected(boolean connected) {
@@ -60,6 +66,6 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
         outState.putBoolean(LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
     }
     
-    public abstract void onCreate(Bundle savedInstanceState, int songPos, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle);
+    public abstract void onCreate(Bundle savedInstanceState, int songPos,int songId, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle);
     public abstract void onConnection();
 }
