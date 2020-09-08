@@ -145,13 +145,15 @@ public class MediaPlaybackService extends Service implements
     public void startForegroundService(int currentSongPosition, boolean isPlaying) {
         Song song = mSongData.getSongAt(currentSongPosition);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            showNotification(song, isPlaying);
-//            startForeground(NOTIFICATION_ID,showNotification(song, isPlaying));
+//            showNotification(song, isPlaying);
+            startForeground(NOTIFICATION_ID,showNotification(song, isPlaying));
+            if (!isPlaying)
+            stopForeground(false);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void showNotification(Song song, Boolean isPlaying) {
+    private Notification showNotification(Song song, Boolean isPlaying) {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(this, "tag");
         Intent playIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PLAY);
@@ -215,9 +217,9 @@ public class MediaPlaybackService extends Service implements
                 .setContentIntent(notificationPendingIntent)
                 .setCustomContentView(notificationLayout)
                 .setCustomBigContentView(notificationLayoutExpanded);
-        if (!isPlaying) notifyBuilder.setOngoing(false); else notifyBuilder.setOngoing(true);
-        notificationManagerCompat.notify(NOTIFICATION_ID, notifyBuilder.build());
-//        return notifyBuilder.build();
+        if (!isPlaying) notifyBuilder.setOngoing(false);
+//        notificationManagerCompat.notify(NOTIFICATION_ID, notifyBuilder.build());
+        return notifyBuilder.build();
     }
 
     public void cancelNotification() {
