@@ -250,6 +250,7 @@ public abstract class BaseSongsFragment extends Fragment {
     }
 
     public void updatePlaySongLayout(Song mSong) {
+        this.mSong = mSong;
         mLinearLayout.setVisibility(View.VISIBLE);
 
         mSongName.setText(mSong.getTitle());
