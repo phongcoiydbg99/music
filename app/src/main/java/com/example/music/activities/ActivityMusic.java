@@ -48,7 +48,7 @@ import android.widget.Toast;
 
 import java.util.LinkedList;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SongListAdapter.SongItemClickIdListener {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SongItemClickListener {
 
     public static final String TAG = "ActivityMusic";
     private String sharedPrefFile =
@@ -287,7 +287,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 Toast.makeText(this, "Favorite songs"+mediaPlaybackService.getCurrentSongId(), Toast.LENGTH_SHORT).show();
                 isAllSongFrag = false;
                 mFavoriteSongsFragment = new FavoriteSongsFragment();
-                mFavoriteSongsFragment.setOnSongItemClickIdListener(this);
+                mFavoriteSongsFragment.setOnSongItemClickListener(this);
                 mFavoriteSongsFragment.setMediaPlaybackService(mediaPlaybackService);
                 // Add the fragment to the 'fragment_container' FrameLayout
                 getSupportFragmentManager().beginTransaction()
@@ -361,9 +361,9 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
 
     @Override
-    public void onSongItemClickId(SongListAdapter.SongViewHolder holder, int id) {
+    public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
+        int id = song.getId();
         Toast.makeText(this,"Text: "+id+" "+holder.getLayoutPosition(),Toast.LENGTH_SHORT).show();
-        Song song = mSongData.getSongId(id);
         mediaPlaybackService.play(song.getPos());
         mediaPlaybackService.startForegroundService(song.getPos(),true);
 //        getSupportFragmentManager().popBackStack();

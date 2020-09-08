@@ -103,10 +103,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             public void onClick(View view) {
                 Log.d(TAG, "onClick: "+position);
                 if (songItemClickListener != null) {
-                    songItemClickListener.onSongItemClick(holder, mCurrent.getPos());
-                }
-                if (songItemClickIdListener != null) {
-                    songItemClickIdListener.onSongItemClickId(holder, mCurrent.getId());
+                    songItemClickListener.onSongItemClick(holder, mCurrent);
                 }
             }
         });

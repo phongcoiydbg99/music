@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.music.MusicDB;
@@ -54,8 +55,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private SongItemClickListener mSongItemClickListener;
-    private SongListAdapter.SongItemClickIdListener mSongItemClickIdListener;
+    private TextView mTextView;
 
     public FavoriteSongsFragment() {
         // Required empty public constructor
@@ -106,6 +106,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorite_songs, container, false);
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
+        mTextView = view.findViewById(R.id.text_favorite_song);
         if (mediaPlaybackService != null){
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
@@ -117,9 +118,11 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
         }
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mAdapter.setSongList(mSongData.getSongListFavor());
-        mAdapter.setOnSongItemClickIdListener(mSongItemClickIdListener);
+        mAdapter.setOnSongItemClickListener(mSongItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        if (mSongData.getSongListFavor().size() <= 0) mTextView.setVisibility(View.VISIBLE);
+        else mTextView.setVisibility(View.INVISIBLE);
 
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
             @Override
@@ -131,7 +134,8 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.action_remove_songs) {
-                            int id = mediaPlaybackService.getCurrentSongId();
+//                            int id = mediaPlaybackService.getCurrentSongId();
+                            int id = song.getId();
                             Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
                             Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
                                     null);
@@ -142,6 +146,8 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
                                 getContext().getContentResolver().update(uri, values, null, null);
                                 mSongData.setSongListFavor(SongData.getFavorAllSongs(getActivity().getApplicationContext()));
                                 mAdapter.setSongList(mSongData.getSongListFavor());
+                                if (mSongData.getSongListFavor().size() <= 0) mTextView.setVisibility(View.VISIBLE);
+                                else mTextView.setVisibility(View.INVISIBLE);
                                 mAdapter.notifyDataSetChanged();
                                 Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                             }
@@ -159,13 +165,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    public void setOnSongItemClickIdListener(SongListAdapter.SongItemClickIdListener songItemClickListener) {
-        mSongItemClickIdListener = songItemClickListener;
-        if (mAdapter != null) {
-            mAdapter.setOnSongItemClickIdListener(songItemClickListener);
-        }
     }
 
     @Override
@@ -226,7 +225,10 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
 
     @Override
     public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
-
+        mSongItemClickListener = songItemClickListener;
+        if (mAdapter != null) {
+            mAdapter.setOnSongItemClickListener(songItemClickListener);
+        }
     }
 
     @Override

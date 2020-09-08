@@ -83,7 +83,8 @@ public class PortLayoutController extends LayoutController {
     }
 
     @Override
-    public void onSongItemClick(SongListAdapter.SongViewHolder holder, int pos) {
+    public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
+        int pos = song.getPos();
         mediaPlaybackService.play(pos);
         mediaPlaybackService.startForegroundService(pos,true);
         mAllSongsFragment.setSongCurrentPosition(pos);
@@ -92,5 +93,6 @@ public class PortLayoutController extends LayoutController {
         Log.d(TAG, "onSongItemClick: " + pos);
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
         mAllSongsFragment.updateUI();
+
     }
 }

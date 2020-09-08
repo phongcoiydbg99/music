@@ -61,7 +61,6 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
     // TODO: Rename and change types of parameters
     protected Boolean isPortrait;
     private SongPlayClickListener songPlayClickListener;
-    private SongItemClickListener mSongItemClickListener;
     private Song mSong;
     private View view;
     private LinearLayout mLinearLayout;

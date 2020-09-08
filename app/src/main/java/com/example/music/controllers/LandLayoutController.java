@@ -82,7 +82,8 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onSongItemClick(SongListAdapter.SongViewHolder holder, int pos) {
+    public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
+        int pos = song.getPos();
         mediaPlaybackService.play(pos);
         mAllSongsFragment.setSongCurrentPosition(pos);
         mAllSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
@@ -91,7 +92,7 @@ public class LandLayoutController extends LayoutController {
         Log.d(TAG, "onSongItemClick: " );
         mediaPlaybackService.startForegroundService(pos,true);
         if (isConnected)
-        mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,true);
+            mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,true);
         mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
         mMediaPlaybackFragment.updateUI();
     }

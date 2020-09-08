@@ -33,7 +33,7 @@ public abstract class BaseSongsFragment extends Fragment {
     protected int mSongCurrentId = -1;
     protected LinkedList<Song> mSongList = new LinkedList<>();
     protected SongListAdapter mAdapter;
-
+    protected SongItemClickListener mSongItemClickListener;
     protected SongData mSongData;
     protected RecyclerView mRecyclerView;
 
@@ -96,8 +96,6 @@ public abstract class BaseSongsFragment extends Fragment {
     public abstract void setOnSongPlayClickListener(AllSongsFragment.SongPlayClickListener songplayclicklistener);
     public abstract void setOnSongItemClickListener(SongItemClickListener songItemClickListener);
     public abstract void setPlaying(boolean playing);
-    public void setOnSongItemClickIdListener(SongListAdapter.SongItemClickIdListener songItemClickListener){
-    }
     public abstract void updateUI();
     public void updateUILand(){
     }
