@@ -4,6 +4,8 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -69,6 +71,10 @@ public class SongData {
     public Song getSongAt(int pos)
     {
         return mSongList.get(pos);
+    }
+    public Song getSongFavorAt(int pos)
+    {
+        return mSongListFavor.get(pos);
     }
     public int getCount() {
         return mSongList.size();
@@ -175,21 +181,29 @@ public class SongData {
         }
         return  songListFavor;
     }
-    public static byte[] getAlbumArt(String uri)
-    {
-        byte[] albumArt = new byte[0];
-        try {
-            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-            mediaMetadataRetriever.setDataSource(uri);
-            albumArt = mediaMetadataRetriever.getEmbeddedPicture();
-            mediaMetadataRetriever.release();
-        } catch (Exception e) {
-            e.printStackTrace();
+//    public static byte[] getAlbumArt(String uri)
+//    {
+//        byte[] albumArt = new byte[0];
+//        try {
+//            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+//            mediaMetadataRetriever.setDataSource(uri);
+//            albumArt = mediaMetadataRetriever.getEmbeddedPicture();
+//            mediaMetadataRetriever.release();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return albumArt;
+//    }
+    public static Bitmap getAlbumArt(String path){
+        MediaMetadataRetriever mediaMetadataRetriever=new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(path);
+        byte [] data=mediaMetadataRetriever.getEmbeddedPicture();
+        if(data!=null){
+            return BitmapFactory.decodeByteArray(data, 0 , data.length);
         }
-        
-        return albumArt;
+        return null;
     }
-
     public void setPlaying(boolean isPlaying) {
         this.isPlaying = isPlaying;
     }

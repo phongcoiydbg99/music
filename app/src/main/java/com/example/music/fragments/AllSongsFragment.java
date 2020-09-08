@@ -110,6 +110,33 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
     }
 
     @Override
+    protected void updatePopupMenu(View v, Song song, final int pos) {
+        PopupMenu popup = new PopupMenu(v.getContext(), v);
+        // Inflate the Popup using XML file.
+        popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.action_add_songs) {
+                    int id = mSongData.getSongAt(pos).getId();
+                    Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+                    Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                            null);
+                    if (cursor != null) {
+                        cursor.moveToFirst();
+                        ContentValues values = new ContentValues();
+                        values.put(MusicDB.IS_FAVORITE, 2);
+                        getContext().getContentResolver().update(uri, values, null, null);
+                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                return false;
+            }
+        });
+        popup.show();
+    }
+
+    @Override
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
         this.mediaPlaybackService = mediaPlaybackService;
         this.isPlaying = this.mediaPlaybackService.isPlaying();

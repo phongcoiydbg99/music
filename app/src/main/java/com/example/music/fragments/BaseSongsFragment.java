@@ -1,35 +1,27 @@
 package com.example.music.fragments;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.music.MusicDB;
-import com.example.music.MusicProvider;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
@@ -40,7 +32,7 @@ import com.example.music.services.MediaPlaybackService;
 import java.util.LinkedList;
 
 public abstract class BaseSongsFragment extends Fragment {
-    private static final String TAG = AllSongsFragment.class.getSimpleName();
+    private static final String TAG = BaseSongsFragment.class.getSimpleName();
 
     protected boolean isPlaying = true;
     protected MediaPlaybackService mediaPlaybackService;
@@ -108,7 +100,7 @@ public abstract class BaseSongsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: " + isPlaying);
+        Log.d(TAG, "onCreateView: " + mSongCurrentPosition);
         view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         mLinearLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
@@ -133,7 +125,6 @@ public abstract class BaseSongsFragment extends Fragment {
             mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
             isPlaying = mediaPlaybackService.isPlaying();
             updateUI();
-
         }
         if (mSongCurrentPosition >= 0) {
             updateUI();
@@ -181,33 +172,12 @@ public abstract class BaseSongsFragment extends Fragment {
         mAdapter.setOnSongBtnClickListener(new SongListAdapter.SongBtnClickListener() {
             @Override
             public void onSongBtnClickListener(ImageButton btn, View v, final Song song, final int pos) {
-                PopupMenu popup = new PopupMenu(v.getContext(), v);
-                // Inflate the Popup using XML file.
-                popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.action_add_songs) {
-                            int id = mSongData.getSongAt(pos).getId();
-                            Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-                            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
-                                    null);
-                            if (cursor != null) {
-                                cursor.moveToFirst();
-                                ContentValues values = new ContentValues();
-                                values.put(MusicDB.IS_FAVORITE, 2);
-                                getContext().getContentResolver().update(uri, values, null, null);
-                                Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        return false;
-                    }
-                });
-                popup.show();
+                updatePopupMenu(v,song,pos);
             }
         });
         return view;
     }
+
 
     @Override
     public void onDestroy() {
@@ -216,6 +186,8 @@ public abstract class BaseSongsFragment extends Fragment {
             LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
         }
     }
+
+    protected abstract void updatePopupMenu(View v,Song song, int pos);
 
     public abstract void setSongCurrentPosition(int position);
 
@@ -258,15 +230,11 @@ public abstract class BaseSongsFragment extends Fragment {
         if (isPlaying) {
             mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
         } else mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
-        byte[] albumArt = SongData.getAlbumArt(mSong.getData());
+        Bitmap albumArt = SongData.getAlbumArt(mSong.getData());
         if (albumArt != null) {
-            Glide.with(view.getContext()).asBitmap()
-                    .load(albumArt)
-                    .into(mSongImage);
+            mSongImage.setImageBitmap(albumArt);
         } else {
-            Glide.with(view.getContext())
-                    .load(R.drawable.art_song_default)
-                    .into(mSongImage);
+            mSongImage.setImageResource(R.drawable.art_song_default);
         }
     }
 

@@ -174,11 +174,9 @@ public class MediaPlaybackService extends Service implements
         PendingIntent stopPendingIntent = PendingIntent.getService(this,
                 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Bitmap bitmap = null;
-        try {
-            byte[] albumArt = SongData.getAlbumArt(song.getData());
-            bitmap = BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length);
-        } catch (Exception e) {
+        Bitmap bitmap = SongData.getAlbumArt(song.getData());
+        if (bitmap == null)
+        {
             bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art_song_default);
         }
         Log.d(TAG, "showNotification: " + bitmap);

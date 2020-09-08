@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -129,11 +130,9 @@ public class MediaPlaybackFragment extends Fragment {
                 if (state == "song_state_play") {
                     isPlaying = true;
                     mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
-                    //                    updateUI();
                 } else if (state == "song_state_pause") {
                     isPlaying = false;
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
-//                    updateUI();
                 } else {
                     if(mediaPlaybackService != null){
                         mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
@@ -168,10 +167,6 @@ public class MediaPlaybackFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
-        // gui message toi allsongsFragment khi back
-//        Intent intent = new Intent(SONG_POSSITON);
-//        intent.putExtra(SONG_POSSITON, String.valueOf(mSongCurrentPosition));
-//        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(intent);
         // unregister receiver
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
@@ -397,25 +392,14 @@ public class MediaPlaybackFragment extends Fragment {
         }
         updateSeekBarThread.updateSeekBar();
 
-        byte[] albumArt = SongData.getAlbumArt(mSongCurrentData);
-        Log.d(TAG, "updateUI: " + albumArt);
+        Bitmap albumArt = SongData.getAlbumArt(mSongCurrentData);
         if (albumArt != null) {
-            Glide.with(view.getContext()).asBitmap()
-                    .load(albumArt)
-                    .into(mSongImage);
-            Glide.with(view.getContext()).asBitmap()
-                    .load(albumArt)
-                    .into(mMediaSongImage);
+            mSongImage.setImageBitmap(albumArt);
+            mMediaSongImage.setImageBitmap(albumArt);
         } else {
-            Glide.with(view.getContext())
-                    .load(R.drawable.art_song_default)
-                    .into(mSongImage);
-            Glide.with(view.getContext())
-                    .load(R.drawable.art_song_default)
-                    .into(mMediaSongImage);
+            mSongImage.setImageResource(R.drawable.art_song_default);
+            mMediaSongImage.setImageResource(R.drawable.art_song_default);
         }
-
-
     }
 
     public String formattedTime(long duration) {
