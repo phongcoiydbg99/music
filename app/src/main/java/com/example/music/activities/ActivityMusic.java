@@ -286,7 +286,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 getSupportActionBar().setTitle("Favorite Songs");
                 Toast.makeText(this, "Favorite songs"+mediaPlaybackService.getCurrentSongId(), Toast.LENGTH_SHORT).show();
                 isAllSongFrag = false;
-                mFavoriteSongsFragment = new FavoriteSongsFragment();
+                mFavoriteSongsFragment = FavoriteSongsFragment.newInstance(isPortrait);
                 mFavoriteSongsFragment.setOnSongItemClickListener(this);
                 mFavoriteSongsFragment.setMediaPlaybackService(mediaPlaybackService);
                 // Add the fragment to the 'fragment_container' FrameLayout
