@@ -1,11 +1,7 @@
 package com.example.music.fragments;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,9 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.music.MusicHelper;
 import com.example.music.MusicDB;
 import com.example.music.MusicProvider;
 import com.example.music.R;
@@ -41,8 +34,6 @@ import com.example.music.SongData;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
-
-import java.util.LinkedList;
 
 /**
  * A simple {@link Fragment} subclass.

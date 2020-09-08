@@ -363,9 +363,10 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
         int id = song.getId();
-        Toast.makeText(this,"Text: "+id+" "+holder.getLayoutPosition(),Toast.LENGTH_SHORT).show();
-        mediaPlaybackService.play(song.getPos());
-        mediaPlaybackService.startForegroundService(song.getPos(),true);
+        Toast.makeText(this,"Text: "+id+" "+song.getPos(),Toast.LENGTH_SHORT).show();
+        Song songTemp = mSongData.getSongId(id);
+        mediaPlaybackService.play(songTemp.getPos());
+        mediaPlaybackService.startForegroundService(songTemp.getPos(),true);
 //        getSupportFragmentManager().popBackStack();
         mFavoriteSongsFragment.setSongCurrentPosition(holder.getLayoutPosition());
         mFavoriteSongsFragment.setSongCurrentId(id);
@@ -374,7 +375,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         if (!isPortrait) {
             MediaPlaybackFragment mediaPlaybackFragment = mLayoutController.getMediaPlaybackFragment();
             if (isConnected)
-                mediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(song.getPos()),song.getPos(),true);
+                mediaPlaybackFragment.updateSongCurrentData(songTemp,songTemp.getPos(),true);
             mediaPlaybackFragment.setSongCurrentStreamPossition(0);
             mediaPlaybackFragment.updateUI();
         }

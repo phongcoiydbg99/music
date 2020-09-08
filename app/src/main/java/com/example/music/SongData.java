@@ -105,9 +105,7 @@ public class SongData {
     public static LinkedList<Song> getAllSongs(Context context) {
 
         LinkedList<Song> songList = new LinkedList<>();
-        LinkedList<Song> songListFavor = new LinkedList<>();
         int pos = 0;
-        int posFavor = 0;
         Uri uri =  Uri.parse(String.valueOf(MusicProvider.CONTENT_URI));;
         String[] projection = {
                 MusicDB.ID,
@@ -133,10 +131,6 @@ public class SongData {
                 Song song = new Song(pos,id_provider,title,artistName,data,duration);
                 Log.d("TAG", "Data: "+ id + " Album: " + is_fravorite);
                 songList.add(song);
-                if (is_fravorite == 2 ) {
-                    songListFavor.add(song);
-                    posFavor++;
-                }
                 pos++;
             }
             cursor.close();
