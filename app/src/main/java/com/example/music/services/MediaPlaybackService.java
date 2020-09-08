@@ -238,7 +238,7 @@ public class MediaPlaybackService extends Service implements
             NotificationChannel notificationChannel = new NotificationChannel
                     (PRIMARY_CHANNEL_ID,
                             getString(R.string.notification_channel_name),
-                            NotificationManager.IMPORTANCE_DEFAULT);
+                            NotificationManager.IMPORTANCE_LOW);
 
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
