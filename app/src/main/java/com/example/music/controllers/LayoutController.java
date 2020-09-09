@@ -19,7 +19,7 @@ import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
 
 
-public abstract class LayoutController implements AllSongsFragment.SongPlayClickListener, SongItemClickListener {
+public abstract class LayoutController implements AllSongsFragment.SongPlayClickListener, SongItemClickListener, BaseSongsFragment.SongRemoveFavoriteListener, MediaPlaybackFragment.SongIsFavorClickListener {
 
     private static final String TAG = LayoutController.class.getSimpleName();
     public static final String LAST_SONG_POS_EXTRA = "last_song_pos_extra";

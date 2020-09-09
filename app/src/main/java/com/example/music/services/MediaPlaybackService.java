@@ -38,6 +38,9 @@ import com.example.music.Song;
 import com.example.music.SongData;
 import com.example.music.activities.ActivityMusic;
 
+import java.util.LinkedList;
+import java.util.Random;
+
 import static android.support.v4.media.session.MediaSessionCompat.*;
 
 public class MediaPlaybackService extends Service implements
@@ -66,7 +69,7 @@ public class MediaPlaybackService extends Service implements
     private NotificationManager mNotifyManager;
     private final IBinder mBinder = new MediaPlaybackBinder();
     private MediaPlayer mPlayer;
-    private Song mCurrentSong;
+    private LinkedList<Song> mSongList = new LinkedList<>();
     private SongData mSongData;
     private boolean isRepeat = false;
     private boolean isRepeatAll = false;
@@ -74,6 +77,7 @@ public class MediaPlaybackService extends Service implements
     private boolean isFirst = true;
 
     private int currentSongPosition;
+    private int currentSongIndex = -1 ;
     private int currentSongId = -1;
 
     public MediaPlaybackService() {
@@ -84,6 +88,7 @@ public class MediaPlaybackService extends Service implements
         super.onCreate();
         mPlayer = new MediaPlayer();
         mSongData = new SongData(this);
+        mSongList = mSongData.getSongList();
         // init service
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(this);
@@ -143,7 +148,7 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void startForegroundService(int currentSongPosition, boolean isPlaying) {
-        Song song = mSongData.getSongAt(currentSongPosition);
+        Song song = mSongList.get(currentSongPosition);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //            showNotification(song, isPlaying);
             startForeground(NOTIFICATION_ID,showNotification(song, isPlaying));
@@ -268,24 +273,25 @@ public class MediaPlaybackService extends Service implements
         Log.d(TAG, "onCompletion:1 "+ mPlayer.getDuration()+" * "+mPlayer.getCurrentPosition());
         Log.d(TAG, "onCompletion:2 "+ mp.getDuration()+" * "+mp.getCurrentPosition());
         String state = "play_normal";
-        if (mp.getCurrentPosition() > 0 && currentSongPosition >= 0){
+        if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0){
             if (isRepeat) {
-                play(currentSongPosition);
+                play(currentSongIndex);
                 state = "play_repeat";
-                startForegroundService(currentSongPosition, true);
+                startForegroundService(currentSongIndex, true);
             } else if (isRepeatAll) {
-                currentSongPosition++;
-                if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
-                play(currentSongPosition);
+                currentSongIndex++;
+                if (currentSongIndex == mSongList.size()) currentSongIndex = 0;
+                play(currentSongIndex);
                 state = "play_repeat_all";
-                startForegroundService(currentSongPosition, true);
+                startForegroundService(currentSongIndex, true);
             } else if (isShuffle) {
-                currentSongPosition = mSongData.getRandomSongPos();
-                play(currentSongPosition);
+                Random r = new Random();
+                currentSongIndex = r.nextInt(mSongList.size() - 1);
+                play(currentSongIndex);
                 state = "play_is_shuffe";
-                startForegroundService(currentSongPosition, true);
+                startForegroundService(currentSongIndex, true);
             } else {
-                startForegroundService(currentSongPosition, false);
+                startForegroundService(currentSongIndex, false);
             }
             Intent intent = new Intent(SONG_PLAY_COMPLETE);
             intent.putExtra(MESSAGE_SONG_PLAY_COMPLETE, state);
@@ -319,7 +325,15 @@ public class MediaPlaybackService extends Service implements
         this.currentSongId = currentSongId;
     }
 
-    public MediaPlayer getmPlayer() {
+    public int getCurrentSongIndex() {
+        return currentSongIndex;
+    }
+
+    public void setCurrentSongIndex(int currentSongIndex) {
+        this.currentSongIndex = currentSongIndex;
+    }
+
+    public MediaPlayer getPlayer() {
         return mPlayer;
     }
 
@@ -329,6 +343,14 @@ public class MediaPlaybackService extends Service implements
 
     public void setSongData(SongData mSongData) {
         this.mSongData = mSongData;
+    }
+
+    public LinkedList<Song> getSongList() {
+        return mSongList;
+    }
+
+    public void setSongList(LinkedList<Song> mSongList) {
+        this.mSongList = mSongList;
     }
 
     public boolean isRepeat() {
@@ -368,12 +390,12 @@ public class MediaPlaybackService extends Service implements
         sendMessageChangeState("song_state_play");
     }
 
-    public void play(int songPos) {
+    public void play(int currentSongIndex) {
         mPlayer.reset();
-        currentSongPosition = songPos;
-        Song playSong = mSongData.getSongAt(songPos);
+        Song playSong = mSongList.get(currentSongIndex);
+        currentSongPosition = playSong.getPos();
         currentSongId = playSong.getId();
-        Log.d("MediaPlaybackFragment", " "+playSong.getId()+"*"+songPos);
+        Log.d("MediaPlaybackFragment", " "+playSong.getId()+"*"+mSongList.size());
         play(playSong);
     }
 
@@ -443,20 +465,24 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void playNext() {
-        currentSongPosition++;
-        if (currentSongPosition == mSongData.getSongList().size()) currentSongPosition = 0;
-        Log.d(TAG, "playNext: " + currentSongPosition);
-        play(currentSongPosition);
+        currentSongIndex++;
+        if (currentSongIndex == mSongList.size()) currentSongIndex = 0;
+        Log.d(TAG, "playNext: " + currentSongIndex);
+        currentSongPosition = mSongList.get(currentSongIndex).getPos();
+        currentSongId = mSongList.get(currentSongIndex).getId();
+        play(mSongList.get(currentSongIndex));
         sendMessageChangePos();
     }
 
     public void playPrev() {
         int seconds = getCurrentStreamPosition() / 1000 % 60;
         if (seconds <= 3) {
-            currentSongPosition--;
-            if (currentSongPosition < 0) currentSongPosition = mSongData.getSongList().size() - 1;
+            currentSongIndex--;
+            if (currentSongIndex < 0) currentSongIndex = mSongList.size() - 1;
         }
-        play(currentSongPosition);
+        currentSongPosition = mSongList.get(currentSongIndex).getPos();
+        currentSongId = mSongList.get(currentSongIndex).getId();
+        play(mSongList.get(currentSongIndex));
         sendMessageChangePos();
     }
 

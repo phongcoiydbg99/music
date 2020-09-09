@@ -1,13 +1,10 @@
 package com.example.music.fragments;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -30,13 +27,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.music.MusicDB;
 import com.example.music.MusicProvider;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
-import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
 
 /**
@@ -151,7 +146,7 @@ public class MediaPlaybackFragment extends Fragment {
                         Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
                         updateSongCurrentData(song, mSongCurrentPosition, true);
                         updateUI();
-                        mediaPlaybackService.startForegroundService(mSongCurrentPosition, true);
+                        mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), true);
                     }
                 }
             }
@@ -270,7 +265,7 @@ public class MediaPlaybackFragment extends Fragment {
                     isPlaying = false;
                     mediaPlaybackService.sendMessageChangeState("song_state_pause");
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
-                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), false);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), false);
                 } else {
                     if (mediaPlaybackService.isFirst()) {
                         mediaPlaybackService.play(mSongCurrentPosition);
@@ -282,7 +277,7 @@ public class MediaPlaybackFragment extends Fragment {
                     mediaPlaybackService.sendMessageChangeState("song_state_play");
                     updateSeekBarThread.updateSeekBar();
                     mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
-                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), true);
                 }
             }
         });
@@ -507,7 +502,7 @@ public class MediaPlaybackFragment extends Fragment {
                     public void run() {
                         Log.d(TAG, "runis: " + mediaPlaybackService.isPlaying());
                         if (isPlaying) {
-                            while (mediaPlaybackService.getmPlayer() != null) {
+                            while (mediaPlaybackService.getPlayer() != null) {
                                 try {
                                     long current = -1;
                                     try {

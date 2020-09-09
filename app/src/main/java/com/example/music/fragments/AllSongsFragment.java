@@ -117,7 +117,6 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (songRemoveFavoriteListener != null) {
                     int id = mSongData.getSongAt(pos).getId();
                     Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
                     Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
@@ -132,9 +131,7 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
                         }
                         getContext().getContentResolver().update(uri, values, null, null);
                         Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
-                        songRemoveFavoriteListener.onSongRemoveFavoriteListener();
                     }
-                }
                 return false;
             }
         });
