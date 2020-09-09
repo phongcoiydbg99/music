@@ -90,9 +90,11 @@ public class PortLayoutController extends LayoutController {
             isPlaying = mediaPlaybackService.isPlaying();
             Log.d(TAG, "onConnection: " + mediaPlaybackService.isPlaying());
             if (mCurrentSongPossion >= 0)
+            {
                 mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
-            mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
-            mediaPlaybackService.startForegroundService(mCurrentSongPossion, isPlaying);
+                mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
+                mediaPlaybackService.startForegroundService(mCurrentSongPossion, isPlaying);
+            }
 
             if (isPlaying) {
                 mBaseSongsFragment.setPlaying(true);
@@ -130,7 +132,7 @@ public class PortLayoutController extends LayoutController {
         mediaPlaybackService.play(song);
         mediaPlaybackService.startForegroundService(pos, true);
         mediaPlaybackService.setCurrentSongPosition(song.getPos());
-        mediaPlaybackService.setCurrentSongIndex(song.getPos());
+        mediaPlaybackService.setCurrentSongIndex(pos);
         mediaPlaybackService.setCurrentSongId(song.getId());
 
         mBaseSongsFragment.setSongCurrentPosition(song.getPos());

@@ -115,25 +115,25 @@ public class MediaPlaybackService extends Service implements
         switch (intent.getAction()) {
             case MUSIC_SERVICE_ACTION_PLAY:
                 if (isFirst()) {
-                    play(currentSongPosition);
+                    play(currentSongIndex);
                     setFirst(false);
                 } else
                     start();
-                startForegroundService(currentSongPosition, true);
+                startForegroundService(currentSongIndex, true);
                 sendMessageChangeState("song_state_play");
                 break;
             case MUSIC_SERVICE_ACTION_PAUSE:
                 pause();
-                startForegroundService(currentSongPosition, false);
+                startForegroundService(currentSongIndex, false);
                 sendMessageChangeState("song_state_pause");
                 break;
             case MUSIC_SERVICE_ACTION_NEXT:
                 playNext();
-                startForegroundService(currentSongPosition, true);
+                startForegroundService(currentSongIndex, true);
                 break;
             case MUSIC_SERVICE_ACTION_PREV:
                 playPrev();
-                startForegroundService(currentSongPosition, true);
+                startForegroundService(currentSongIndex, true);
                 break;
             case MUSIC_SERVICE_ACTION_STOP:
                 stop();
