@@ -140,18 +140,18 @@ public abstract class BaseSongsFragment extends Fragment {
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
-                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), false);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), false);
                     isPlaying = false;
                     mSongData.setPlaying(isPlaying);
                     mAdapter.notifyDataSetChanged();
                 } else {
                     if (mediaPlaybackService.isFirst()) {
-                        mediaPlaybackService.play(mSongCurrentPosition);
+                        mediaPlaybackService.play(mediaPlaybackService.getCurrentSongIndex());
                         mediaPlaybackService.setFirst(false);
                     } else
                         mediaPlaybackService.start();
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
-                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
+                    mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), true);
                     isPlaying = true;
                     mSongData.setPlaying(isPlaying);
                     mAdapter.notifyDataSetChanged();
@@ -235,7 +235,7 @@ public abstract class BaseSongsFragment extends Fragment {
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
         }
         mSongData.setSongCurrentId(mSongCurrentId);
-        mAdapter.setCurrentPos(mSongCurrentPosition);
+//        mAdapter.setCurrentPos(mSongCurrentPosition);
         mRecyclerView.scrollToPosition(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
         Song song = mSongData.getSongId(mSongData.getSongCurrentId());
@@ -246,7 +246,6 @@ public abstract class BaseSongsFragment extends Fragment {
     public void updatePlaySongLayout(Song mSong) {
         this.mSong = mSong;
         mLinearLayout.setVisibility(View.VISIBLE);
-
         mSongName.setText(mSong.getTitle());
         mSongArtist.setText(mSong.getArtistName());
         if (isPlaying) {

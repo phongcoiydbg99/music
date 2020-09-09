@@ -103,7 +103,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 Log.d(TAG, "onServiceConnected() " + mediaPlaybackService.isFirst());
                 isConnected = true;
                 if (isPermission) {
-//                    mediaPlaybackService.setSongData(mSongData);
                     mLayoutController.setMediaPlaybackService(mediaPlaybackService);
                     if (mediaPlaybackService.isFirst()) {
                         mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
@@ -182,7 +181,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         Log.d(TAG, "onResume: " + mNavigationView.getCheckedItem());
         if (isPermission && isConnected && isFirst) {
             isFirst = false;
-//            mediaPlaybackService.setSongData(mSongData);
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
@@ -200,9 +198,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         Log.d(TAG, "onPause: ");
         if (isConnected && isPermission) {
             Log.d(TAG, "onPause: " + mediaPlaybackService.getCurrentStreamPosition());
-//            if (mediaPlaybackService.getDuration() > 0) {
-//                mediaPlaybackService.setFirst(false);
-//            }
             int id = mediaPlaybackService.getCurrentSongId();
             SharedPreferences.Editor preferencesEditor = mPreferences.edit();
             preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, id);
