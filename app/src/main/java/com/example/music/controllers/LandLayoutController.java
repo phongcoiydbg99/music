@@ -29,9 +29,9 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, int songId,  long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
+    public void onCreate(Bundle savedInstanceState, int songPos, int songId, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
-            Log.d(TAG, "onCreate: " +" * "+ songPos+" "+isPlaying);
+            Log.d(TAG, "onCreate: " + " * " + songPos + " " + isPlaying);
             mCurrentSongPossion = songPos;
             mIsPlaying = isPlaying;
             mCurrentSongId = songId;
@@ -39,7 +39,8 @@ public class LandLayoutController extends LayoutController {
             mSongData = new SongData(mActivity.getApplicationContext());
             if (songPos < 0) songPos = 0;
             mSong = mSongData.getSongAt(songPos);
-            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(mSong.getTitle(),mSong.getArtistName(),mSong.getData(),mSong.getDuration(),songPos,songDuration,isPlaying);
+            if (songDuration > mSong.getDuration()) mSongCurrentStreamPossition = 0;
+            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(false, mSong.getTitle(), mSong.getArtistName(), mSong.getData(), mSong.getDuration(), songPos, mSongCurrentStreamPossition, isPlaying);
 
             // Create a new Fragment to be placed in the activity layout
             mAllSongsFragment = AllSongsFragment.newInstance(false);
@@ -57,17 +58,18 @@ public class LandLayoutController extends LayoutController {
 
     @Override
     public void onConnection() {
-        Log.d(TAG, "onConnection: "+ mSongCurrentStreamPossition+" "+mSong.getDuration());
-        if (isConnected){
+        Log.d(TAG, "onConnection: " + mSongCurrentStreamPossition + " " + mediaPlaybackService.getDuration());
+        Log.d(TAG, "onConnection: " + mSongCurrentStreamPossition + " " + mediaPlaybackService.getCurrentStreamPosition());
+        if (isConnected) {
             mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
             if (mCurrentSongPossion >= 0)
-            mediaPlaybackService.startForegroundService(mCurrentSongPossion,mIsPlaying);
+                mediaPlaybackService.startForegroundService(mCurrentSongPossion, mIsPlaying);
             if (mIsPlaying) {
                 mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
                 mAllSongsFragment.setSongCurrentId(mCurrentSongId);
-                mAllSongsFragment.updateUILand();
-                mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion),mCurrentSongPossion,true);
+                mAllSongsFragment.updateUI();
+                mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion), mCurrentSongPossion, true);
                 mMediaPlaybackFragment.updateUI();
             }
         }
@@ -75,9 +77,9 @@ public class LandLayoutController extends LayoutController {
 
     @Override
     public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
-        Toast.makeText(mActivity, "Play music "+isConnected, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, "Play music " + isConnected, Toast.LENGTH_SHORT).show();
         if (isConnected) {
-            Log.d(TAG, "onSongPlayClickListener: "+ song.getTitle());
+            Log.d(TAG, "onSongPlayClickListener: " + song.getTitle());
         }
     }
 
@@ -89,10 +91,10 @@ public class LandLayoutController extends LayoutController {
         mAllSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
         mAllSongsFragment.setPlaying(true);
         mAllSongsFragment.updateUI();
-        Log.d(TAG, "onSongItemClick: " );
-        mediaPlaybackService.startForegroundService(pos,true);
+        Log.d(TAG, "onSongItemClick: ");
+        mediaPlaybackService.startForegroundService(pos, true);
         if (isConnected)
-            mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos),pos,true);
+            mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos), pos, true);
         mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
         mMediaPlaybackFragment.updateUI();
     }

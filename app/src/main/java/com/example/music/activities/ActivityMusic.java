@@ -47,7 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SongItemClickListener, AllSongsFragment.SongPlayClickListener {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SongItemClickListener, AllSongsFragment.SongPlayClickListener, MediaPlaybackFragment.SongIsFavorClickListener {
 
     public static final String TAG = "ActivityMusic";
     public static final String IS_FAVORITE_LAYOUT = "is_favorite_layout";
@@ -61,6 +61,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private BaseSongsFragment mFavoriteSongsFragment;
+    private MediaPlaybackFragment mMediaPlaybackFragment;
     private int mSongLastPossition = -1;
     private long mSongLastDuration = -1;
     private Boolean isFavoriteLayout = false;
@@ -150,7 +151,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
-
             if (isFavoriteLayout) {
                 getSupportActionBar().setTitle("Favorite Songs");
                 mFavoriteSongsFragment = FavoriteSongsFragment.newInstance(isPortrait);
@@ -402,22 +402,27 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         mFavoriteSongsFragment.setPlaying(true);
         mFavoriteSongsFragment.updateUI();
         if (!isPortrait) {
-            MediaPlaybackFragment mediaPlaybackFragment = mLayoutController.getMediaPlaybackFragment();
+            mMediaPlaybackFragment = mLayoutController.getMediaPlaybackFragment();
             if (isConnected)
-                mediaPlaybackFragment.updateSongCurrentData(songTemp, songTemp.getPos(), true);
-            mediaPlaybackFragment.setSongCurrentStreamPossition(0);
-            mediaPlaybackFragment.updateUI();
+                mMediaPlaybackFragment.updateSongCurrentData(songTemp, songTemp.getPos(), true);
+            mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
+            mMediaPlaybackFragment.updateUI();
         }
     }
 
     @Override
     public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
         if (isConnected && isPortrait) {
-            MediaPlaybackFragment mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
+            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true,song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
+                    .replace(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
             getSupportActionBar().hide();
         }
+    }
+
+    @Override
+    public void onSongIsFavorClickListener() {
+        mFavoriteSongsFragment.refresh();
     }
 }

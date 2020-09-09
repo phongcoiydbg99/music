@@ -39,6 +39,7 @@ public abstract class BaseSongsFragment extends Fragment {
     protected int mSongCurrentPosition = -1;
     protected int mSongCurrentId = -1;
     protected Boolean isPortrait;
+    protected TextView mTextView;
     protected LinkedList<Song> mSongList = new LinkedList<>();
     protected SongListAdapter mAdapter;
     protected SongItemClickListener mSongItemClickListener;
@@ -91,6 +92,7 @@ public abstract class BaseSongsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart: ");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
         intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
@@ -107,6 +109,7 @@ public abstract class BaseSongsFragment extends Fragment {
         mSongName = view.findViewById(R.id.song_name_play);
         mSongArtist = view.findViewById(R.id.song_artist_name);
         mSongPlayBtn = view.findViewById(R.id.song_play_button);
+        mTextView = view.findViewById(R.id.text_favorite_song);
         mRecyclerView = view.findViewById(R.id.song_recyclerview);
         mRecyclerView.setHasFixedSize(true);
 
@@ -207,6 +210,7 @@ public abstract class BaseSongsFragment extends Fragment {
 
     public abstract void updateAdapter();
 
+    public abstract void refresh();
     //    public abstract void updateUI();
     public void updateUI() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
@@ -236,8 +240,5 @@ public abstract class BaseSongsFragment extends Fragment {
         } else {
             mSongImage.setImageResource(R.drawable.art_song_default);
         }
-    }
-
-    public void updateUILand() {
     }
 }

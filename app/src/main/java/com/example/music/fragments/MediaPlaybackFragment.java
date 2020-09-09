@@ -2,11 +2,15 @@ package com.example.music.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,11 +28,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.music.MusicDB;
+import com.example.music.MusicProvider;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
+import com.example.music.interfaces.SongItemClickListener;
 import com.example.music.services.MediaPlaybackService;
 
 /**
@@ -42,6 +50,7 @@ public class MediaPlaybackFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TAG = MediaPlaybackFragment.class.getSimpleName();
     public static final String ID = "song_id";
+    public static final String IS_PORTRAIT = "is_portait";
     public static final String TITLE = "song_title";
     public static final String ARTIST = "song_artist";
     public static final String DATA = "song_data";
@@ -57,9 +66,11 @@ public class MediaPlaybackFragment extends Fragment {
     private long mSongCurrentStreamPossition;
     private boolean isPlaying;
     private int mSongCurrentPosition;
+    private int mSongCurrentId = -1;
 
     private Song mSong;
     private SongData mSongData;
+    private boolean isPortrait = true;
     private ImageView mMediaSongImage;
     private ImageView mSongImage;
     private TextView mSongName;
@@ -79,6 +90,7 @@ public class MediaPlaybackFragment extends Fragment {
     private View view;
     private MediaPlaybackService mediaPlaybackService;
     private UpdateSeekBarThread updateSeekBarThread;
+    private SongIsFavorClickListener mSongIsFavorClickListener;
 
     public MediaPlaybackFragment() {
         // Required empty public constructor
@@ -91,9 +103,10 @@ public class MediaPlaybackFragment extends Fragment {
      * @return A new instance of fragment MediaPlaybackFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MediaPlaybackFragment newInstance(String title, String artist, String data, long duration, int pos, long current, boolean isPlaying) {
+    public static MediaPlaybackFragment newInstance(Boolean isPortrait,String title, String artist, String data, long duration, int pos, long current, boolean isPlaying) {
         MediaPlaybackFragment fragment = new MediaPlaybackFragment();
         Bundle args = new Bundle();
+        args.putBoolean(IS_PORTRAIT,isPortrait);
         args.putString(TITLE, title);
         args.putString(ARTIST, artist);
         args.putString(DATA, data);
@@ -111,9 +124,7 @@ public class MediaPlaybackFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
-                if (state == "play_normal") {
-                   isPlaying = false;
-                } else isPlaying = true;
+                isPlaying = state != "play_normal";
                 if (mediaPlaybackService != null) {
                     mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                     Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
@@ -154,30 +165,11 @@ public class MediaPlaybackFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: ");
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
-        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
-        // unregister receiver
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        updateSeekBarThread.exit();
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
+            isPortrait = args.getBoolean(IS_PORTRAIT);
             mSongCurrentTitle = getArguments().getString(TITLE);
             mSongCurrentArtist = getArguments().getString(ARTIST);
             mSongCurrentData = getArguments().getString(DATA);
@@ -204,9 +196,30 @@ public class MediaPlaybackFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_COMPLETE);
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
+        intentFilter.addAction(MediaPlaybackService.SONG_PLAY_CHANGE);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(mReceiver, intentFilter);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+        // unregister receiver
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(mReceiver);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        updateSeekBarThread.exit();
     }
 
     public void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService) {
@@ -251,7 +264,7 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: " + mediaPlaybackService.isPlaying() + " " + String.valueOf(mediaPlaybackService == null));
+                Log.d(TAG, "onClick: " + mediaPlaybackService.isPlaying() + " " + (mediaPlaybackService == null));
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     isPlaying = false;
@@ -290,14 +303,55 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mSongCurrentId = mediaPlaybackService.getCurrentSongId();
+                Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + mSongCurrentId);
+                Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                        null);
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0 ){
+                        ContentValues values = new ContentValues();
+                        values.put(MusicDB.IS_FAVORITE, 2);
+                        getContext().getContentResolver().update(uri, values, null, null);
+                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                        if (isPortrait) {
+                            mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
+                            mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
+                        } else {
+                            mMediaLikeButton.setImageResource(R.drawable.ic_baseline_thumb_up_24);
+                            mMediaDislikeButton.setImageResource(R.drawable.ic_outline_thumb_down_24);
+                        }
+//                        mSongIsFavorClickListener.onSongIsFavorClickListener();
+                    }
+                }
             }
         });
 
         mMediaDislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mSongCurrentId = mediaPlaybackService.getCurrentSongId();
+                Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + mSongCurrentId);
+                Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                        null);
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                    if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2 ){
+                        ContentValues values = new ContentValues();
+                        values.put(MusicDB.IS_FAVORITE, 0);
+                        getContext().getContentResolver().update(uri, values, null, null);
+                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                        if (isPortrait) {
+                            mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
+                            mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
+                        } else {
+                            mMediaDislikeButton.setImageResource(R.drawable.ic_baseline_thumb_down_24);
+                            mMediaLikeButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+                        }
+//                        mSongIsFavorClickListener.onSongIsFavorClickListener();
+                    }
+                }
             }
         });
 
@@ -366,7 +420,6 @@ public class MediaPlaybackFragment extends Fragment {
     }
 
     public void updateUI() {
-
         mSongName.setText(mSongCurrentTitle);
         mSongArtist.setText(mSongCurrentArtist);
         mStartTime.setText(formattedTime(mSongCurrentStreamPossition));
@@ -388,6 +441,30 @@ public class MediaPlaybackFragment extends Fragment {
             }
             else {
                 mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
+            }
+            mSongCurrentId = mediaPlaybackService.getCurrentSongId();
+            Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + mSongCurrentId);
+            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                    null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0 ){
+                    if (isPortrait) {
+                        mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
+                        mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
+                    } else {
+                        mMediaDislikeButton.setImageResource(R.drawable.ic_baseline_thumb_down_24);
+                        mMediaLikeButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+                    }
+                } else {
+                    if (isPortrait) {
+                        mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
+                        mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
+                    } else {
+                        mMediaLikeButton.setImageResource(R.drawable.ic_baseline_thumb_up_24);
+                        mMediaDislikeButton.setImageResource(R.drawable.ic_outline_thumb_down_24);
+                    }
+                }
             }
         }
         updateSeekBarThread.updateSeekBar();
@@ -463,4 +540,14 @@ public class MediaPlaybackFragment extends Fragment {
             handler.getLooper().quit();
         }
     }
+
+    public interface SongIsFavorClickListener {
+        void onSongIsFavorClickListener();
+    }
+
+
+    public void setOnSongIsFavorClickListener(SongIsFavorClickListener songItemClickListener) {
+        mSongIsFavorClickListener = songItemClickListener;
+    }
+
 }

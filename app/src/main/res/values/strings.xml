@@ -27,4 +27,6 @@
     <string name="close">close</string>
     <string name="favorite_songs">Favorite Songs</string>
     <string name="text_favorite_song">Bạn chưa có bài hát yêu thích</string>
+    <string name="add_favorite">Add favorite</string>
+    <string name="remove_favorite">Remove favorite</string>
 </resources>

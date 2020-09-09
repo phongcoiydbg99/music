@@ -117,19 +117,22 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.action_add_songs) {
-                    int id = mSongData.getSongAt(pos).getId();
-                    Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-                    Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
-                            null);
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                        ContentValues values = new ContentValues();
+                int id = mSongData.getSongAt(pos).getId();
+                Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+                Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                        null);
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    ContentValues values = new ContentValues();
+                    if (item.getItemId() == R.id.action_add_songs) {
                         values.put(MusicDB.IS_FAVORITE, 2);
-                        getContext().getContentResolver().update(uri, values, null, null);
-                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                    } else  if (item.getItemId() == R.id.action_remove_songs) {
+                            values.put(MusicDB.IS_FAVORITE, 0);
                     }
+                    getContext().getContentResolver().update(uri, values, null, null);
+                    Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                 }
+
                 return false;
             }
         });
@@ -223,38 +226,10 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
         mSongList = mAdapter.getSongList();
     }
 
-//    @Override
-//    public void updateUI() {
-//        mSongData.setCurrentSongPossition(mSongCurrentPosition);
-//        mSongData.setPlaying(isPlaying);
-//        if (mediaPlaybackService != null) mSongData.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
-//        mAdapter.setCurrentPos(mSongCurrentPosition);
-//        mRecyclerView.scrollToPosition(mSongCurrentPosition);
-//        mAdapter.notifyDataSetChanged();
-//        if (isPortrait) updatePlaySongLayout(mSongCurrentPosition);
-//        Log.d(TAG, "updateUI: " + isPlaying);
-//    }
-//
-//    public void updatePlaySongLayout(int pos) {
-//        mLinearLayout.setVisibility(View.VISIBLE);
-//        mSong = mSongList.get(pos);
-//
-//        mSongName.setText(mSong.getTitle());
-//        mSongArtist.setText(mSong.getArtistName());
-//        if (isPlaying) {
-//            mSongPlayBtn.setImageResource(R.drawable.ic_media_pause_light);
-//        } else mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
-//        byte[] albumArt = SongData.getAlbumArt(mSong.getData());
-//        if (albumArt != null) {
-//            Glide.with(view.getContext()).asBitmap()
-//                    .load(albumArt)
-//                    .into(mSongImage);
-//        } else {
-//            Glide.with(view.getContext())
-//                    .load(R.drawable.art_song_default)
-//                    .into(mSongImage);
-//        }
-//    }
+    @Override
+    public void refresh() {
+
+    }
 
     public interface SongPlayClickListener {
         void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying);

@@ -53,7 +53,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
     public static final String SONG_POSSITION = "song_possion";
     private static final String IS_PORTRAIT = "is_portrait";
     // TODO: Rename and change types of parameters
-    private TextView mTextView;
 
     public FavoriteSongsFragment() {
         // Required empty public constructor
@@ -105,28 +104,8 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-//        View view = inflater.inflate(R.layout.fragment_favorite_songs, container, false);
-//        mRecyclerView = view.findViewById(R.id.song_recyclerview);
-//        if (mediaPlaybackService != null){
-//            mSongCurrentId = mediaPlaybackService.getCurrentSongId();
-//            Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
-//            if (song != null) {
-//                mSongCurrentPosition = mSongData.getCurrentSongPossition();
-//            } else mSongCurrentPosition = -1;
-//            mSongData.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
-//            mSongData.setPlaying(mediaPlaybackService.isPlaying());
-//        }
-//        mAdapter = new SongListAdapter(view.getContext(), mSongData);
-//        mAdapter.setSongList(mSongData.getSongListFavor());
-//        mAdapter.setOnSongItemClickListener(mSongItemClickListener);
-//        mRecyclerView.setAdapter(mAdapter);
-//        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-//        if (mSongData.getSongListFavor().size() <= 0) mTextView.setVisibility(View.VISIBLE);
-//        else mTextView.setVisibility(View.INVISIBLE);
 
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        mTextView = view.findViewById(R.id.text_favorite_song);
         return view;
     }
 
@@ -168,16 +147,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
         });
         popup.show();
     }
-
-//    @Override
-//    public void updateUI() {
-//        mSongData.setSongCurrentId(mSongCurrentId);
-//        mSongData.setCurrentSongPossition(mSongCurrentPosition);
-//        mSongData.setPlaying(isPlaying);
-//        mAdapter.setCurrentPos(mSongCurrentPosition);
-//        mRecyclerView.scrollToPosition(mSongCurrentPosition);
-//        mAdapter.notifyDataSetChanged();
-//    }
 
     public MediaPlaybackService getMediaPlaybackService() {
         return mediaPlaybackService;
@@ -251,7 +220,17 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
         }
         Log.d(TAG, "updateAdapter: " + mSongCurrentPosition);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
-        mAdapter.setSongList(mSongData.getSongListFavor());
+        mSongList = SongData.getFavorAllSongs(getContext());
+        mAdapter.setSongList(mSongList);
+        if (mSongList.size() <= 0)
+            mTextView.setVisibility(View.VISIBLE);
+        else mTextView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void refresh() {
+        mSongList = SongData.getFavorAllSongs(getContext());
+        mAdapter.setSongList(mSongList);
     }
 
     @Override

@@ -74,7 +74,7 @@ public class PortLayoutController extends LayoutController {
     public void onSongPlayClickListener(View v, Song song, int pos,long current, boolean isPlaying) {
         Log.d(TAG, "onSongPlayClick: " + isPlaying);
         if (isConnected) {
-            mMediaPlaybackFragment  = MediaPlaybackFragment.newInstance(song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
+            mMediaPlaybackFragment  = MediaPlaybackFragment.newInstance(true, song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
             mActivity.getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
