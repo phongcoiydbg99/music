@@ -34,14 +34,14 @@ public class PortLayoutController extends LayoutController {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, int songId,  long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
+    public void onCreate(Bundle savedInstanceState, int songPos, int songId, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
-            Log.d(TAG, "onCreate: "+ songPos);
+            Log.d(TAG, "onCreate: " + songPos);
             isFavorite = false;
             mCurrentSongPossion = songPos;
             mCurrentSongId = songId;
-            mBaseSongsFragment =  AllSongsFragment.newInstance(true);
+            mBaseSongsFragment = AllSongsFragment.newInstance(true);
             mBaseSongsFragment.setOnSongPlayClickListener(this);
             mBaseSongsFragment.setOnSongItemClickListener(this);
             this.isPlaying = isPlaying;
@@ -69,7 +69,7 @@ public class PortLayoutController extends LayoutController {
     @Override
     public void onCreateAllSong() {
         isFavorite = false;
-        mBaseSongsFragment =  AllSongsFragment.newInstance(true);
+        mBaseSongsFragment = AllSongsFragment.newInstance(true);
         mBaseSongsFragment.setOnSongPlayClickListener(this);
         mBaseSongsFragment.setOnSongItemClickListener(this);
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
@@ -88,14 +88,17 @@ public class PortLayoutController extends LayoutController {
         if (isConnected) {
             mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             isPlaying = mediaPlaybackService.isPlaying();
-            Log.d(TAG, "onConnection: "+mediaPlaybackService.isPlaying());
+            Log.d(TAG, "onConnection: " + mediaPlaybackService.isPlaying());
             if (mCurrentSongPossion >= 0)
-            mediaPlaybackService.startForegroundService(mCurrentSongPossion,isPlaying);
+                mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
+            mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
+            mediaPlaybackService.startForegroundService(mCurrentSongPossion, isPlaying);
+
             if (isPlaying) {
                 mBaseSongsFragment.setPlaying(true);
                 mBaseSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
                 mBaseSongsFragment.setSongCurrentId(mCurrentSongId);
-                Log.d(TAG, "onConnection: " );
+                Log.d(TAG, "onConnection: ");
                 Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
                 mBaseSongsFragment.updateUI();
             }
@@ -104,10 +107,10 @@ public class PortLayoutController extends LayoutController {
     }
 
     @Override
-    public void onSongPlayClickListener(View v, Song song, int pos,long current, boolean isPlaying) {
+    public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
         Log.d(TAG, "onSongPlayClick: " + isPlaying);
         if (isConnected) {
-            mMediaPlaybackFragment  = MediaPlaybackFragment.newInstance(true, song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
+            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true, song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
             mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
             mActivity.getSupportFragmentManager().beginTransaction()
@@ -121,12 +124,11 @@ public class PortLayoutController extends LayoutController {
         int pos = holder.getAdapterPosition();
         if (isFavorite) {
             mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
-            Log.d(TAG, "onSongItemClick: "+SongData.getFavorAllSongs(mActivity).size());
-        }
-        else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
+            Log.d(TAG, "onSongItemClick: " + SongData.getFavorAllSongs(mActivity).size());
+        } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
 
         mediaPlaybackService.play(song);
-        mediaPlaybackService.startForegroundService(pos,true);
+        mediaPlaybackService.startForegroundService(pos, true);
         mediaPlaybackService.setCurrentSongPosition(song.getPos());
         mediaPlaybackService.setCurrentSongIndex(song.getPos());
         mediaPlaybackService.setCurrentSongId(song.getId());

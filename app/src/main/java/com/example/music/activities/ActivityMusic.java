@@ -285,6 +285,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
         switch (item.getItemId()) {
             case R.id.nav_listen_now:
+                isFavoriteLayout = false;
                 getSupportActionBar().setTitle("Music");
                 handler.postDelayed(new Runnable() {
                     @Override

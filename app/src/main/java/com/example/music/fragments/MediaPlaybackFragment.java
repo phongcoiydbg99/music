@@ -268,7 +268,7 @@ public class MediaPlaybackFragment extends Fragment {
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), false);
                 } else {
                     if (mediaPlaybackService.isFirst()) {
-                        mediaPlaybackService.play(mSongCurrentPosition);
+                        mediaPlaybackService.play(mediaPlaybackService.getCurrentSongIndex());
                         mediaPlaybackService.setFirst(false);
                     } else
                         mediaPlaybackService.start();
