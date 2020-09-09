@@ -83,7 +83,7 @@ public class MediaPlaybackService extends Service implements
     public void onCreate() {
         super.onCreate();
         mPlayer = new MediaPlayer();
-//        mSongData = new SongData(this);
+        mSongData = new SongData(this);
         // init service
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(this);
@@ -373,7 +373,7 @@ public class MediaPlaybackService extends Service implements
         currentSongPosition = songPos;
         Song playSong = mSongData.getSongAt(songPos);
         currentSongId = playSong.getId();
-        Log.d(TAG, playSong.getTitle());
+        Log.d("MediaPlaybackFragment", " "+playSong.getId()+"*"+songPos);
         play(playSong);
     }
 

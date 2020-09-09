@@ -74,7 +74,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         currentPos = mSongData.getCurrentSongPossition();
         currentId = mSongData.getSongCurrentId();
         Log.d(TAG, "onBindViewHolder: "+ currentId+"*"+isPlaying);
-        holder.itemId.setText(String.valueOf(mCurrent.getPos() + 1));
+        holder.itemId.setText(String.valueOf(position + 1));
         holder.songItemView.setText(mCurrent.getTitle());
         holder.songDurationView.setText(mCurrent.formattedTime());
         holder.itemId.setVisibility(View.VISIBLE);

@@ -47,7 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SongItemClickListener, AllSongsFragment.SongPlayClickListener, MediaPlaybackFragment.SongIsFavorClickListener {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MediaPlaybackFragment.SongIsFavorClickListener {
 
     public static final String TAG = "ActivityMusic";
     public static final String IS_FAVORITE_LAYOUT = "is_favorite_layout";
@@ -103,7 +103,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 Log.d(TAG, "onServiceConnected() " + mediaPlaybackService.isFirst());
                 isConnected = true;
                 if (isPermission) {
-                    mediaPlaybackService.setSongData(mSongData);
+//                    mediaPlaybackService.setSongData(mSongData);
                     mLayoutController.setMediaPlaybackService(mediaPlaybackService);
                     if (mediaPlaybackService.isFirst()) {
                         mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
@@ -119,10 +119,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                     mLayoutController.setConnected(true);
                     mLayoutController.onConnection();
                     if (isFavoriteLayout) {
-                        mFavoriteSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-                        // Add the fragment to the 'fragment_container' FrameLayout
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_all_songs, mFavoriteSongsFragment).addToBackStack(null).commit();
+                        getSupportActionBar().setTitle("Favorite Songs");
+                        mLayoutController.onCreateFavorite();
                     }
                 }
             }
@@ -151,12 +149,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
-            if (isFavoriteLayout) {
-                getSupportActionBar().setTitle("Favorite Songs");
-                mFavoriteSongsFragment = FavoriteSongsFragment.newInstance(isPortrait);
-                mFavoriteSongsFragment.setOnSongItemClickListener(this);
-                mFavoriteSongsFragment.setOnSongPlayClickListener(this);
-            }
         }
 
     }
@@ -190,7 +182,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         Log.d(TAG, "onResume: " + mNavigationView.getCheckedItem());
         if (isPermission && isConnected && isFirst) {
             isFirst = false;
-            mediaPlaybackService.setSongData(mSongData);
+//            mediaPlaybackService.setSongData(mSongData);
             mLayoutController = isPortrait ? new PortLayoutController(this)
                     : new LandLayoutController(this);
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
@@ -207,10 +199,10 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onPause();
         Log.d(TAG, "onPause: ");
         if (isConnected && isPermission) {
-            Log.d(TAG, "onPause: " + mediaPlaybackService.getDuration());
-            if (mediaPlaybackService.getDuration() > 0) {
-                mediaPlaybackService.setFirst(false);
-            }
+            Log.d(TAG, "onPause: " + mediaPlaybackService.getCurrentStreamPosition());
+//            if (mediaPlaybackService.getDuration() > 0) {
+//                mediaPlaybackService.setFirst(false);
+//            }
             int id = mediaPlaybackService.getCurrentSongId();
             SharedPreferences.Editor preferencesEditor = mPreferences.edit();
             preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, id);
@@ -297,10 +289,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (isFavoriteLayout) {
-                            isFavoriteLayout = false;
-                            getSupportFragmentManager().popBackStack();
-                        }
+                        mLayoutController.onCreateAllSong();
                     }
                 }, 370);
                 mDrawerLayout.closeDrawers();
@@ -312,12 +301,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mFavoriteSongsFragment = FavoriteSongsFragment.newInstance(isPortrait);
-                        mFavoriteSongsFragment.setOnSongItemClickListener(ActivityMusic.this);
-                        mFavoriteSongsFragment.setOnSongPlayClickListener(ActivityMusic.this);
-                        mFavoriteSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_all_songs, mFavoriteSongsFragment).addToBackStack(null).commit();
+                       mLayoutController.onCreateFavorite();
                     }
                 }, 370);
                 mDrawerLayout.closeDrawers();
@@ -389,37 +373,37 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     }
 
 
-    @Override
-    public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
-        int id = song.getId();
-        Toast.makeText(this, "Text: " + id + " " + song.getPos(), Toast.LENGTH_SHORT).show();
-        Song songTemp = mSongData.getSongId(id);
-        mediaPlaybackService.play(songTemp.getPos());
-        mediaPlaybackService.startForegroundService(songTemp.getPos(), true);
-//        getSupportFragmentManager().popBackStack();
-        mFavoriteSongsFragment.setSongCurrentPosition(holder.getLayoutPosition());
-        mFavoriteSongsFragment.setSongCurrentId(id);
-        mFavoriteSongsFragment.setPlaying(true);
-        mFavoriteSongsFragment.updateUI();
-        if (!isPortrait) {
-            mMediaPlaybackFragment = mLayoutController.getMediaPlaybackFragment();
-            if (isConnected)
-                mMediaPlaybackFragment.updateSongCurrentData(songTemp, songTemp.getPos(), true);
-            mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
-            mMediaPlaybackFragment.updateUI();
-        }
-    }
-
-    @Override
-    public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
-        if (isConnected && isPortrait) {
-            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true,song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
-            mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
-            getSupportActionBar().hide();
-        }
-    }
+//    @Override
+//    public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
+//        int id = song.getId();
+//        Toast.makeText(this, "Text: " + id + " " + song.getPos(), Toast.LENGTH_SHORT).show();
+//        Song songTemp = mSongData.getSongId(id);
+//        mediaPlaybackService.play(songTemp.getPos());
+//        mediaPlaybackService.startForegroundService(songTemp.getPos(), true);
+////        getSupportFragmentManager().popBackStack();
+//        mFavoriteSongsFragment.setSongCurrentPosition(holder.getLayoutPosition());
+//        mFavoriteSongsFragment.setSongCurrentId(id);
+//        mFavoriteSongsFragment.setPlaying(true);
+//        mFavoriteSongsFragment.updateUI();
+//        if (!isPortrait) {
+//            mMediaPlaybackFragment = mLayoutController.getMediaPlaybackFragment();
+//            if (isConnected)
+//                mMediaPlaybackFragment.updateSongCurrentData(songTemp, songTemp.getPos(), true);
+//            mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
+//            mMediaPlaybackFragment.updateUI();
+//        }
+//    }
+//
+//    @Override
+//    public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
+//        if (isConnected && isPortrait) {
+//            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true,song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
+//            mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
+//            getSupportActionBar().hide();
+//        }
+//    }
 
     @Override
     public void onSongIsFavorClickListener() {

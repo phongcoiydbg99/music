@@ -14,9 +14,12 @@ import com.example.music.MusicDB;
 import com.example.music.MusicProvider;
 import com.example.music.R;
 import com.example.music.Song;
+import com.example.music.SongData;
+import com.example.music.activities.ActivityMusic;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.fragments.AllSongsFragment;
 import com.example.music.fragments.BaseSongsFragment;
+import com.example.music.fragments.FavoriteSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
 
 
@@ -37,34 +40,58 @@ public class PortLayoutController extends LayoutController {
             Log.d(TAG, "onCreate: "+ songPos);
             mCurrentSongPossion = songPos;
             mCurrentSongId = songId;
-            mAllSongsFragment =  AllSongsFragment.newInstance(true);
-            mAllSongsFragment.setOnSongPlayClickListener(this);
-            mAllSongsFragment.setOnSongItemClickListener(this);
+            mBaseSongsFragment =  AllSongsFragment.newInstance(true);
+            mBaseSongsFragment.setOnSongPlayClickListener(this);
+            mBaseSongsFragment.setOnSongItemClickListener(this);
             this.isPlaying = isPlaying;
-            mAllSongsFragment.setSongCurrentPosition(songPos);
-            mAllSongsFragment.setSongCurrentId(songId);
-            mAllSongsFragment.setPlaying(isPlaying);
+            mBaseSongsFragment.setSongCurrentPosition(songPos);
+            mBaseSongsFragment.setSongCurrentId(songId);
+            mBaseSongsFragment.setPlaying(isPlaying);
             // Add the fragment to the 'fragment_container' FrameLayout
             mActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_all_songs, mAllSongsFragment).commit();
+                    .replace(R.id.fragment_all_songs, mBaseSongsFragment).commit();
         }
+    }
+
+    @Override
+    public void onCreateFavorite() {
+        mBaseSongsFragment = FavoriteSongsFragment.newInstance(true);
+        mBaseSongsFragment.setOnSongItemClickListener(this);
+        mBaseSongsFragment.setOnSongPlayClickListener(this);
+        mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+        mActivity.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_all_songs, mBaseSongsFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onCreateAllSong() {
+        mBaseSongsFragment =  AllSongsFragment.newInstance(true);
+        mBaseSongsFragment.setOnSongPlayClickListener(this);
+        mBaseSongsFragment.setOnSongItemClickListener(this);
+        mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+        mBaseSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
+        mBaseSongsFragment.setSongCurrentPosition(mediaPlaybackService.getCurrentSongPosition());
+        mBaseSongsFragment.setPlaying(mediaPlaybackService.isPlaying());
+        // Add the fragment to the 'fragment_container' FrameLayout
+        mActivity.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_all_songs, mBaseSongsFragment).commit();
     }
 
     @Override
     public void onConnection() {
         if (isConnected) {
-            mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+            mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             isPlaying = mediaPlaybackService.isPlaying();
             Log.d(TAG, "onConnection: "+mediaPlaybackService.isPlaying());
             if (mCurrentSongPossion >= 0)
             mediaPlaybackService.startForegroundService(mCurrentSongPossion,isPlaying);
             if (isPlaying) {
-                mAllSongsFragment.setPlaying(true);
-                mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
-                mAllSongsFragment.setSongCurrentId(mCurrentSongId);
+                mBaseSongsFragment.setPlaying(true);
+                mBaseSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
+                mBaseSongsFragment.setSongCurrentId(mCurrentSongId);
                 Log.d(TAG, "onConnection: " );
                 Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-                mAllSongsFragment.updateUI();
+                mBaseSongsFragment.updateUI();
             }
         }
 
@@ -84,15 +111,13 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
-        int pos = song.getPos();
-        mediaPlaybackService.play(pos);
-        mediaPlaybackService.startForegroundService(pos,true);
-        mAllSongsFragment.setSongCurrentPosition(pos);
-        mAllSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
-        mAllSongsFragment.setPlaying(true);
-        Log.d(TAG, "onSongItemClick: " + pos);
+        mediaPlaybackService.play(song.getPos());
+        mediaPlaybackService.startForegroundService(song.getPos(),true);
+        mBaseSongsFragment.setSongCurrentPosition(song.getPos());
+        mBaseSongsFragment.setSongCurrentId(song.getId());
+        mBaseSongsFragment.setPlaying(true);
+        Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getCurrentSongId());
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
-        mAllSongsFragment.updateUI();
-
+        mBaseSongsFragment.updateUI();
     }
 }

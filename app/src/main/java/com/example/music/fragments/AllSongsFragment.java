@@ -117,22 +117,24 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                int id = mSongData.getSongAt(pos).getId();
-                Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-                Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
-                        null);
-                if (cursor != null) {
-                    cursor.moveToFirst();
-                    ContentValues values = new ContentValues();
-                    if (item.getItemId() == R.id.action_add_songs) {
-                        values.put(MusicDB.IS_FAVORITE, 2);
-                    } else  if (item.getItemId() == R.id.action_remove_songs) {
+                if (songRemoveFavoriteListener != null) {
+                    int id = mSongData.getSongAt(pos).getId();
+                    Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+                    Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                            null);
+                    if (cursor != null) {
+                        cursor.moveToFirst();
+                        ContentValues values = new ContentValues();
+                        if (item.getItemId() == R.id.action_add_songs) {
+                            values.put(MusicDB.IS_FAVORITE, 2);
+                        } else if (item.getItemId() == R.id.action_remove_songs) {
                             values.put(MusicDB.IS_FAVORITE, 0);
+                        }
+                        getContext().getContentResolver().update(uri, values, null, null);
+                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                        songRemoveFavoriteListener.onSongRemoveFavoriteListener();
                     }
-                    getContext().getContentResolver().update(uri, values, null, null);
-                    Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                 }
-
                 return false;
             }
         });
@@ -207,10 +209,6 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
         updateUI();
     }
 
-    @Override
-    public void setOnSongPlayClickListener(SongPlayClickListener songPlayClickListener) {
-        this.songPlayClickListener = songPlayClickListener;
-    }
 
     @Override
     public void setPlaying(boolean playing) {
@@ -223,6 +221,7 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
         mSongData.setSongCurrentId(mSongCurrentId);
         mSongData.setPlaying(isPlaying);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
+        Log.d("BaseSongsFragment", "updateAdapterAll: " + mSongCurrentPosition);
         mSongList = mAdapter.getSongList();
     }
 
@@ -235,12 +234,4 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
         void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying);
     }
 
-
-    @Override
-    public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
-        mSongItemClickListener = songItemClickListener;
-        if (mAdapter != null) {
-            mAdapter.setOnSongItemClickListener(songItemClickListener);
-        }
-    }
 }

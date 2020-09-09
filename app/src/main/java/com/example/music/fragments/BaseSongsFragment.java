@@ -46,6 +46,7 @@ public abstract class BaseSongsFragment extends Fragment {
     protected SongData mSongData;
     protected RecyclerView mRecyclerView;
     protected AllSongsFragment.SongPlayClickListener songPlayClickListener;
+    protected SongRemoveFavoriteListener songRemoveFavoriteListener;
     protected View view;
     protected LinearLayout mLinearLayout;
     protected ImageView mSongImage;
@@ -135,7 +136,7 @@ public abstract class BaseSongsFragment extends Fragment {
         mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: start" + mediaPlaybackService.isPlaying());
+                Log.d(TAG, "onClick: start" + mediaPlaybackService.isFirst());
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
@@ -202,27 +203,44 @@ public abstract class BaseSongsFragment extends Fragment {
 
     public abstract void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService);
 
-    public abstract void setOnSongPlayClickListener(AllSongsFragment.SongPlayClickListener songplayclicklistener);
-
-    public abstract void setOnSongItemClickListener(SongItemClickListener songItemClickListener);
-
     public abstract void setPlaying(boolean playing);
 
     public abstract void updateAdapter();
 
     public abstract void refresh();
-    //    public abstract void updateUI();
+
+    public interface SongRemoveFavoriteListener{
+        void onSongRemoveFavoriteListener();
+    }
+
+    public void setOnSongRemoveFavoriteListener(SongRemoveFavoriteListener songPlayClickListener) {
+        this.songRemoveFavoriteListener = songPlayClickListener;
+    }
+
+    public void setOnSongPlayClickListener(AllSongsFragment.SongPlayClickListener songPlayClickListener) {
+        this.songPlayClickListener = songPlayClickListener;
+    }
+
+    public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
+        mSongItemClickListener = songItemClickListener;
+        if (mAdapter != null) {
+            mAdapter.setOnSongItemClickListener(songItemClickListener);
+        }
+    }
+
     public void updateUI() {
         mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mSongData.setPlaying(isPlaying);
-        if (mediaPlaybackService != null)
-            mSongData.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
+        if (mediaPlaybackService != null){
+            mSongCurrentId = mediaPlaybackService.getCurrentSongId();
+        }
+        mSongData.setSongCurrentId(mSongCurrentId);
         mAdapter.setCurrentPos(mSongCurrentPosition);
         mRecyclerView.scrollToPosition(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
         Song song = mSongData.getSongId(mSongData.getSongCurrentId());
+        Log.d(TAG, "updateUI: "+mSongData.getSongCurrentId());
         if (isPortrait) updatePlaySongLayout(song);
-        Log.d(TAG, "updateUI: " + isPlaying);
     }
 
     public void updatePlaySongLayout(Song mSong) {

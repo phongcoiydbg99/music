@@ -31,8 +31,9 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
 
 
     protected AppCompatActivity mActivity;
-    protected BaseSongsFragment mAllSongsFragment;
+    protected BaseSongsFragment mBaseSongsFragment;
     protected MediaPlaybackFragment mMediaPlaybackFragment;
+    protected Boolean isFavorite;
 
     public LayoutController(AppCompatActivity activity) {
         mActivity = activity;
@@ -64,7 +65,9 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
         outState.putBoolean(LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
         outState.putBoolean(LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
     }
-    
+
     public abstract void onCreate(Bundle savedInstanceState, int songPos,int songId, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle);
+    public abstract void onCreateFavorite();
+    public abstract void onCreateAllSong();
     public abstract void onConnection();
 }

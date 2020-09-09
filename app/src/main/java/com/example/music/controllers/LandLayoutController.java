@@ -13,9 +13,11 @@ import com.example.music.Song;
 import com.example.music.SongData;
 import com.example.music.adapters.SongListAdapter;
 import com.example.music.fragments.AllSongsFragment;
+import com.example.music.fragments.BaseSongsFragment;
+import com.example.music.fragments.FavoriteSongsFragment;
 import com.example.music.fragments.MediaPlaybackFragment;
 
-public class LandLayoutController extends LayoutController {
+public class LandLayoutController extends LayoutController implements MediaPlaybackFragment.SongIsFavorClickListener, BaseSongsFragment.SongRemoveFavoriteListener {
     private static final String TAG = "LandLayoutController";
     private SongData mSongData;
     private Song mSong;
@@ -36,39 +38,70 @@ public class LandLayoutController extends LayoutController {
             mIsPlaying = isPlaying;
             mCurrentSongId = songId;
             mSongCurrentStreamPossition = (int) songDuration;
+            isFavorite = false;
             mSongData = new SongData(mActivity.getApplicationContext());
             if (songPos < 0) songPos = 0;
             mSong = mSongData.getSongAt(songPos);
             if (songDuration > mSong.getDuration()) mSongCurrentStreamPossition = 0;
             mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(false, mSong.getTitle(), mSong.getArtistName(), mSong.getData(), mSong.getDuration(), songPos, mSongCurrentStreamPossition, isPlaying);
-
+            mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
             // Create a new Fragment to be placed in the activity layout
-            mAllSongsFragment = AllSongsFragment.newInstance(false);
-            mAllSongsFragment.setSongCurrentPosition(songPos);
-            mAllSongsFragment.setSongCurrentId(songId);
-            mAllSongsFragment.setPlaying(mIsPlaying);
-            mAllSongsFragment.setOnSongPlayClickListener(this);
-            mAllSongsFragment.setOnSongItemClickListener(this);
+            mBaseSongsFragment = AllSongsFragment.newInstance(false);
+            mBaseSongsFragment.setSongCurrentPosition(songPos);
+            mBaseSongsFragment.setSongCurrentId(songId);
+            mBaseSongsFragment.setPlaying(mIsPlaying);
+            mBaseSongsFragment.setOnSongPlayClickListener(this);
+            mBaseSongsFragment.setOnSongItemClickListener(this);
+            mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
             mActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_all_songs, mAllSongsFragment)
+                    .replace(R.id.fragment_all_songs, mBaseSongsFragment)
                     .replace(R.id.fragment_media, mMediaPlaybackFragment)
                     .commit();
         }
     }
 
     @Override
+    public void onCreateFavorite() {
+        isFavorite = true;
+        mBaseSongsFragment = FavoriteSongsFragment.newInstance(false);
+        mBaseSongsFragment.setOnSongItemClickListener(this);
+        mBaseSongsFragment.setOnSongPlayClickListener(this);
+        mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
+        mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+        mActivity.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_all_songs, mBaseSongsFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onCreateAllSong() {
+        isFavorite = false;
+        mBaseSongsFragment =  AllSongsFragment.newInstance(false);
+        mBaseSongsFragment.setOnSongPlayClickListener(this);
+        mBaseSongsFragment.setOnSongItemClickListener(this);
+        mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
+        mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+        mBaseSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
+        mBaseSongsFragment.setSongCurrentPosition(mediaPlaybackService.getCurrentSongPosition());
+        mBaseSongsFragment.setPlaying(mediaPlaybackService.isPlaying());
+        // Add the fragment to the 'fragment_container' FrameLayout
+        mActivity.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_all_songs, mBaseSongsFragment).commit();
+    }
+
+    @Override
     public void onConnection() {
         Log.d(TAG, "onConnection: " + mSongCurrentStreamPossition + " " + mediaPlaybackService.getDuration());
-        Log.d(TAG, "onConnection: " + mSongCurrentStreamPossition + " " + mediaPlaybackService.getCurrentStreamPosition());
+        Log.d(TAG, "onConnection: " + mCurrentSongPossion + " " + mediaPlaybackService.getCurrentStreamPosition());
+        Log.d(TAG, "onConnection: " + mCurrentSongId);
         if (isConnected) {
-            mAllSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+            mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
             if (mCurrentSongPossion >= 0)
                 mediaPlaybackService.startForegroundService(mCurrentSongPossion, mIsPlaying);
             if (mIsPlaying) {
-                mAllSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
-                mAllSongsFragment.setSongCurrentId(mCurrentSongId);
-                mAllSongsFragment.updateUI();
+                mBaseSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
+                mBaseSongsFragment.setSongCurrentId(mCurrentSongId);
+                mBaseSongsFragment.updateUI();
                 mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion), mCurrentSongPossion, true);
                 mMediaPlaybackFragment.updateUI();
             }
@@ -87,15 +120,31 @@ public class LandLayoutController extends LayoutController {
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
         int pos = song.getPos();
         mediaPlaybackService.play(pos);
-        mAllSongsFragment.setSongCurrentPosition(pos);
-        mAllSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
-        mAllSongsFragment.setPlaying(true);
-        mAllSongsFragment.updateUI();
-        Log.d(TAG, "onSongItemClick: ");
+        Log.d(TAG, "onSongItemClick: "+holder.getAdapterPosition());
+        mBaseSongsFragment.setSongCurrentPosition(holder.getAdapterPosition());
+        mBaseSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
+        mBaseSongsFragment.setPlaying(true);
+        mBaseSongsFragment.updateUI();
         mediaPlaybackService.startForegroundService(pos, true);
         if (isConnected)
             mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(pos), pos, true);
         mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
+        mMediaPlaybackFragment.updateUI();
+        mediaPlaybackService.setCurrentSongPosition(holder.getAdapterPosition());
+        if (isFavorite) {
+            mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
+            Log.d(TAG, "onSongItemClick: "+SongData.getFavorAllSongs(mActivity).size());
+        }
+        else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
+    }
+
+    @Override
+    public void onSongIsFavorClickListener() {
+        mBaseSongsFragment.refresh();
+    }
+
+    @Override
+    public void onSongRemoveFavoriteListener() {
         mMediaPlaybackFragment.updateUI();
     }
 }

@@ -43,7 +43,6 @@ public class SongData {
         this.mCurrentSongPossition = mCurrentSongPossition;
     }
 
-
     public SongData(Context context) {
         mSongList = getAllSongs(context);
         mSongListFavor = getFavorAllSongs(context);
@@ -56,10 +55,6 @@ public class SongData {
         this.mSongListFavor = mSongListFavor;
     }
 
-    public Song getRandomSong() {
-        Random r = new Random();
-        return mSongList.get(r.nextInt(mSongList.size() - 1));
-    }
     public int getRandomSongPos() {
         Random r = new Random();
         return r.nextInt(mSongList.size() - 1);
@@ -146,7 +141,6 @@ public class SongData {
     public static LinkedList<Song> getFavorAllSongs(Context context) {
 
         LinkedList<Song> songListFavor = new LinkedList<>();
-        int pos = 0;
         int posFavor = 0;
         Uri uri =  Uri.parse(String.valueOf(MusicProvider.CONTENT_URI));;
         String[] projection = {
@@ -174,8 +168,8 @@ public class SongData {
                 if (is_fravorite == 2 ) {
                     Song song = new Song(posFavor,id_provider,title,artistName,data,duration);
                     songListFavor.add(song);
-                    posFavor++;
                 }
+                posFavor++;
             }
             cursor.close();
         }

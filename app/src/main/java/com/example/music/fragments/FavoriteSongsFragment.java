@@ -123,24 +123,26 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.action_remove_songs) {
-//                            int id = mediaPlaybackService.getCurrentSongId();
-                    int id = song.getId();
-                    Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-                    Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
-                            null);
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                        ContentValues values = new ContentValues();
-                        values.put(MusicDB.IS_FAVORITE, 0);
-                        getContext().getContentResolver().update(uri, values, null, null);
-                        mSongData.setSongListFavor(SongData.getFavorAllSongs(getActivity().getApplicationContext()));
-                        mAdapter.setSongList(mSongData.getSongListFavor());
-                        if (mSongData.getSongListFavor().size() <= 0)
-                            mTextView.setVisibility(View.VISIBLE);
-                        else mTextView.setVisibility(View.INVISIBLE);
-                        mAdapter.notifyDataSetChanged();
-                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                    if (songRemoveFavoriteListener != null){
+                        Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + song.getId());
+                        Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                                null);
+                        if (cursor != null) {
+                            cursor.moveToFirst();
+                            ContentValues values = new ContentValues();
+                            values.put(MusicDB.IS_FAVORITE, 0);
+                            getContext().getContentResolver().update(uri, values, null, null);
+                            mSongData.setSongListFavor(SongData.getFavorAllSongs(getActivity().getApplicationContext()));
+                            mAdapter.setSongList(mSongData.getSongListFavor());
+                            if (mSongData.getSongListFavor().size() <= 0)
+                                mTextView.setVisibility(View.VISIBLE);
+                            else mTextView.setVisibility(View.INVISIBLE);
+                            mAdapter.notifyDataSetChanged();
+                            Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                            songRemoveFavoriteListener.onSongRemoveFavoriteListener();
+                        }
                     }
+
                 }
                 return false;
             }
@@ -189,18 +191,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
         this.mediaPlaybackService = mediaPlaybackService;
     }
 
-    @Override
-    public void setOnSongPlayClickListener(AllSongsFragment.SongPlayClickListener songPlayClickListener) {
-        this.songPlayClickListener = songPlayClickListener;
-    }
-
-    @Override
-    public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
-        mSongItemClickListener = songItemClickListener;
-        if (mAdapter != null) {
-            mAdapter.setOnSongItemClickListener(songItemClickListener);
-        }
-    }
 
     @Override
     public void setPlaying(boolean playing) {
@@ -218,7 +208,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
             mSongData.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
             mSongData.setPlaying(mediaPlaybackService.isPlaying());
         }
-        Log.d(TAG, "updateAdapter: " + mSongCurrentPosition);
+        Log.d("BaseSongsFragment", "updateAdapterFavor: " + mSongCurrentPosition);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mSongList = SongData.getFavorAllSongs(getContext());
         mAdapter.setSongList(mSongList);
@@ -229,8 +219,12 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
 
     @Override
     public void refresh() {
-        mSongList = SongData.getFavorAllSongs(getContext());
-        mAdapter.setSongList(mSongList);
+        mSongData.setSongListFavor(SongData.getFavorAllSongs(getActivity().getApplicationContext()));
+        mAdapter.setSongList(mSongData.getSongListFavor());
+        if (mSongData.getSongListFavor().size() <= 0)
+            mTextView.setVisibility(View.VISIBLE);
+        else mTextView.setVisibility(View.INVISIBLE);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
