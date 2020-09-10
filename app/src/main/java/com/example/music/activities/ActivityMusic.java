@@ -52,22 +52,21 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
 
     public static final String TAG = "ActivityMusic";
     public static final String IS_FAVORITE_LAYOUT = "is_favorite_layout";
-    private String sharedPrefFile = "com.example.music";
+    public static final String SHARED_PREF_FILE = "com.example.music";
     SharedPreferences mPreferences;
     public static final int REQUEST_CODE = 1;
-    private boolean isPermission = false;
+    private ServiceConnection mServiceConnection;
+    private Bundle savedInstanceState;
     private MediaPlaybackService mediaPlaybackService;
-    private boolean isConnected = false;
     private LayoutController mLayoutController;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
+    private boolean isPermission = false;
+    private boolean isConnected = false;
     private int mSongLastPossition = -1;
     private long mSongLastDuration = -1;
     private Boolean isFavoriteLayout = false;
     private Boolean mSongLastIsPlaying = false;
-    private ServiceConnection mServiceConnection;
-    private boolean isPortrait;
-    private Bundle savedInstanceState;
     private boolean mSongLastIsRepeat = false;
     private boolean mSongLastIsShuffle = false;
     private int mSongLastId = -1;
@@ -84,15 +83,14 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mNavigationView = findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-//        mNavigationView.setCheckedItem(R.id.nav_listen_now);
-        Log.d(TAG, "onCreate: " + mNavigationView.getCheckedItem());
         ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         mActionBarDrawerToggle.syncState();
 
-        isPortrait = getResources().getBoolean(R.bool.isPortrait);
+        boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
         permission();
+
         mServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -133,7 +131,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
             isFavoriteLayout = savedInstanceState.getBoolean(IS_FAVORITE_LAYOUT);
         }
-        mPreferences = getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE);
+        mPreferences = getSharedPreferences(SHARED_PREF_FILE, Context.MODE_PRIVATE);
         mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA, -1);
         mLayoutController = isPortrait ? new PortLayoutController(this)
                 : new LandLayoutController(this);
@@ -209,7 +207,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(IS_FAVORITE_LAYOUT, isFavoriteLayout);
-        mLayoutController.onSaveInstanceState(outState);
+        if (mLayoutController != null) mLayoutController.onSaveInstanceState(outState);
     }
 
     @Override
@@ -228,7 +226,15 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                     mLayoutController.onConnection();
                 }
             } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                if (ActivityCompat.shouldShowRequestPermissionRationale(ActivityMusic.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    // case 4 User has denied permission but not permanently
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                } else {
+                    // case 5. Permission denied permanently.
+                    // You can open Permission setting's page from here now.
+                    finish();
+                }
             }
         }
     }
@@ -285,7 +291,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                       mLayoutController.onCreateFavorite();
+                        mLayoutController.onCreateFavorite();
                     }
                 }, 370);
                 mDrawerLayout.closeDrawers();

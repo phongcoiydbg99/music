@@ -63,8 +63,6 @@ public class MediaPlaybackFragment extends Fragment {
     private int mSongCurrentPosition;
     private int mSongCurrentId = -1;
 
-    private Song mSong;
-    private SongData mSongData;
     private boolean isPortrait = true;
     private ImageView mMediaSongImage;
     private ImageView mSongImage;

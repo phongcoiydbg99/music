@@ -154,12 +154,14 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void startForegroundService(int currentSongPosition, boolean isPlaying) {
-        Song song = mSongList.get(currentSongPosition);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (currentSongPosition >= 0){
+            Song song = mSongList.get(currentSongPosition);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //            showNotification(song, isPlaying);
-            startForeground(NOTIFICATION_ID,showNotification(song, isPlaying));
-            if (!isPlaying)
-            stopForeground(false);
+                startForeground(NOTIFICATION_ID,showNotification(song, isPlaying));
+                if (!isPlaying)
+                    stopForeground(false);
+            }
         }
     }
 
@@ -297,6 +299,12 @@ public class MediaPlaybackService extends Service implements
                 state = "play_is_shuffe";
                 startForegroundService(currentSongIndex, true);
             } else {
+                currentSongIndex++;
+                if (currentSongIndex != mSongList.size()) {
+                    play(currentSongIndex);
+                } else {
+                    currentSongIndex = mSongList.size()-1;
+                }
                 startForegroundService(currentSongIndex, false);
             }
             Intent intent = new Intent(SONG_PLAY_COMPLETE);
