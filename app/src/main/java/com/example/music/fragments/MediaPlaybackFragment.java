@@ -266,11 +266,11 @@ public class MediaPlaybackFragment extends Fragment {
                     mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), false);
                 } else {
                     if (mediaPlaybackService.isFirst()) {
+                        Log.d(TAG, "clickView: " + mediaPlaybackService.getCurrentSongIndex());
                         mediaPlaybackService.play(mediaPlaybackService.getCurrentSongIndex());
                         mediaPlaybackService.setFirst(false);
                     } else
                         mediaPlaybackService.start();
-                    Log.d(TAG, "clickView: " + mediaPlaybackService.getCurrentSongId());
                     isPlaying = true;
                     mediaPlaybackService.sendMessageChangeState("song_state_play");
                     updateSeekBarThread.updateSeekBar();

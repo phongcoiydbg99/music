@@ -299,11 +299,13 @@ public class MediaPlaybackService extends Service implements
                 state = "play_is_shuffe";
                 startForegroundService(currentSongIndex, true);
             } else {
-                currentSongIndex++;
-                if (currentSongIndex != mSongList.size()) {
-                    play(currentSongIndex);
-                } else {
-                    currentSongIndex = mSongList.size()-1;
+                if (!isFirst) {
+                    currentSongIndex++;
+                    if (currentSongIndex != mSongList.size()) {
+                        play(currentSongIndex);
+                    } else {
+                        currentSongIndex = mSongList.size()-1;
+                    }
                 }
                 startForegroundService(currentSongIndex, false);
             }
@@ -409,7 +411,7 @@ public class MediaPlaybackService extends Service implements
         Song playSong = mSongList.get(currentSongIndex);
         currentSongPosition = playSong.getPos();
         currentSongId = playSong.getId();
-        Log.d("MediaPlaybackFragment", " "+playSong.getId()+"*"+mSongList.size());
+        Log.d("MediaPlaybackFragment", " "+playSong.getId()+"*"+playSong.getTitle());
         play(playSong);
     }
 
