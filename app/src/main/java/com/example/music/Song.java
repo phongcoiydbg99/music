@@ -5,14 +5,9 @@ import javax.xml.datatype.Duration;
 public class Song {
     private int pos;
     private int id;
-    private int trackNumber;
-    private int is_favorite;
-    private int count_play;
     private long duration;
     private String title;
     private String artistName;
-    private String composer;
-    private String albumName;
     private String data;
 
     public boolean isPlaying() {
@@ -56,20 +51,8 @@ public class Song {
         return artistName;
     }
 
-    public String getComposer() {
-        return composer;
-    }
-
-    public String getAlbumName() {
-        return albumName;
-    }
-
     public String getData() {
         return data;
-    }
-
-    public int getTrackNumber() {
-        return trackNumber;
     }
 
     public long getDuration() {

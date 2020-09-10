@@ -117,11 +117,12 @@ public class MediaPlaybackFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
-                isPlaying = state != "play_normal";
+                isPlaying = !state.equals("play_done");
                 if (mediaPlaybackService != null) {
                     mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
                     if (mSongCurrentPosition < 0) mSongCurrentPosition = 0;
                     Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+                    mSongCurrentStreamPossition = mediaPlaybackService.getCurrentStreamPosition();
                     updateSongCurrentData(song, mSongCurrentPosition, isPlaying);
                     updateUI();
                     Log.d(TAG, "song complete: " + isPlaying + " " + mSongCurrentPosition);
@@ -303,7 +304,7 @@ public class MediaPlaybackFragment extends Fragment {
                         null);
                 if (cursor != null) {
                     cursor.moveToFirst();
-                    if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0) {
+                    if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0 || cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 1) {
                         ContentValues values = new ContentValues();
                         values.put(MusicDB.IS_FAVORITE, 2);
                         getContext().getContentResolver().update(uri, values, null, null);
@@ -337,7 +338,7 @@ public class MediaPlaybackFragment extends Fragment {
                         Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                         if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2) {
                             ContentValues values = new ContentValues();
-                            values.put(MusicDB.IS_FAVORITE, 0);
+                            values.put(MusicDB.IS_FAVORITE, 1);
                             getContext().getContentResolver().update(uri, values, null, null);
                             Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                             if (isPortrait) {
@@ -443,7 +444,7 @@ public class MediaPlaybackFragment extends Fragment {
                     null);
             if (cursor != null) {
                 cursor.moveToFirst();
-                if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0) {
+                if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) != 2) {
                     if (isPortrait) {
                         mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
                         mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);

@@ -140,7 +140,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
-            Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
             Helper.getAllSongs(this);
             mSongData = new SongData(getApplicationContext());
             startService();

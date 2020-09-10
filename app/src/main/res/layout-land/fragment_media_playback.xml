@@ -16,7 +16,6 @@
         android:layout_centerHorizontal="true"
         android:clickable="false"
         android:scaleType="fitXY"
-        android:elevation="0dp"
         android:src="@drawable/media_playback" >
 
     </ImageView>
@@ -42,13 +41,14 @@
             android:layout_toRightOf="@+id/song_media_image"
             android:orientation="vertical"
             android:layout_centerVertical="true"
-            android:padding="10dp">
+            android:padding="10dp"
+            android:layout_toStartOf="@+id/media_popup_button"
+            android:layout_toEndOf="@+id/song_media_image">
 
             <TextView
                 android:id="@+id/media_song_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bai hatasdasdmnakjjsdhjashdjkhajskdhkasdksajhdasjdhkajsdasjkdhajksd"
                 android:maxEms="9"
                 android:singleLine="true"
                 android:textColor="@color/song_lable"
@@ -58,9 +58,8 @@
                 android:id="@+id/song_author_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/song_id"
-                android:text="Ten ca si"
                 android:singleLine="true"
+                android:maxEms="9"
                 android:textSize="@dimen/song_sublable_size"
                 android:textColor="@color/song_sublable" />
         </LinearLayout>

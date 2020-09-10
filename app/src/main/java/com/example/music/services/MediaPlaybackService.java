@@ -7,9 +7,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -27,12 +29,15 @@ import android.provider.MediaStore;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.music.MusicDB;
+import com.example.music.MusicProvider;
 import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
@@ -305,6 +310,7 @@ public class MediaPlaybackService extends Service implements
                         play(currentSongIndex);
                     } else {
                         currentSongIndex = mSongList.size()-1;
+                        state = "play_done";
                     }
                 }
                 startForegroundService(currentSongIndex, false);
@@ -418,8 +424,23 @@ public class MediaPlaybackService extends Service implements
 
     public void play(Song song) {
         if (mPlayer != null) {
+            Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + song.getId());
+            Cursor cursor = getContentResolver().query(uri, null, null, null,
+                    null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                int count = cursor.getInt(cursor.getColumnIndex(MusicDB.COUNT_OF_PLAY));
+                count++;
+                ContentValues values = new ContentValues();
+                values.put(MusicDB.COUNT_OF_PLAY,count);
+                if (count >= 3 && cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0) {
+                    values.put(MusicDB.IS_FAVORITE, 2);
+                }
+                getContentResolver().update(uri, values, null, null);
+                Toast.makeText(getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "play: "+count);
+            }
             mPlayer.reset();
-            Log.d(TAG, String.valueOf("play: " + mPlayer == null));
             try {
                 mPlayer.setDataSource(song.getData());
                 mPlayer.prepareAsync();

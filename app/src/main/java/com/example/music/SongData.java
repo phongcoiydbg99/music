@@ -128,9 +128,9 @@ public class SongData {
                 long duration = cursor.getInt(4);
                 String data = cursor.getString(5);
                 int is_fravorite = cursor.getInt(6);
-                String count_of_play = cursor.getString(7);
+                int count_of_play = cursor.getInt(7);
                 Song song = new Song(pos,id_provider,title,artistName,data,duration);
-                Log.d("TAG", "Data: "+ id + " Album: " + is_fravorite);
+                Log.d("TAG", "Data: "+ id + " Album: " + is_fravorite+" * "+count_of_play);
                 songList.add(song);
                 pos++;
             }

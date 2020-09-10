@@ -131,7 +131,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                         if (cursor != null) {
                             cursor.moveToFirst();
                             ContentValues values = new ContentValues();
-                            values.put(MusicDB.IS_FAVORITE, 0);
+                            values.put(MusicDB.IS_FAVORITE, 1);
                             getContext().getContentResolver().update(uri, values, null, null);
                             mSongData.setSongListFavor(SongData.getFavorAllSongs(getActivity().getApplicationContext()));
                             mAdapter.setSongList(mSongData.getSongListFavor());
