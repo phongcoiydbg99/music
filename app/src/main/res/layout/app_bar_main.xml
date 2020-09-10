@@ -22,6 +22,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                app:buttonGravity="center_vertical"
                 android:background="@color/color_action_bar"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
                 app:titleTextAppearance="@style/MyTitleTextStyle" />
