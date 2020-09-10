@@ -13,6 +13,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,7 +46,7 @@ import java.util.LinkedList;
  * Use the {@link FavoriteSongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem.OnActionExpandListener {
+public class FavoriteSongsFragment extends BaseSongsFragment  {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -231,6 +232,11 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(this);
     }
 
     @Override
@@ -240,6 +246,17 @@ public class FavoriteSongsFragment extends BaseSongsFragment implements MenuItem
 
     @Override
     public boolean onMenuItemActionCollapse(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mAdapter.getFilter().filter(newText);
         return false;
     }
 }

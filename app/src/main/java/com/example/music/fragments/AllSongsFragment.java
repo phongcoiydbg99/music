@@ -40,7 +40,7 @@ import com.example.music.services.MediaPlaybackService;
  * Use the {@link AllSongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AllSongsFragment extends BaseSongsFragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
+public class AllSongsFragment extends BaseSongsFragment  {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -214,12 +214,16 @@ public class AllSongsFragment extends BaseSongsFragment implements SearchView.On
 
     @Override
     public void updateAdapter() {
-        mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mSongData.setSongCurrentId(mSongCurrentId);
         mSongData.setPlaying(isPlaying);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
-        Log.d("BaseSongsFragment", "updateAdapterAll: " + mSongCurrentPosition);
         mSongList = mAdapter.getSongList();
+        if (mSongList.size() <= 0)
+        {
+            mTextView.setText("Bạn chưa có bài hát");
+            mTextView.setVisibility(View.VISIBLE);
+        }
+        else mTextView.setVisibility(View.INVISIBLE);
     }
 
     @Override

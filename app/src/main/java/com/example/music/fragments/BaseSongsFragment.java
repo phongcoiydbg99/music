@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,7 +33,7 @@ import com.example.music.services.MediaPlaybackService;
 
 import java.util.LinkedList;
 
-public abstract class BaseSongsFragment extends Fragment {
+public abstract class BaseSongsFragment extends Fragment implements SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
     private static final String TAG = BaseSongsFragment.class.getSimpleName();
 
     protected boolean isPlaying = true;
@@ -125,12 +127,12 @@ public abstract class BaseSongsFragment extends Fragment {
         }
 
         Log.d(TAG, String.valueOf(mediaPlaybackService != null));
-        if (mediaPlaybackService != null && mSongCurrentPosition >= 0) {
+        if (mediaPlaybackService != null && mSongCurrentId >= 0) {
             mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
             isPlaying = mediaPlaybackService.isPlaying();
             updateUI();
         }
-        if (mSongCurrentPosition >= 0) {
+        if (mSongCurrentId >= 0) {
             updateUI();
         }
         mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
@@ -229,7 +231,6 @@ public abstract class BaseSongsFragment extends Fragment {
     }
 
     public void updateUI() {
-        mSongData.setCurrentSongPossition(mSongCurrentPosition);
         mSongData.setPlaying(isPlaying);
         if (mediaPlaybackService != null){
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();

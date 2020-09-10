@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.example.music.Helper;
 import com.example.music.MusicDB;
 import com.example.music.MusicProvider;
 import com.example.music.Song;
@@ -47,7 +48,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MediaPlaybackFragment.SongIsFavorClickListener {
+public class ActivityMusic extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String TAG = "ActivityMusic";
     public static final String IS_FAVORITE_LAYOUT = "is_favorite_layout";
@@ -60,14 +61,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private LayoutController mLayoutController;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private BaseSongsFragment mFavoriteSongsFragment;
-    private MediaPlaybackFragment mMediaPlaybackFragment;
     private int mSongLastPossition = -1;
     private long mSongLastDuration = -1;
     private Boolean isFavoriteLayout = false;
     private Boolean mSongLastIsPlaying = false;
     private ServiceConnection mServiceConnection;
-    private boolean isFirst = true;
     private boolean isPortrait;
     private Bundle savedInstanceState;
     private boolean mSongLastIsRepeat = false;
@@ -105,14 +103,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 if (isPermission) {
                     mLayoutController.setMediaPlaybackService(mediaPlaybackService);
                     if (mediaPlaybackService.isFirst()) {
-                        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-                        mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA, -1);
                         Log.d(TAG, "onServiceConnected() " + mSongLastPossition);
                         mediaPlaybackService.setCurrentSongPosition(mSongLastPossition);
                         mediaPlaybackService.setCurrentSongId(mSongLastId);
-                        mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos() : -1;
+//                        mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos() : -1;
                         mSongLastIsPlaying = false;
-//                        mediaPlaybackService.setFirst(false);
                     }
                     Log.d(TAG, "onServiceConnected() mSongLastDuration " + mSongLastDuration);
                     mLayoutController.setConnected(true);
@@ -138,28 +133,26 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
             isFavoriteLayout = savedInstanceState.getBoolean(IS_FAVORITE_LAYOUT);
         }
-        if (mSongLastDuration >= 0) isFirst = false;
         mPreferences = getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE);
         mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA, -1);
+        mLayoutController = isPortrait ? new PortLayoutController(this)
+                : new LandLayoutController(this);
         Log.d(TAG, "onCreate: " + mSongLastId);
         if (isPermission) {
             mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos() : -1;
-            isFirst = false;
-            mLayoutController = isPortrait ? new PortLayoutController(this)
-                    : new LandLayoutController(this);
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
         }
 
     }
 
     private void permission() {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
             Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
             isPermission = true;
-            getAllSongs(this);
+            Helper.getAllSongs(this);
             mSongData = new SongData(getApplicationContext());
         }
     }
@@ -178,18 +171,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: " + mNavigationView.getCheckedItem());
-        if (isPermission && isConnected && isFirst) {
-            isFirst = false;
-            mLayoutController = isPortrait ? new PortLayoutController(this)
-                    : new LandLayoutController(this);
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
-            mLayoutController.setMediaPlaybackService(mediaPlaybackService);
-            mLayoutController.setConnected(true);
-            mLayoutController.onConnection();
-        }
-
-        Log.d(TAG, "onResume: " + isFirst);
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
@@ -237,10 +219,16 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 isPermission = true;
-                getAllSongs(this);
+                Helper.getAllSongs(this);
                 mSongData = new SongData(getApplicationContext());
+                if (isConnected) {
+                    mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+                    mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+                    mLayoutController.setConnected(true);
+                    mLayoutController.onConnection();
+                }
             } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
             }
         }
     }
@@ -309,100 +297,4 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         return true;
     }
 
-    public static void getAllSongs(Context context) {
-        int pos = 0;
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TRACK,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.COMPOSER,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DATA
-        };
-        String[] projectionDB = {
-                MusicDB.ID,
-                MusicDB.ID_PROVIDER,
-                MusicDB.TITLE,
-                MusicDB.ARTIST,
-                MusicDB.DURATION,
-                MusicDB.DATA,
-                MusicDB.IS_FAVORITE,
-                MusicDB.COUNT_OF_PLAY
-        };
-        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                int id = cursor.getInt(0);
-                int trackNumber = cursor.getInt(1);
-                long duration = cursor.getInt(2);
-                String title = cursor.getString(3);
-                String artistName = cursor.getString(4);
-                String composer = cursor.getString(5);
-                String albumName = cursor.getString(6);
-                String data = cursor.getString(7);
-
-                Song song = new Song(pos, id, title, artistName, data, duration);
-                Cursor cursorDB = context.getContentResolver().query(MusicProvider.CONTENT_URI, projectionDB, null, null, null);
-                Log.d(TAG, "getAllSongs: ----------------" + pos);
-                if (cursorDB.moveToPosition(pos)) {
-                    Log.d(TAG, "getAllSongs: " + String.valueOf(cursorDB.getString(cursorDB.getColumnIndexOrThrow(MusicDB.IS_FAVORITE))) + " " + pos);
-                } else {
-                    ContentValues values = new ContentValues();
-                    values.put(MusicDB.ID_PROVIDER, id);
-                    values.put(MusicDB.TITLE, title);
-                    values.put(MusicDB.ARTIST, artistName);
-                    values.put(MusicDB.DURATION, duration);
-                    values.put(MusicDB.DATA, data);
-                    values.put(MusicDB.IS_FAVORITE, 0);
-                    values.put(MusicDB.COUNT_OF_PLAY, 0);
-                    // insert a record
-                    Log.d(TAG, "getAllSongs: " + id + " " + data);
-                    context.getContentResolver().insert(MusicProvider.CONTENT_URI, values);
-                }
-                pos++;
-            }
-            cursor.close();
-        }
-    }
-
-
-//    @Override
-//    public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
-//        int id = song.getId();
-//        Toast.makeText(this, "Text: " + id + " " + song.getPos(), Toast.LENGTH_SHORT).show();
-//        Song songTemp = mSongData.getSongId(id);
-//        mediaPlaybackService.play(songTemp.getPos());
-//        mediaPlaybackService.startForegroundService(songTemp.getPos(), true);
-////        getSupportFragmentManager().popBackStack();
-//        mFavoriteSongsFragment.setSongCurrentPosition(holder.getLayoutPosition());
-//        mFavoriteSongsFragment.setSongCurrentId(id);
-//        mFavoriteSongsFragment.setPlaying(true);
-//        mFavoriteSongsFragment.updateUI();
-//        if (!isPortrait) {
-//            mMediaPlaybackFragment = mLayoutController.getMediaPlaybackFragment();
-//            if (isConnected)
-//                mMediaPlaybackFragment.updateSongCurrentData(songTemp, songTemp.getPos(), true);
-//            mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
-//            mMediaPlaybackFragment.updateUI();
-//        }
-//    }
-//
-//    @Override
-//    public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
-//        if (isConnected && isPortrait) {
-//            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true,song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
-//            mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
-//            getSupportActionBar().hide();
-//        }
-//    }
-
-    @Override
-    public void onSongIsFavorClickListener() {
-        mFavoriteSongsFragment.refresh();
-    }
 }

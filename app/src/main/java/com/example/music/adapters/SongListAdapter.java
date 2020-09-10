@@ -196,6 +196,8 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     public void setSongList(LinkedList<Song> mSongList) {
         this.mSongList = mSongList;
+        mSongListFull = new LinkedList<Song>();
+        mSongListFull.addAll(mSongList);
     }
 
     public void setCurrentPos(int currentPos) {
