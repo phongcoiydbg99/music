@@ -42,12 +42,9 @@ public class PortLayoutController extends LayoutController {
             mCurrentSongPossion = songPos;
             mCurrentSongId = songId;
             mBaseSongsFragment = AllSongsFragment.newInstance(true);
-            mBaseSongsFragment.setOnSongPlayClickListener(this);
-            mBaseSongsFragment.setOnSongItemClickListener(this);
+            setListener();
             this.isPlaying = isPlaying;
-            mBaseSongsFragment.setSongCurrentPosition(songPos);
-            mBaseSongsFragment.setSongCurrentId(songId);
-            mBaseSongsFragment.setPlaying(isPlaying);
+            mBaseSongsFragment.setStateMusic(songPos,songId,isPlaying);
             // Add the fragment to the 'fragment_container' FrameLayout
             mActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_all_songs, mBaseSongsFragment).commit();
@@ -58,9 +55,7 @@ public class PortLayoutController extends LayoutController {
     public void onCreateFavorite() {
         isFavorite = true;
         mBaseSongsFragment = FavoriteSongsFragment.newInstance(true);
-        mBaseSongsFragment.setOnSongItemClickListener(this);
-        mBaseSongsFragment.setOnSongPlayClickListener(this);
-        mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
+        setListener();
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
         mActivity.getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_all_songs, mBaseSongsFragment).addToBackStack(null).commit();
@@ -70,12 +65,10 @@ public class PortLayoutController extends LayoutController {
     public void onCreateAllSong() {
         isFavorite = false;
         mBaseSongsFragment = AllSongsFragment.newInstance(true);
-        mBaseSongsFragment.setOnSongPlayClickListener(this);
-        mBaseSongsFragment.setOnSongItemClickListener(this);
+        setListener();
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-        mBaseSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
-        mBaseSongsFragment.setSongCurrentPosition(mediaPlaybackService.getCurrentSongPosition());
-        mBaseSongsFragment.setPlaying(mediaPlaybackService.isPlaying());
+        mBaseSongsFragment.setStateMusic(mediaPlaybackService.getCurrentSongPosition(), mediaPlaybackService.getCurrentSongId(), mediaPlaybackService.isPlaying());
+
         mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
         // Add the fragment to the 'fragment_container' FrameLayout
@@ -97,9 +90,7 @@ public class PortLayoutController extends LayoutController {
             }
 
             if (isPlaying) {
-                mBaseSongsFragment.setPlaying(true);
-                mBaseSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
-                mBaseSongsFragment.setSongCurrentId(mCurrentSongId);
+                mBaseSongsFragment.setStateMusic(mCurrentSongPossion,mCurrentSongId,true);
                 Log.d(TAG, "onConnection: ");
                 Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
                 mBaseSongsFragment.updateUI();
@@ -128,16 +119,11 @@ public class PortLayoutController extends LayoutController {
             mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
             Log.d(TAG, "onSongItemClick: " + SongData.getFavorAllSongs(mActivity).size());
         } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
-
         mediaPlaybackService.play(song);
         mediaPlaybackService.startForegroundService(pos, true);
-        mediaPlaybackService.setCurrentSongPosition(song.getPos());
-        mediaPlaybackService.setCurrentSongIndex(pos);
-        mediaPlaybackService.setCurrentSongId(song.getId());
+        mediaPlaybackService.setStateMusic(song.getPos(),pos,song.getId());
+        mBaseSongsFragment.setStateMusic(song.getPos(),song.getId(),true);
 
-        mBaseSongsFragment.setSongCurrentPosition(song.getPos());
-        mBaseSongsFragment.setSongCurrentId(song.getId());
-        mBaseSongsFragment.setPlaying(true);
         Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getCurrentSongId());
         Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
         mBaseSongsFragment.updateUI();
@@ -151,5 +137,11 @@ public class PortLayoutController extends LayoutController {
     @Override
     public void onSongIsFavorClickListener() {
         mBaseSongsFragment.refresh();
+    }
+
+    public void setListener(){
+        mBaseSongsFragment.setOnSongPlayClickListener(this);
+        mBaseSongsFragment.setOnSongItemClickListener(this);
+        mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
     }
 }

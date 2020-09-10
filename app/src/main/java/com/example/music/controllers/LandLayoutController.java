@@ -40,19 +40,19 @@ public class LandLayoutController extends LayoutController {
             mSongCurrentStreamPossition = (int) songDuration;
             isFavorite = false;
             mSongData = new SongData(mActivity.getApplicationContext());
+
             if (songPos < 0) songPos = 0;
             mSong = mSongData.getSongAt(songPos);
             if (songDuration > mSong.getDuration()) mSongCurrentStreamPossition = 0;
+
             mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(false, mSong.getTitle(), mSong.getArtistName(), mSong.getData(), mSong.getDuration(), songPos, mSongCurrentStreamPossition, isPlaying);
             mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
             // Create a new Fragment to be placed in the activity layout
             mBaseSongsFragment = AllSongsFragment.newInstance(false);
-            mBaseSongsFragment.setSongCurrentPosition(songPos);
-            mBaseSongsFragment.setSongCurrentId(songId);
-            mBaseSongsFragment.setPlaying(mIsPlaying);
-            mBaseSongsFragment.setOnSongPlayClickListener(this);
-            mBaseSongsFragment.setOnSongItemClickListener(this);
-            mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
+            mBaseSongsFragment.setStateMusic(songPos,songId,mIsPlaying);
+
+            setListener();
+
             mActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_all_songs, mBaseSongsFragment)
                     .replace(R.id.fragment_media, mMediaPlaybackFragment)
@@ -64,9 +64,7 @@ public class LandLayoutController extends LayoutController {
     public void onCreateFavorite() {
         isFavorite = true;
         mBaseSongsFragment = FavoriteSongsFragment.newInstance(false);
-        mBaseSongsFragment.setOnSongItemClickListener(this);
-        mBaseSongsFragment.setOnSongPlayClickListener(this);
-        mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
+        setListener();
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
         mActivity.getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_all_songs, mBaseSongsFragment).addToBackStack(null).commit();
@@ -76,13 +74,11 @@ public class LandLayoutController extends LayoutController {
     public void onCreateAllSong() {
         isFavorite = false;
         mBaseSongsFragment =  AllSongsFragment.newInstance(false);
-        mBaseSongsFragment.setOnSongPlayClickListener(this);
-        mBaseSongsFragment.setOnSongItemClickListener(this);
-        mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
+        setListener();
+
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-        mBaseSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
-        mBaseSongsFragment.setSongCurrentPosition(mediaPlaybackService.getCurrentSongPosition());
-        mBaseSongsFragment.setPlaying(mediaPlaybackService.isPlaying());
+        mBaseSongsFragment.setStateMusic(mediaPlaybackService.getCurrentSongPosition(), mediaPlaybackService.getCurrentSongId(), mediaPlaybackService.isPlaying());
+
         mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
         // Add the fragment to the 'fragment_container' FrameLayout
@@ -102,8 +98,7 @@ public class LandLayoutController extends LayoutController {
                 mediaPlaybackService.setCurrentSongIndex(mCurrentSongPossion);
                 mediaPlaybackService.startForegroundService(mCurrentSongPossion, mIsPlaying);
             if (mIsPlaying) {
-                mBaseSongsFragment.setSongCurrentPosition(mCurrentSongPossion);
-                mBaseSongsFragment.setSongCurrentId(mCurrentSongId);
+                mBaseSongsFragment.setStateMusic(mCurrentSongPossion,mCurrentSongId,mIsPlaying);
                 mBaseSongsFragment.updateUI();
                 mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion), mCurrentSongPossion, true);
                 mMediaPlaybackFragment.updateUI();
@@ -128,20 +123,15 @@ public class LandLayoutController extends LayoutController {
         }
         else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.play(song);
-        mediaPlaybackService.setCurrentSongPosition(song.getPos());
-        mediaPlaybackService.setCurrentSongIndex(holder.getAdapterPosition());
-        mediaPlaybackService.setCurrentSongId(song.getId());
+        mediaPlaybackService.setStateMusic(song.getPos(),holder.getAdapterPosition(),song.getId());
         Log.d(TAG, "onSongItemClick: "+holder.getAdapterPosition());
-        mBaseSongsFragment.setSongCurrentPosition(holder.getAdapterPosition());
-        mBaseSongsFragment.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
-        mBaseSongsFragment.setPlaying(true);
+        mBaseSongsFragment.setStateMusic(holder.getAdapterPosition(),mediaPlaybackService.getCurrentSongId(),true);
         mBaseSongsFragment.updateUI();
         mediaPlaybackService.startForegroundService(pos, true);
         if (isConnected)
             mMediaPlaybackFragment.updateSongCurrentData(mediaPlaybackService.getSongList().get(pos), pos, true);
         mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
         mMediaPlaybackFragment.updateUI();
-
     }
 
     @Override
@@ -153,4 +143,11 @@ public class LandLayoutController extends LayoutController {
     public void onSongRemoveFavoriteListener() {
         mMediaPlaybackFragment.updateUI();
     }
+
+    public void setListener(){
+        mBaseSongsFragment.setOnSongPlayClickListener(this);
+        mBaseSongsFragment.setOnSongItemClickListener(this);
+        mBaseSongsFragment.setOnSongRemoveFavoriteListener(this);
+    }
+
 }

@@ -230,6 +230,12 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         }
     }
 
+    public void setStateMusic(int position, int id, boolean playing){
+        mSongCurrentPosition = position;
+        mSongCurrentId = id;
+        isPlaying = playing;
+    }
+
     public void updateUI() {
         mSongData.setPlaying(isPlaying);
         if (mediaPlaybackService != null){

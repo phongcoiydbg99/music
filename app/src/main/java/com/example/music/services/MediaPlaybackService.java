@@ -104,6 +104,12 @@ public class MediaPlaybackService extends Service implements
         return mBinder;
     }
 
+    public void setStateMusic(int pos, int index, int id) {
+        currentSongPosition = pos;
+        currentSongIndex = index;
+        currentSongId = id;
+    }
+
     public class MediaPlaybackBinder extends Binder {
         public MediaPlaybackService getMediaPlaybackService() {
             return MediaPlaybackService.this;
