@@ -118,7 +118,7 @@
         android:layout_above="@id/layout_play"
         android:layout_marginLeft="-18dp"
         android:layout_marginRight="-18dp"
-        android:layout_marginBottom="-9dp"
+        android:layout_marginBottom="-8dp"
         android:elevation="10dp"
         android:progress="20"
         android:progressDrawable="@drawable/custom_seekbar"
