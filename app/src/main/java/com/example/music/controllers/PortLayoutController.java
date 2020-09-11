@@ -101,7 +101,7 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
-        Log.d(TAG, "onSongPlayClick: " + pos);
+        Log.d(TAG, "onSongPlayClick: " + mediaPlaybackService.getCurrentSongIndex());
         if (isConnected) {
             mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true, song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), pos, current, isPlaying);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
@@ -121,7 +121,6 @@ public class PortLayoutController extends LayoutController {
         } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.play(song);
         mediaPlaybackService.startForegroundService(pos, true);
-        mediaPlaybackService.setStateMusic(song.getPos(),pos,song.getId());
         mBaseSongsFragment.setStateMusic(song.getPos(),song.getId(),true);
 
         Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getCurrentSongId());

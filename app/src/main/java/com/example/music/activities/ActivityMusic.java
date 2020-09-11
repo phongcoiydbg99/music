@@ -170,13 +170,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
-        if (isConnected) {
-            Log.d(TAG, "onPause: " + mediaPlaybackService.getCurrentStreamPosition());
-            int id = mediaPlaybackService.getCurrentSongId();
-            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-            preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, id);
-            preferencesEditor.apply();
-        }
     }
 
     @Override

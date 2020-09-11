@@ -329,7 +329,7 @@ public class MediaPlaybackFragment extends Fragment {
             public void onClick(View v) {
                 if (mSongIsFavorClickListener != null) {
                     mSongCurrentId = mediaPlaybackService.getCurrentSongId();
-                    Log.d(TAG, "onClick: "+mSongCurrentId);
+                    Log.d(TAG, "onClick: " + mSongCurrentId);
                     Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + mSongCurrentId);
                     Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
                             null);

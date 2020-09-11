@@ -245,8 +245,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 //        mAdapter.setCurrentPos(mSongCurrentPosition);
         mRecyclerView.scrollToPosition(mSongCurrentPosition);
         mAdapter.notifyDataSetChanged();
-        Song song = mSongData.getSongId(mSongData.getSongCurrentId());
-        Log.d(TAG, "updateUI: "+mSongData.getSongCurrentId());
+        SongData songData = new SongData(getActivity().getApplicationContext());
+        Song song = songData.getSongId(mSongCurrentId);
+        Log.d(TAG, "updateUI: "+song.getId());
         if (isPortrait) updatePlaySongLayout(song);
     }
 

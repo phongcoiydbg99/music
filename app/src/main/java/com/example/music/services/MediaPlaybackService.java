@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,6 +43,7 @@ import com.example.music.R;
 import com.example.music.Song;
 import com.example.music.SongData;
 import com.example.music.activities.ActivityMusic;
+import com.example.music.controllers.LayoutController;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -70,7 +72,7 @@ public class MediaPlaybackService extends Service implements
     private static final String MUSIC_SERVICE_ACTION_START = "music_service_action_start";
     private static final String MUSIC_SERVICE = "music_service";
 
-
+    SharedPreferences mPreferences;
     private NotificationManager mNotifyManager;
     private final IBinder mBinder = new MediaPlaybackBinder();
     private MediaPlayer mPlayer;
@@ -438,8 +440,9 @@ public class MediaPlaybackService extends Service implements
                 }
                 getContentResolver().update(uri, values, null, null);
                 Toast.makeText(getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "play: "+count);
             }
+            setStateMusic(song.getPos(),mSongData.getSongIndex(mSongList,song.getId()),song.getId());
+            Log.d(TAG, "play: "+currentSongIndex);
             mPlayer.reset();
             try {
                 mPlayer.setDataSource(song.getData());
@@ -465,6 +468,10 @@ public class MediaPlaybackService extends Service implements
     public void pause() {
         if (mPlayer != null) {
             mPlayer.pause();
+            mPreferences = getSharedPreferences(ActivityMusic.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+            preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, currentSongId);
+            preferencesEditor.apply();
             sendMessageChangeState("song_state_pause");
         }
     }
@@ -502,6 +509,7 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void playNext() {
+        isFirst = false;
         currentSongIndex++;
         if (currentSongIndex == mSongList.size()) currentSongIndex = 0;
         Log.d(TAG, "playNext: " + currentSongIndex);
@@ -512,6 +520,7 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void playPrev() {
+        isFirst = false;
         int seconds = getCurrentStreamPosition() / 1000 % 60;
         if (seconds <= 3) {
             currentSongIndex--;
