@@ -185,6 +185,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
         if (isConnected) {
+            mediaPlaybackService.saveData();
             mediaPlaybackService.cancelNotification();
             unbindService(mServiceConnection);
             isConnected = false;

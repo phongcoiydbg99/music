@@ -33,17 +33,29 @@ public class LandLayoutController extends LayoutController {
     @Override
     public void onCreate(Bundle savedInstanceState, int songPos, int songId, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
-            Log.d(TAG, "onCreate: " + " * " + songPos + " " + isPlaying);
             if (songPos < 0) songPos = 0;
             mCurrentSongPossion = songPos;
             mIsPlaying = isPlaying;
-            mCurrentSongId = songId;
             mSongCurrentStreamPossition = (int) songDuration;
             isFavorite = false;
             mSongData = new SongData(mActivity.getApplicationContext());
             mSong = mSongData.getSongAt(songPos);
             if (songDuration > mSong.getDuration()) mSongCurrentStreamPossition = 0;
+            mCurrentSongId = mSong.getId();
+            Log.d(TAG, "onCreate: " + " * " + " " + isPlaying);
 
+            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(false, mSong.getTitle(), mSong.getArtistName(), mSong.getData(), mSong.getDuration(), mCurrentSongPossion, mSongCurrentStreamPossition, mIsPlaying);
+            mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
+            // Create a new Fragment to be placed in the activity layout
+            mBaseSongsFragment = AllSongsFragment.newInstance(false);
+            mBaseSongsFragment.setStateMusic(mCurrentSongPossion, mCurrentSongId, mIsPlaying);
+
+            setListener();
+
+            mActivity.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_all_songs, mBaseSongsFragment)
+                    .replace(R.id.fragment_media, mMediaPlaybackFragment)
+                    .commit();
         }
     }
 
@@ -80,31 +92,20 @@ public class LandLayoutController extends LayoutController {
         Log.d(TAG, "onConnection: " + mCurrentSongPossion + " " + mediaPlaybackService.getCurrentStreamPosition());
         Log.d(TAG, "onConnection: " + mCurrentSongId);
         if (isConnected) {
-            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(false, mSong.getTitle(), mSong.getArtistName(), mSong.getData(), mSong.getDuration(), mCurrentSongPossion, mSongCurrentStreamPossition, mIsPlaying);
-            mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
-            // Create a new Fragment to be placed in the activity layout
-            mBaseSongsFragment = AllSongsFragment.newInstance(false);
-            mBaseSongsFragment.setStateMusic(mCurrentSongPossion, mCurrentSongId, mIsPlaying);
-
-            setListener();
 
             mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
 
             if (mCurrentSongPossion >= 0) {
-                mediaPlaybackService.setCurrentSongIndex(mCurrentSongPossion);
+                mediaPlaybackService.setStateMusic(mCurrentSongPossion,mCurrentSongPossion,mCurrentSongId);
                 mediaPlaybackService.startForegroundService(mCurrentSongPossion, mIsPlaying);
             }
-//            if (mIsPlaying) {
-//                mBaseSongsFragment.setStateMusic(mCurrentSongPossion,mCurrentSongId,mIsPlaying);
-//                mBaseSongsFragment.updateUI();
-//                mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion), mCurrentSongPossion, true);
-//                mMediaPlaybackFragment.updateUI();
-//            }
-            mActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_all_songs, mBaseSongsFragment)
-                    .replace(R.id.fragment_media, mMediaPlaybackFragment)
-                    .commit();
+
+            mBaseSongsFragment.setStateMusic(mCurrentSongPossion, mCurrentSongId, mIsPlaying);
+            mBaseSongsFragment.updateUI();
+            mMediaPlaybackFragment.updateSongCurrentData(mSongData.getSongAt(mCurrentSongPossion), mCurrentSongPossion, mIsPlaying);
+            mMediaPlaybackFragment.updateUI();
+
         }
     }
 

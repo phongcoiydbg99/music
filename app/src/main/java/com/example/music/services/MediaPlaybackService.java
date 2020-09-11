@@ -460,14 +460,18 @@ public class MediaPlaybackService extends Service implements
     public void pause() {
         if (mPlayer != null) {
             mPlayer.pause();
-            mPreferences = getSharedPreferences(ActivityMusic.SHARED_PREF_FILE, Context.MODE_PRIVATE);
-            SharedPreferences.Editor preferencesEditor = mPreferences.edit();
-            preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, currentSongId);
-            preferencesEditor.putInt(LayoutController.LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
-            preferencesEditor.putInt(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
-            preferencesEditor.apply();
+            saveData();
             sendMessageChangeState("song_state_pause");
         }
+    }
+
+    public void saveData(){
+        mPreferences = getSharedPreferences(ActivityMusic.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor preferencesEditor = mPreferences.edit();
+        preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, currentSongId);
+        preferencesEditor.putInt(LayoutController.LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
+        preferencesEditor.putInt(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
+        preferencesEditor.apply();
     }
 
     public void stop() {
