@@ -96,7 +96,7 @@
         android:layout_above="@+id/media_seek_bar"
         android:layout_alignParentLeft="true"
         android:background="#0000"
-        android:padding="10dp"
+        android:padding="20dp"
         android:src="@drawable/ic_baseline_repeat_24" />
 
     <ImageButton
@@ -108,7 +108,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="#0000"
-        android:padding="10dp"
+        android:padding="20dp"
         android:src="@drawable/ic_shuffle" />
 
     <SeekBar
@@ -184,8 +184,8 @@
 
             <ImageView
                 android:id="@+id/media_play_button"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="#0000" />

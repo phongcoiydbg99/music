@@ -59,18 +59,18 @@ public class MediaPlaybackService extends Service implements
     public static final String SONG_PLAY_CHANGE = "song_play_change";
     public static final String MESSAGE_SONG_PLAY_COMPLETE = "message_song_play_complete";
     public static final String MESSAGE_SONG_PLAY_CHANGE = "message_song_play_change";
-    public static final String SONG_STATE_PLAY = "song_state_play";
-    public static final String SONG_STATE_PAUSE = "song_state_pause";
     public static final int NOTIFICATION_CHANNEL = 112;
     public static final int NOTIFICATION_ID = 111;
+    public static final int REPEAT = 10;
+    public static final int REPEAT_ALL = 11;
+    public static final int NORMAL = 12;
+    public static final int SHUFFLE = 13;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     private static final String MUSIC_SERVICE_ACTION_PAUSE = "music_service_action_pause";
     private static final String MUSIC_SERVICE_ACTION_PLAY = "music_service_action_play";
     private static final String MUSIC_SERVICE_ACTION_NEXT = "music_service_action_next";
     private static final String MUSIC_SERVICE_ACTION_PREV = "music_service_action_prev";
     private static final String MUSIC_SERVICE_ACTION_STOP = "music_service_action_stop";
-    private static final String MUSIC_SERVICE_ACTION_START = "music_service_action_start";
-    private static final String MUSIC_SERVICE = "music_service";
 
     SharedPreferences mPreferences;
     private NotificationManager mNotifyManager;
@@ -78,9 +78,8 @@ public class MediaPlaybackService extends Service implements
     private MediaPlayer mPlayer;
     private LinkedList<Song> mSongList = new LinkedList<>();
     private SongData mSongData;
-    private boolean isRepeat = false;
-    private boolean isRepeatAll = false;
-    private boolean isShuffle = false;
+    private int isRepeat;
+    private int isShuffle;
     private boolean isFirst = true;
 
     private int currentSongPosition;
@@ -289,23 +288,23 @@ public class MediaPlaybackService extends Service implements
         Log.d(TAG, "onCompletion:2 "+ mp.getDuration()+" * "+mp.getCurrentPosition());
         String state = "play_normal";
         if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0){
-            if (isRepeat) {
+            if (isRepeat == REPEAT) {
                 play(currentSongIndex);
                 state = "play_repeat";
                 startForegroundService(currentSongIndex, true);
-            } else if (isRepeatAll) {
+            } else if (isRepeat == REPEAT_ALL) {
                 currentSongIndex++;
                 if (currentSongIndex == mSongList.size()) currentSongIndex = 0;
                 play(currentSongIndex);
                 state = "play_repeat_all";
                 startForegroundService(currentSongIndex, true);
-            } else if (isShuffle) {
+            } else if (isShuffle == SHUFFLE) {
                 Random r = new Random();
                 currentSongIndex = r.nextInt(mSongList.size() - 1);
                 play(currentSongIndex);
                 state = "play_is_shuffe";
                 startForegroundService(currentSongIndex, true);
-            } else {
+            } else if(isRepeat == NORMAL) {
                 if (!isFirst) {
                     currentSongIndex++;
                     if (currentSongIndex != mSongList.size()) {
@@ -377,16 +376,12 @@ public class MediaPlaybackService extends Service implements
         this.mSongList = mSongList;
     }
 
-    public boolean isRepeat() {
+    public int isRepeat() {
         return isRepeat;
     }
 
-    public boolean isShuffle() {
+    public int isShuffle() {
         return isShuffle;
-    }
-
-    public boolean isRepeatAll() {
-        return isRepeatAll;
     }
 
     public boolean isFirst() {
@@ -397,15 +392,12 @@ public class MediaPlaybackService extends Service implements
         isFirst = first;
     }
 
-    public void setRepeatAll(boolean repeatAll) {
-        isRepeatAll = repeatAll;
-    }
 
-    public void setRepeat(boolean repeat) {
+    public void setRepeat(int repeat) {
         isRepeat = repeat;
     }
 
-    public void setShuffle(boolean shuffle) {
+    public void setShuffle(int shuffle) {
         isShuffle = shuffle;
     }
 
@@ -471,6 +463,8 @@ public class MediaPlaybackService extends Service implements
             mPreferences = getSharedPreferences(ActivityMusic.SHARED_PREF_FILE, Context.MODE_PRIVATE);
             SharedPreferences.Editor preferencesEditor = mPreferences.edit();
             preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, currentSongId);
+            preferencesEditor.putInt(LayoutController.LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
+            preferencesEditor.putInt(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
             preferencesEditor.apply();
             sendMessageChangeState("song_state_pause");
         }
@@ -512,7 +506,7 @@ public class MediaPlaybackService extends Service implements
         isFirst = false;
         currentSongIndex++;
         if (currentSongIndex == mSongList.size()) currentSongIndex = 0;
-        Log.d(TAG, "playNext: " + currentSongIndex);
+        Log.d(TAG, "playNext: " + currentSongIndex+" "+ mSongList.size());
         currentSongPosition = mSongList.get(currentSongIndex).getPos();
         currentSongId = mSongList.get(currentSongIndex).getId();
         play(mSongList.get(currentSongIndex));

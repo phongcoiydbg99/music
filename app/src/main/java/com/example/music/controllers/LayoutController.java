@@ -56,17 +56,13 @@ public abstract class LayoutController implements AllSongsFragment.SongPlayClick
     public void onSaveInstanceState(Bundle outState) {
         int pos = mediaPlaybackService.getCurrentSongPosition() != -1 ?  mediaPlaybackService.getCurrentSongPosition() : 0;
         boolean isPlaying = mediaPlaybackService != null ? mediaPlaybackService.isPlaying() : false;
-        boolean isRepeat = mediaPlaybackService != null ? mediaPlaybackService.isRepeat() : false;
-        boolean isShuffle = mediaPlaybackService != null ? mediaPlaybackService.isShuffle() : false;
         long currentStreamPos = mediaPlaybackService != null ?  mediaPlaybackService.getCurrentStreamPosition() : 0;
         outState.putInt(LAST_SONG_POS_EXTRA, pos );
         outState.putLong(LAST_SONG_DURATION_EXTRA, currentStreamPos);
         outState.putBoolean(LAST_SONG_ISPLAYING_EXTRA, isPlaying);
-        outState.putBoolean(LAST_SONG_IS_REPEAT_EXTRA, isRepeat);
-        outState.putBoolean(LAST_SONG_IS_SHUFFLE_EXTRA, isShuffle);
     }
 
-    public abstract void onCreate(Bundle savedInstanceState, int songPos,int songId, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle);
+    public abstract void onCreate(Bundle savedInstanceState, int songPos,int songId, long songDuration, boolean isPlaying);
     public abstract void onCreateFavorite();
     public abstract void onCreateAllSong();
     public abstract void onConnection();

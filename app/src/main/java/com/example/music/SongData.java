@@ -55,6 +55,10 @@ public class SongData {
         this.mSongListFavor = mSongListFavor;
     }
 
+    public void setSongList(LinkedList<Song> mSongList) {
+        this.mSongList = mSongList;
+    }
+
     public int getRandomSongPos() {
         Random r = new Random();
         return r.nextInt(mSongList.size() - 1);

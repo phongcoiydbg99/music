@@ -65,9 +65,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                     String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
-                    if (state == "play_normal") {
-                        isPlaying = false;
-                    } else isPlaying = true;
+                    isPlaying = !state.equals("play_done");
                     onReceiverSongComplete();
                 }
             }

@@ -309,13 +309,8 @@ public class MediaPlaybackFragment extends Fragment {
                         values.put(MusicDB.IS_FAVORITE, 2);
                         getContext().getContentResolver().update(uri, values, null, null);
                         Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
-                        if (isPortrait) {
-                            mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
-                            mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
-                        } else {
-                            mMediaLikeButton.setImageResource(R.drawable.ic_baseline_thumb_up_24);
-                            mMediaDislikeButton.setImageResource(R.drawable.ic_outline_thumb_down_24);
-                        }
+                        mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
+                        mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
                         if (mSongIsFavorClickListener != null) {
                             mSongIsFavorClickListener.onSongIsFavorClickListener();
                         }
@@ -341,13 +336,8 @@ public class MediaPlaybackFragment extends Fragment {
                             values.put(MusicDB.IS_FAVORITE, 1);
                             getContext().getContentResolver().update(uri, values, null, null);
                             Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
-                            if (isPortrait) {
-                                mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
-                                mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
-                            } else {
-                                mMediaDislikeButton.setImageResource(R.drawable.ic_baseline_thumb_down_24);
-                                mMediaLikeButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
-                            }
+                            mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
+                            mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
                             mSongIsFavorClickListener.onSongIsFavorClickListener();
                         }
                     }
@@ -358,17 +348,15 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaRepeatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mediaPlaybackService.isRepeat()) {
-                    mediaPlaybackService.setRepeat(false);
-                    mediaPlaybackService.setRepeatAll(false);
+                int repeat = mediaPlaybackService.isRepeat();
+                if (repeat == MediaPlaybackService.REPEAT) {
+                    mediaPlaybackService.setRepeat(MediaPlaybackService.NORMAL);
                     mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
-                } else if (mediaPlaybackService.isRepeatAll()) {
-                    mediaPlaybackService.setRepeat(true);
-                    mediaPlaybackService.setRepeatAll(false);
+                } else if (repeat == MediaPlaybackService.REPEAT_ALL) {
+                    mediaPlaybackService.setRepeat(MediaPlaybackService.REPEAT);
                     mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
                 } else {
-                    mediaPlaybackService.setRepeatAll(true);
-                    mediaPlaybackService.setRepeat(false);
+                    mediaPlaybackService.setRepeat(MediaPlaybackService.REPEAT_ALL);
                     mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_all_24);
                 }
             }
@@ -377,11 +365,12 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaShuffleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mediaPlaybackService.isShuffle()) {
-                    mediaPlaybackService.setShuffle(false);
+                int shuffle = mediaPlaybackService.isShuffle();
+                if (shuffle == MediaPlaybackService.SHUFFLE) {
+                    mediaPlaybackService.setShuffle(MediaPlaybackService.NORMAL);
                     mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
                 } else {
-                    mediaPlaybackService.setShuffle(true);
+                    mediaPlaybackService.setShuffle(MediaPlaybackService.SHUFFLE);
                     mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
                 }
             }
@@ -426,17 +415,20 @@ public class MediaPlaybackFragment extends Fragment {
             mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
         } else mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
         if (mediaPlaybackService != null) {
-            if (mediaPlaybackService.isRepeat()) {
+            int repeat = mediaPlaybackService.isRepeat();
+            if (repeat == MediaPlaybackService.REPEAT) {
                 mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_one_24);
-            } else if (mediaPlaybackService.isRepeatAll()) {
+            } else if (repeat == MediaPlaybackService.REPEAT_ALL) {
                 mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_all_24);
             } else {
                 mMediaRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24);
             }
-            if (mediaPlaybackService.isShuffle()) {
-                mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
-            } else {
+
+            int shuffle = mediaPlaybackService.isShuffle();
+            if (shuffle != MediaPlaybackService.SHUFFLE) {
                 mMediaShuffleButton.setImageResource(R.drawable.ic_shuffle);
+            } else {
+                mMediaShuffleButton.setImageResource(R.drawable.ic_baseline_shuffle_25);
             }
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + mSongCurrentId);
@@ -445,21 +437,11 @@ public class MediaPlaybackFragment extends Fragment {
             if (cursor != null) {
                 cursor.moveToFirst();
                 if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) != 2) {
-                    if (isPortrait) {
                         mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
                         mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
-                    } else {
-                        mMediaDislikeButton.setImageResource(R.drawable.ic_baseline_thumb_down_24);
-                        mMediaLikeButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
-                    }
                 } else {
-                    if (isPortrait) {
                         mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
                         mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
-                    } else {
-                        mMediaLikeButton.setImageResource(R.drawable.ic_baseline_thumb_up_24);
-                        mMediaDislikeButton.setImageResource(R.drawable.ic_outline_thumb_down_24);
-                    }
                 }
             }
         }
@@ -511,7 +493,6 @@ public class MediaPlaybackFragment extends Fragment {
                                     }
                                     if (getActivity() != null) {
                                         final long finalCurrent = current;
-                                        Log.d(TAG, "run: " + finalCurrent);
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {

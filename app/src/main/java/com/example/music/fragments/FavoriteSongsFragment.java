@@ -133,8 +133,14 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                             ContentValues values = new ContentValues();
                             values.put(MusicDB.IS_FAVORITE, 1);
                             getContext().getContentResolver().update(uri, values, null, null);
-                            mSongData.setSongListFavor(SongData.getFavorAllSongs(getActivity().getApplicationContext()));
-                            mAdapter.setSongList(mSongData.getSongListFavor());
+                            if (song.getId() == mediaPlaybackService.getCurrentSongId()) {
+                                mSongData.setSongList(SongData.getAllSongs(getActivity().getApplicationContext()));
+                                mediaPlaybackService.setSongList(mSongData.getSongList());
+                            }
+                            else {
+                                mSongData.setSongListFavor(SongData.getFavorAllSongs(getActivity().getApplicationContext()));
+                                mAdapter.setSongList(mSongData.getSongListFavor());
+                            }
                             if (mSongData.getSongListFavor().size() <= 0)
                                 mTextView.setVisibility(View.VISIBLE);
                             else mTextView.setVisibility(View.INVISIBLE);

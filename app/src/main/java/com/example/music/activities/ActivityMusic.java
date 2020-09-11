@@ -66,8 +66,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private long mSongLastDuration = -1;
     private Boolean isFavoriteLayout = false;
     private Boolean mSongLastIsPlaying = false;
-    private boolean mSongLastIsRepeat = false;
-    private boolean mSongLastIsShuffle = false;
+    private int mSongLastIsRepeat ;
+    private int mSongLastIsShuffle ;
     private int mSongLastId = -1;
     private SongData mSongData;
 
@@ -95,6 +95,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 mediaPlaybackService = binder.getMediaPlaybackService();
                 Log.d(TAG, "onServiceConnected() " + mediaPlaybackService.isFirst());
                 isConnected = true;
+                mediaPlaybackService.setRepeat(mSongLastIsRepeat);
+                mediaPlaybackService.setShuffle(mSongLastIsShuffle);
                 mLayoutController.setMediaPlaybackService(mediaPlaybackService);
                 if (mediaPlaybackService.isFirst()) {
                     Log.d(TAG, "onServiceConnected() " + mSongLastPossition);
@@ -124,13 +126,13 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
             mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
             mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
-            mSongLastIsRepeat = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_REPEAT_EXTRA);
-            mSongLastIsShuffle = savedInstanceState.getBoolean(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA);
             isFavoriteLayout = savedInstanceState.getBoolean(IS_FAVORITE_LAYOUT);
         }
         Log.d(TAG, "onCreate: "+mSongLastIsPlaying);
         mPreferences = getSharedPreferences(SHARED_PREF_FILE, Context.MODE_PRIVATE);
         mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA, -1);
+        mSongLastIsRepeat = mPreferences.getInt(LayoutController.LAST_SONG_IS_REPEAT_EXTRA, MediaPlaybackService.NORMAL);
+        mSongLastIsShuffle =  mPreferences.getInt(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA, MediaPlaybackService.NORMAL);
         Log.d(TAG, "onCreate: " + mSongLastId);
         permission();
     }
@@ -144,7 +146,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mSongData = new SongData(getApplicationContext());
             startService();
             mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos() : -1;
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+            mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
         }
     }
 
@@ -206,7 +208,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 Helper.getAllSongs(this);
                 mSongData = new SongData(getApplicationContext());
                 startService();
-                mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying, mSongLastIsRepeat, mSongLastIsShuffle);
+                mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
             } else {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(ActivityMusic.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)) {

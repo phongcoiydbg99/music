@@ -31,7 +31,7 @@ public class LandLayoutController extends LayoutController {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState, int songPos, int songId, long songDuration, boolean isPlaying, boolean isRepeat, boolean isShuffle) {
+    public void onCreate(Bundle savedInstanceState, int songPos, int songId, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
             Log.d(TAG, "onCreate: " + " * " + songPos + " " + isPlaying);
             if (songPos < 0) songPos = 0;
@@ -90,7 +90,7 @@ public class LandLayoutController extends LayoutController {
 
             mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-            
+
             if (mCurrentSongPossion >= 0) {
                 mediaPlaybackService.setCurrentSongIndex(mCurrentSongPossion);
                 mediaPlaybackService.startForegroundService(mCurrentSongPossion, mIsPlaying);
