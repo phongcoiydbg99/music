@@ -196,7 +196,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(IS_FAVORITE_LAYOUT, isFavoriteLayout);
-        if (mLayoutController != null) mLayoutController.onSaveInstanceState(outState);
+        if (mLayoutController != null && mediaPlaybackService != null) mLayoutController.onSaveInstanceState(outState);
     }
 
     @Override
