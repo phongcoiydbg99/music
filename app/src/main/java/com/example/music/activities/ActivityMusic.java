@@ -204,7 +204,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 Helper.getAllSongs(this);
                 mSongData = new SongData(getApplicationContext());
