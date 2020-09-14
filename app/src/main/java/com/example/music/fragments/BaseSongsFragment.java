@@ -209,6 +209,11 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
     public abstract void refresh();
 
+    public void setSongListPlay(){
+        mediaPlaybackService.setSongList(mSongData.getSongList());
+        mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
+    }
+
     public interface SongRemoveFavoriteListener{
         void onSongRemoveFavoriteListener();
     }

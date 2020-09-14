@@ -64,10 +64,10 @@ public class LandLayoutController extends LayoutController {
         isFavorite = true;
         mBaseSongsFragment = FavoriteSongsFragment.newInstance(false);
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-        Log.d(TAG, "onCreateFavorite: "+mediaPlaybackService.getCurrentSongId());
+        Log.d(TAG, "onCreateFavorite: " + mediaPlaybackService.getCurrentSongId());
         setListener();
         mActivity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_all_songs, mBaseSongsFragment).addToBackStack(null).commit();
+                .replace(R.id.fragment_all_songs, mBaseSongsFragment).commit();
     }
 
     @Override
@@ -97,7 +97,7 @@ public class LandLayoutController extends LayoutController {
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
 
             if (mCurrentSongPossion >= 0) {
-                mediaPlaybackService.setStateMusic(mCurrentSongPossion,mCurrentSongPossion,mCurrentSongId);
+                mediaPlaybackService.setStateMusic(mCurrentSongPossion, mCurrentSongPossion, mCurrentSongId);
                 mediaPlaybackService.startForegroundService(mCurrentSongPossion, mIsPlaying);
             }
 
@@ -139,6 +139,7 @@ public class LandLayoutController extends LayoutController {
     @Override
     public void onSongIsFavorClickListener() {
         mBaseSongsFragment.refresh();
+        mBaseSongsFragment.setSongListPlay();
     }
 
     @Override
