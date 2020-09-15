@@ -138,7 +138,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                                 mSongData.setSongList(SongData.getAllSongs(getActivity().getApplicationContext()));
                                 mediaPlaybackService.setSongList(mSongData.getSongList());
                             }
-                            Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                             songRemoveFavoriteListener.onSongRemoveFavoriteListener();
                         }
                     }

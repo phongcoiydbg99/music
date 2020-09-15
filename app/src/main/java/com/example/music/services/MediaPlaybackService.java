@@ -431,7 +431,6 @@ public class MediaPlaybackService extends Service implements
                     values.put(MusicDB.IS_FAVORITE, 2);
                 }
                 getContentResolver().update(uri, values, null, null);
-                Toast.makeText(getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
             }
             setStateMusic(song.getPos(),mSongData.getSongIndex(mSongList,song.getId()),song.getId());
             Log.d(TAG, "play: "+currentSongIndex);

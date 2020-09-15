@@ -308,7 +308,7 @@ public class MediaPlaybackFragment extends Fragment {
                         ContentValues values = new ContentValues();
                         values.put(MusicDB.IS_FAVORITE, 2);
                         getContext().getContentResolver().update(uri, values, null, null);
-                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
                         mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
                         mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
                         if (mSongIsFavorClickListener != null) {
@@ -330,12 +330,11 @@ public class MediaPlaybackFragment extends Fragment {
                             null);
                     if (cursor != null) {
                         cursor.moveToFirst();
-                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                         if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2) {
                             ContentValues values = new ContentValues();
                             values.put(MusicDB.IS_FAVORITE, 1);
                             getContext().getContentResolver().update(uri, values, null, null);
-                            Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                             mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
                             mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
                             mSongIsFavorClickListener.onSongIsFavorClickListener();

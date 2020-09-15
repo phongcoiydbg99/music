@@ -90,8 +90,6 @@ public class PortLayoutController extends LayoutController {
 
             if (isPlaying) {
                 mBaseSongsFragment.setStateMusic(mCurrentSongPossion, mCurrentSongId, true);
-                Log.d(TAG, "onConnection: ");
-                Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
                 mBaseSongsFragment.updateUI();
             }
         }
@@ -123,7 +121,6 @@ public class PortLayoutController extends LayoutController {
         mBaseSongsFragment.setStateMusic(song.getPos(), song.getId(), true);
 
         Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getCurrentSongId());
-        Toast.makeText(mActivity, "Play music", Toast.LENGTH_SHORT).show();
         mBaseSongsFragment.updateUI();
     }
 

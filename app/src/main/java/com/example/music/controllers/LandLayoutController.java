@@ -111,7 +111,6 @@ public class LandLayoutController extends LayoutController {
 
     @Override
     public void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying) {
-        Toast.makeText(mActivity, "Play music " + isConnected, Toast.LENGTH_SHORT).show();
         if (isConnected) {
             Log.d(TAG, "onSongPlayClickListener: " + song.getTitle());
         }

@@ -126,11 +126,12 @@ public class AllSongsFragment extends BaseSongsFragment  {
                         ContentValues values = new ContentValues();
                         if (item.getItemId() == R.id.action_add_songs) {
                             values.put(MusicDB.IS_FAVORITE, 2);
+                            Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
                         } else if (item.getItemId() == R.id.action_remove_songs) {
                             values.put(MusicDB.IS_FAVORITE, 0);
+                            Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                         }
                         getContext().getContentResolver().update(uri, values, null, null);
-                        Toast.makeText(getActivity().getApplicationContext(), cursor.getString(cursor.getColumnIndex(MusicDB.TITLE)), Toast.LENGTH_SHORT).show();
                     }
                 return false;
             }
