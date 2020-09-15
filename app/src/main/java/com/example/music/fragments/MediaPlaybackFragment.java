@@ -391,6 +391,7 @@ public class MediaPlaybackFragment extends Fragment {
                         mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
                         isPlaying = true;
                         mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
+                        updateSeekBarThread.updateSeekBar();
                     }
                     mediaPlaybackService.seekTo(progress*1000);
                 }
