@@ -87,6 +87,8 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         mActionBarDrawerToggle.syncState();
 
+        float density = getResources().getDisplayMetrics().density;
+        Log.d(TAG, "onCreate: "+density);
         boolean isPortrait = getResources().getBoolean(R.bool.isPortrait);
         mServiceConnection = new ServiceConnection() {
             @Override

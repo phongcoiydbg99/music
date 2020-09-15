@@ -209,6 +209,7 @@ public class SongData {
 //        return albumArt;
 //    }
     public static Bitmap getAlbumArt(String path){
+        Log.d("TAG", "getAlbumArt: "+path);
         MediaMetadataRetriever mediaMetadataRetriever=new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(path);
         byte [] data=mediaMetadataRetriever.getEmbeddedPicture();

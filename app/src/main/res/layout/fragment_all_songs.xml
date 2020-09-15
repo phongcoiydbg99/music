@@ -15,77 +15,73 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="0dp"
         android:background="#FFFFFF" />
+
     <TextView
-        android:visibility="invisible"
         android:id="@+id/text_favorite_song"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/text_favorite_song"
         android:gravity="center"
-        />
-    <LinearLayout
+        android:text="@string/text_favorite_song"
+        android:visibility="invisible" />
+
+    <RelativeLayout
         android:id="@+id/play_song_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="86dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:elevation="10dp"
         android:orientation="vertical"
         android:visibility="visible">
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/song_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/ic_launcher_background" />
+
+        <LinearLayout
+            android:id="@+id/song_content"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF">
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/media_popup_button"
+            android:layout_toLeftOf="@+id/media_popup_button"
+            android:layout_toEndOf="@+id/song_image"
+            android:layout_toRightOf="@+id/song_image"
+            android:orientation="vertical"
+            android:padding="10dp"
+            tools:ignore="RelativeOverlap,UnknownIdInLayout">
 
-            <ImageView
-                android:id="@+id/song_image"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_margin="10dp"
-                android:src="@drawable/ic_launcher_background"
-                android:contentDescription="@string/todo" />
-
-            <LinearLayout
-                android:id="@+id/song_content"
+            <TextView
+                android:id="@+id/song_name_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/media_popup_button"
-                android:layout_toRightOf="@+id/song_image"
-                android:orientation="vertical"
-                android:padding="10dp"
-                android:layout_toStartOf="@+id/media_popup_button"
-                android:layout_toEndOf="@+id/song_image"
-                tools:ignore="RelativeOverlap,UnknownIdInLayout">
+                android:maxEms="10"
+                android:singleLine="true"
+                android:textColor="@color/song_lable"
+                android:textSize="@dimen/song_lable_size" />
 
-                <TextView
-                    android:id="@+id/song_name_play"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxEms="10"
-                    android:singleLine="true"
-                    android:textColor="@color/song_lable"
-                    android:textSize="@dimen/song_lable_size" />
+            <TextView
+                android:id="@+id/song_artist_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxEms="10"
+                android:singleLine="true"
+                android:textColor="@color/song_sublable"
+                android:textSize="@dimen/song_sublable_size" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/song_artist_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxEms="10"
-                    android:singleLine="true"
-                    android:textColor="@color/song_sublable"
-                    android:textSize="@dimen/song_sublable_size" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/song_play_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
-                android:background="#0000" />
-        </RelativeLayout>
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/song_play_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:background="#0000" />
+    </RelativeLayout>
 </RelativeLayout>

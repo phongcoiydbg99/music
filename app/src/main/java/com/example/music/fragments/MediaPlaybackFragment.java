@@ -243,8 +243,8 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaSkipNextButton = view.findViewById(R.id.media_skip_next);
         mMediaDislikeButton = view.findViewById(R.id.media_thumb_down);
         mMediaSeekBar = view.findViewById(R.id.media_seek_bar);
-        mMediaSeekBar.setMax((int) (mSongCurrentDuration));
-        mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition);
+        mMediaSeekBar.setMax((int) (mSongCurrentDuration/1000));
+        mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition/1000);
     }
 
     public void clickView() {
@@ -379,9 +379,22 @@ public class MediaPlaybackFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (mediaPlaybackService != null && fromUser) {
-                    mediaPlaybackService.seekTo(progress);
+                    if (mediaPlaybackService.isFirst()) {
+                        try {
+                            mediaPlaybackService.play(mediaPlaybackService.getCurrentSongIndex());
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d(TAG, "onProgressChanged: "+mediaPlaybackService.isPlaying());
+                        mediaPlaybackService.setFirst(false);
+                        mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
+                        isPlaying = true;
+                        mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
+                    }
+                    mediaPlaybackService.seekTo(progress*1000);
                 }
-                mMediaSeekBar.setProgress(progress);
+                mStartTime.setText(formattedTime(progress*1000));
             }
 
             @Override
@@ -495,9 +508,9 @@ public class MediaPlaybackFragment extends Fragment {
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()));
-                                                mMediaSeekBar.setProgress((int) (finalCurrent));
-                                                mStartTime.setText(formattedTime(finalCurrent));
+                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()/1000));
+                                                mMediaSeekBar.setProgress((int) (finalCurrent/1000));
+
                                             }
                                         });
                                     }

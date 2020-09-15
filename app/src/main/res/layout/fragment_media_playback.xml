@@ -127,7 +127,7 @@
     <RelativeLayout
         android:id="@+id/layout_play"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="104dp"
         android:layout_alignParentBottom="true"
         android:background="#E8F4EDED"
         android:orientation="horizontal">
@@ -184,8 +184,8 @@
 
             <ImageView
                 android:id="@+id/media_play_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="#0000" />

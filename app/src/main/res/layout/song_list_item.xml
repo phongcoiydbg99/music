@@ -1,91 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:id="@+id/song_list_item"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:layout_height="80dp"
     android:background="#FFFFFF"
-    android:padding="10dp"
-    android:paddingLeft="20dp">
+    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/song_id"
-        android:layout_width="50dp"
+    <RelativeLayout
+        android:id="@+id/layout_id"
+        android:layout_width="91dp"
         android:layout_height="wrap_content"
-        android:text="1"
-        android:textColor="@color/song_sublable"
-        android:textSize="15sp"
-        android:padding="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="15dp"
-        android:gravity="center"
-        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentLeft="true" />
-<!--    <ImageView-->
-<!--        android:visibility="invisible"-->
-<!--        android:id="@+id/icon_play"-->
-<!--        android:src="@drawable/ic_outline_equalizer"-->
-<!--        android:background="#FFFF"-->
-<!--        android:layout_marginLeft="10dp"-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:padding="10dp"-->
-<!--        android:gravity="center"-->
-<!--        android:layout_centerVertical="true"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_alignParentLeft="true" />-->
-    <es.claucookie.miniequalizerlibrary.EqualizerView
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/equalizer_view"
-        custom:foregroundColor="@color/link_text_material_light"
-        custom:animDuration="3500"
-        android:layout_marginLeft="10dp"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:padding="10dp"
-        android:gravity="center"
-        android:visibility="invisible"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentStart="true">
+        <TextView
+            android:id="@+id/song_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="1"
+            android:textColor="@color/song_sublable"
+            android:textSize="@dimen/song_sublable_size" />
+        <es.claucookie.miniequalizerlibrary.EqualizerView
+            android:id="@+id/equalizer_view"
+            android:layout_width="25dp"
+            android:layout_height="24dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:visibility="invisible"
+            custom:animDuration="3500"
+            custom:foregroundColor="@color/link_text_material_light" />
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/popup_button"
-        android:layout_toRightOf="@+id/song_id"
+        android:layout_toRightOf="@+id/layout_id"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/song_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bai hat"
-            android:textSize="@dimen/song_lable_size"
             android:singleLine="true"
+            android:text="Bai hat"
             android:textColor="@color/song_lable"
-            android:layout_centerVertical="true"
-            />
+            android:textSize="@dimen/song_lable_size" />
+
         <TextView
             android:id="@+id/song_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="4:05"
-            android:layout_toRightOf="@+id/song_id"
-            android:textSize="@dimen/song_sublable_size"
             android:textColor="@color/song_sublable"
-            android:layout_centerVertical="true"
-            />
+            android:textSize="@dimen/song_sublable_size" />
     </LinearLayout>
 
     <ImageButton
         android:id="@+id/popup_button"
-        android:background="#0000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_popup"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        />
+        android:background="#0000"
+        android:src="@drawable/ic_action_popup" />
 
 </RelativeLayout>
