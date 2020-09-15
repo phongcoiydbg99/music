@@ -8,14 +8,6 @@
     android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/song_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="0dp"
-        android:background="#FFFFFF" />
-
     <TextView
         android:id="@+id/text_favorite_song"
         android:layout_width="match_parent"
@@ -23,6 +15,15 @@
         android:gravity="center"
         android:text="@string/text_favorite_song"
         android:visibility="invisible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/song_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/play_song_layout"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginBottom="0dp"
+        android:background="#FFFFFF" />
 
     <RelativeLayout
         android:id="@+id/play_song_layout"
@@ -32,7 +33,7 @@
         android:background="@android:color/white"
         android:elevation="10dp"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
         <ImageView
             android:id="@+id/song_image"
             android:layout_width="60dp"

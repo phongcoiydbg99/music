@@ -136,6 +136,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                             refresh();
                             if (song.getId() == mediaPlaybackService.getCurrentSongId()) {
                                 mSongData.setSongList(SongData.getAllSongs(getActivity().getApplicationContext()));
+                                mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
                                 mediaPlaybackService.setSongList(mSongData.getSongList());
                             }
                             Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
