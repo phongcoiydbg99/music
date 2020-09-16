@@ -424,6 +424,7 @@ public class MediaPlaybackService extends Service implements
             } catch (Exception e) {
                 Log.e(TAG, "Error playing from data source", e);
             }
+            saveData();
         }
     }
 
