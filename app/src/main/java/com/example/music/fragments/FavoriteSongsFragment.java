@@ -137,12 +137,16 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                                 mSongData.setSongList(SongData.getAllSongs(getActivity().getApplicationContext()));
                                 mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
                                 mediaPlaybackService.setSongList(mSongData.getSongList());
-                            } else if (pos < mediaPlaybackService.getCurrentSongIndex() && isFavorite == true){
-                                int index = mediaPlaybackService.getCurrentSongIndex()-1;
-                                if (index < 0) index = 0;
-                                if (index >= mSongData.getSongListFavor().size()) index =  mSongData.getSongListFavor().size() - 1;
-                                mediaPlaybackService.setCurrentSongIndex(index);
-                                mediaPlaybackService.setSongList(mSongData.getSongListFavor());
+                            } else {
+                                if (isFavorite == true) {
+                                    if (pos < mediaPlaybackService.getCurrentSongIndex()){
+                                        int index = mediaPlaybackService.getCurrentSongIndex()-1;
+                                        if (index < 0) index = 0;
+                                        if (index >= mSongData.getSongListFavor().size()) index =  mSongData.getSongListFavor().size() - 1;
+                                        mediaPlaybackService.setCurrentSongIndex(index);
+                                    }
+                                    mediaPlaybackService.setSongList(mSongData.getSongListFavor());
+                                }
                             }
                             Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                             songRemoveFavoriteListener.onSongRemoveFavoriteListener();
