@@ -28,7 +28,7 @@
         <es.claucookie.miniequalizerlibrary.EqualizerView
             android:id="@+id/equalizer_view"
             android:layout_width="25dp"
-            android:layout_height="24dp"
+            android:layout_height="27dp"
             android:layout_marginLeft="37dp"
             android:gravity="center"
             android:visibility="invisible"

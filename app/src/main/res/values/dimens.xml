@@ -5,8 +5,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="seek_bar_thickness">6dp</dimen>
+    <dimen name="fab_margin">15dp</dimen>
+    <dimen name="seek_bar_thickness">5dp</dimen>
     <dimen name="seek_bar_thumb_size">18dp</dimen>
     <dimen name="song_lable_size">20sp</dimen>
     <dimen name="song_sublable_size">16sp</dimen>

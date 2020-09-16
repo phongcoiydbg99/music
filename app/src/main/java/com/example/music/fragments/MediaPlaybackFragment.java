@@ -381,7 +381,7 @@ public class MediaPlaybackFragment extends Fragment {
                     if (mediaPlaybackService.isFirst()) {
                         try {
                             mediaPlaybackService.play(mediaPlaybackService.getCurrentSongIndex());
-                            Thread.sleep(100);
+                            Thread.sleep(50);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
