@@ -42,7 +42,9 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/popup_button"
         android:layout_toRightOf="@+id/layout_id"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_toStartOf="@+id/popup_button"
+        android:layout_toEndOf="@+id/layout_id">
 
         <TextView
             android:id="@+id/song_name"
@@ -51,6 +53,7 @@
             android:singleLine="true"
             android:text="Bai hat"
             android:textColor="@color/song_lable"
+            android:layout_marginBottom="3dp"
             android:textSize="@dimen/song_lable_size" />
 
         <TextView

@@ -40,7 +40,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/media_queue_button"
             android:layout_toLeftOf="@+id/media_queue_button"
+            android:layout_toEndOf="@+id/song_media_image"
             android:layout_toRightOf="@+id/song_media_image"
             android:orientation="vertical"
             android:padding="10dp">
@@ -80,9 +82,11 @@
             android:id="@+id/media_popup_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:background="#0000"
+            android:contentDescription="@string/todo"
             android:padding="10dp"
             android:src="@drawable/ic_action_popup" />
     </RelativeLayout>
@@ -94,8 +98,9 @@
         android:layout_above="@+id/media_seek_bar"
         android:layout_alignParentLeft="true"
         android:background="#0000"
-        android:paddingBottom="43dp"
+        android:contentDescription="@string/todo"
         android:paddingLeft="37dp"
+        android:paddingBottom="43dp"
         android:src="@drawable/ic_baseline_repeat_24" />
 
     <ImageButton
@@ -107,9 +112,12 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="#0000"
-        android:paddingBottom="43dp"
+        android:contentDescription="@string/todo"
+        android:paddingEnd="37dp"
         android:paddingRight="37dp"
-        android:src="@drawable/ic_shuffle" />
+        android:paddingBottom="43dp"
+        android:src="@drawable/ic_shuffle"
+        tools:ignore="RtlSymmetry" />
 
     <SeekBar
         android:id="@+id/media_seek_bar"
@@ -142,22 +150,28 @@
                 android:id="@+id/start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
+                android:paddingStart="10dp"
                 android:paddingLeft="10dp"
                 android:textColor="@color/song_sublable"
-                android:textSize="@dimen/song_sublable_size" />
+                android:textSize="@dimen/song_sublable_size"
+                tools:ignore="RtlSymmetry" />
 
             <TextView
                 android:id="@+id/end_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:paddingEnd="10dp"
                 android:paddingRight="10dp"
                 android:textColor="@color/song_sublable"
-                android:textSize="@dimen/song_sublable_size" />
+                android:textSize="@dimen/song_sublable_size"
+                tools:ignore="RtlSymmetry" />
         </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/layout_time"
@@ -167,47 +181,55 @@
                 android:id="@+id/media_thumb_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="35dp"
                 android:background="#0000"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ic_thumb_up" />
 
             <ImageButton
                 android:id="@+id/media_skip_previous"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="38dp"
+                android:layout_toRightOf="@+id/media_thumb_up"
                 android:background="#0000"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ic_skip_previous" />
 
             <ImageView
                 android:id="@+id/media_play_button"
                 android:layout_width="66dp"
                 android:layout_height="66dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:background="#0000" />
+                android:background="#0000"
+                android:contentDescription="@string/todo" />
 
             <ImageButton
                 android:id="@+id/media_skip_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="38dp"
+                android:layout_toLeftOf="@+id/media_thumb_down"
                 android:background="#0000"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ic_skip_next" />
 
             <ImageButton
                 android:id="@+id/media_thumb_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="35dp"
                 android:background="#0000"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ic_thumb_down" />
-        </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
 
 </RelativeLayout>

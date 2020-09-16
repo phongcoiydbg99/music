@@ -52,7 +52,9 @@
             android:layout_toLeftOf="@+id/song_play_button"
             android:orientation="vertical"
             android:padding="10dp"
-            tools:ignore="RelativeOverlap,UnknownIdInLayout">
+            tools:ignore="RelativeOverlap,UnknownIdInLayout"
+            android:layout_toEndOf="@+id/song_image"
+            android:layout_toStartOf="@+id/song_play_button">
 
             <TextView
                 android:id="@+id/song_name_play"

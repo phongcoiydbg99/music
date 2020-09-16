@@ -8,7 +8,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="seek_bar_thickness">6dp</dimen>
     <dimen name="seek_bar_thumb_size">18dp</dimen>
-    <dimen name="song_lable_size">20dp</dimen>
-    <dimen name="song_sublable_size">15dp</dimen>
+    <dimen name="song_lable_size">20sp</dimen>
+    <dimen name="song_sublable_size">16sp</dimen>
     <dimen name="song_sublable_size_land">13sp</dimen>
 </resources>
