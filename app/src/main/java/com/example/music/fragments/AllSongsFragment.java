@@ -188,16 +188,6 @@ public class AllSongsFragment extends BaseSongsFragment {
     }
 
     @Override
-    public void setSongCurrentPosition(int position) {
-        this.mSongCurrentPosition = position;
-    }
-
-    @Override
-    public void setSongCurrentId(int id) {
-        mSongCurrentId = id;
-    }
-
-    @Override
     public void onReceiverSongComplete() {
         if (mediaPlaybackService != null) {
             mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
@@ -211,12 +201,6 @@ public class AllSongsFragment extends BaseSongsFragment {
         updateUI();
     }
 
-
-    @Override
-    public void setPlaying(boolean playing) {
-        isPlaying = playing;
-    }
-
     @Override
     public void updateAdapter() {
         mSongData.setSongCurrentId(mSongCurrentId);
@@ -224,7 +208,7 @@ public class AllSongsFragment extends BaseSongsFragment {
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mSongList = mAdapter.getSongList();
         if (mSongList.size() <= 0) {
-            mTextView.setText("Bạn chưa có bài hát");
+            mTextView.setText(R.string.text_list_song);
             mTextView.setVisibility(View.VISIBLE);
         } else mTextView.setVisibility(View.INVISIBLE);
     }

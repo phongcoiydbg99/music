@@ -1,16 +1,14 @@
 package com.example.music.services;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,26 +16,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.PowerManager;
-import android.provider.MediaStore;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.bumptech.glide.Priority;
 import com.example.music.MusicDB;
 import com.example.music.MusicProvider;
 import com.example.music.R;
@@ -60,7 +50,6 @@ public class MediaPlaybackService extends Service implements
     public static final String SONG_PLAY_CHANGE = "song_play_change";
     public static final String MESSAGE_SONG_PLAY_COMPLETE = "message_song_play_complete";
     public static final String MESSAGE_SONG_PLAY_CHANGE = "message_song_play_change";
-    public static final int NOTIFICATION_CHANNEL = 112;
     public static final int NOTIFICATION_ID = 111;
     public static final int REPEAT = 10;
     public static final int REPEAT_ALL = 11;
@@ -174,8 +163,7 @@ public class MediaPlaybackService extends Service implements
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private Notification showNotification(Song song, Boolean isPlaying) {
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(this, "tag");
+
         Intent playIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PLAY);
         PendingIntent playPendingIntent = PendingIntent.getService(this,
                 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -191,10 +179,6 @@ public class MediaPlaybackService extends Service implements
         Intent prevIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_PREV);
         PendingIntent prevPendingIntent = PendingIntent.getService(this,
                 0, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent stopIntent = new Intent(this, MediaPlaybackService.class).setAction(MUSIC_SERVICE_ACTION_STOP);
-        PendingIntent stopPendingIntent = PendingIntent.getService(this,
-                0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Bitmap bitmap = SongData.getAlbumArt(song.getData());
         if (bitmap == null) {
@@ -418,7 +402,7 @@ public class MediaPlaybackService extends Service implements
     public void play(Song song) {
         if (mPlayer != null) {
             Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + song.getId());
-            Cursor cursor = getContentResolver().query(uri, null, null, null,
+            @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(uri, null, null, null,
                     null);
             if (cursor != null) {
                 cursor.moveToFirst();

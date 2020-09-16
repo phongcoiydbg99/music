@@ -13,7 +13,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.Handler;
@@ -45,7 +44,6 @@ public class MediaPlaybackFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TAG = MediaPlaybackFragment.class.getSimpleName();
-    public static final String ID = "song_id";
     public static final String IS_PORTRAIT = "is_portait";
     public static final String TITLE = "song_title";
     public static final String ARTIST = "song_artist";

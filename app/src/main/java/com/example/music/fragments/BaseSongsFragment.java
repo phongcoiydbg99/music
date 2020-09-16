@@ -195,17 +195,11 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
     protected abstract void updatePopupMenu(View v,Song song, int pos);
 
-    public abstract void setSongCurrentPosition(int position);
-
-    public abstract void setSongCurrentId(int id);
-
     public abstract void onReceiverSongComplete();
 
     public abstract void onReceiverSongChange();
 
     public abstract void setMediaPlaybackService(MediaPlaybackService mediaPlaybackService);
-
-    public abstract void setPlaying(boolean playing);
 
     public abstract void updateAdapter();
 

@@ -164,10 +164,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         return mSongListFull;
     }
 
-    public void setPlaying(boolean isPlaying) {
-        this.isPlaying = isPlaying;
-    }
-
     public class SongViewHolder extends RecyclerView.ViewHolder {
         public final RelativeLayout relativeLayout;
         public final TextView itemId;
@@ -187,10 +183,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             iconPlay = (EqualizerView) itemView.findViewById(R.id.equalizer_view);
             this.mAdapter = adapter;
         }
-    }
-
-    public int getCurrentPos() {
-        return currentPos;
     }
 
     public void setSongList(LinkedList<Song> mSongList) {

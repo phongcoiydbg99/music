@@ -51,7 +51,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TAG = AllSongsFragment.class.getSimpleName();
-    public static final String SONG_POSSITION = "song_possion";
     private static final String IS_PORTRAIT = "is_portrait";
     // TODO: Rename and change types of parameters
 
@@ -157,20 +156,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
         popup.show();
     }
 
-    public MediaPlaybackService getMediaPlaybackService() {
-        return mediaPlaybackService;
-    }
-
-    @Override
-    public void setSongCurrentPosition(int position) {
-        mSongCurrentPosition = position;
-    }
-
-    @Override
-    public void setSongCurrentId(int id) {
-        mSongCurrentId = id;
-    }
-
     @Override
     public void onReceiverSongComplete() {
         if (mediaPlaybackService != null) {
@@ -200,11 +185,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
         this.mediaPlaybackService = mediaPlaybackService;
     }
 
-
-    @Override
-    public void setPlaying(boolean playing) {
-        isPlaying = playing;
-    }
 
     @Override
     public void updateAdapter() {
