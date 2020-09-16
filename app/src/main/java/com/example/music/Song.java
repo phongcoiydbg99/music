@@ -10,17 +10,6 @@ public class Song {
     private String artistName;
     private String data;
 
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
-    public void setPlaying(boolean playing) {
-        isPlaying = playing;
-    }
-
-    private boolean isPlaying;
-
-
     public static Song EMPTY() {
         return new Song(-1,0,"","","",0);
     }
@@ -36,7 +25,6 @@ public class Song {
         this.artistName = artistName;
         this.data = data;
         this.duration = duration;
-        isPlaying = false;
     }
 
     public int getId() {

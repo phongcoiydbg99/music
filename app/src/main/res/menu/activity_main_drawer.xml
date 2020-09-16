@@ -14,14 +14,14 @@
             android:checked="false"
             android:title="@string/favorite_songs" />
     </group>
-    <item android:title="@string/todo">
-        <menu>
-            <item
-                android:id="@+id/nav_setting"
-                android:title="@string/setting" />
-            <item
-                android:id="@+id/nav_help_feedback"
-                android:title="@string/help_feedback" />
-        </menu>
-    </item>
+<!--    <item android:title="@string/todo">-->
+<!--        <menu>-->
+<!--            <item-->
+<!--                android:id="@+id/nav_setting"-->
+<!--                android:title="@string/setting" />-->
+<!--            <item-->
+<!--                android:id="@+id/nav_help_feedback"-->
+<!--                android:title="@string/help_feedback" />-->
+<!--        </menu>-->
+<!--    </item>-->
 </menu>

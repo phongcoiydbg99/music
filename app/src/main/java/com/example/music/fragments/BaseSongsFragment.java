@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,7 +52,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     protected AllSongsFragment.SongPlayClickListener songPlayClickListener;
     protected SongRemoveFavoriteListener songRemoveFavoriteListener;
     protected View view;
-    protected LinearLayout mLinearLayout;
+    protected RelativeLayout mRelativeLayout;
     protected ImageView mSongImage;
     protected TextView mSongName;
     protected TextView mSongArtist;
@@ -106,7 +107,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: " + mSongCurrentPosition);
         view = inflater.inflate(R.layout.fragment_all_songs, container, false);
-        mLinearLayout = view.findViewById(R.id.play_song_layout);
+        mRelativeLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
         mSongName = view.findViewById(R.id.song_name_play);
         mSongArtist = view.findViewById(R.id.song_artist_name);
@@ -161,7 +162,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         });
 
         // chuyen dang media fragment
-        mLinearLayout.setOnClickListener(new View.OnClickListener() {
+        mRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (songPlayClickListener != null)
@@ -261,7 +262,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
 
     public void updatePlaySongLayout(Song mSong) {
         this.mSong = mSong;
-        mLinearLayout.setVisibility(View.VISIBLE);
+        mRelativeLayout.setVisibility(View.VISIBLE);
         mSongName.setText(mSong.getTitle());
         mSongArtist.setText(mSong.getArtistName());
         if (isPlaying) {

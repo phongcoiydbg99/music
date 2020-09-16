@@ -28,6 +28,7 @@ public class PortLayoutController extends LayoutController {
     private boolean isPlaying;
     private int mCurrentSongPossion;
     private int mCurrentSongId;
+    private boolean onClick = false;
 
     public PortLayoutController(AppCompatActivity activity) {
         super(activity);
@@ -58,7 +59,7 @@ public class PortLayoutController extends LayoutController {
         setListener();
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
         mActivity.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_all_songs, mBaseSongsFragment).addToBackStack(null).commit();
+                .replace(R.id.fragment_all_songs, mBaseSongsFragment).commit();
     }
 
     @Override

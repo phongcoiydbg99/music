@@ -40,9 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/media_popup_button"
-            android:layout_toLeftOf="@+id/media_popup_button"
-            android:layout_toEndOf="@+id/song_media_image"
+            android:layout_toLeftOf="@+id/media_queue_button"
             android:layout_toRightOf="@+id/song_media_image"
             android:orientation="vertical"
             android:padding="10dp">
@@ -96,7 +94,8 @@
         android:layout_above="@+id/media_seek_bar"
         android:layout_alignParentLeft="true"
         android:background="#0000"
-        android:padding="20dp"
+        android:paddingBottom="43dp"
+        android:paddingLeft="37dp"
         android:src="@drawable/ic_baseline_repeat_24" />
 
     <ImageButton
@@ -108,7 +107,8 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="#0000"
-        android:padding="20dp"
+        android:paddingBottom="43dp"
+        android:paddingRight="37dp"
         android:src="@drawable/ic_shuffle" />
 
     <SeekBar

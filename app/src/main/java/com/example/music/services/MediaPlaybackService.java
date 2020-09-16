@@ -37,6 +37,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.bumptech.glide.Priority;
 import com.example.music.MusicDB;
 import com.example.music.MusicProvider;
 import com.example.music.R;
@@ -83,7 +84,7 @@ public class MediaPlaybackService extends Service implements
     private boolean isFirst = true;
 
     private int currentSongPosition;
-    private int currentSongIndex = -1 ;
+    private int currentSongIndex = -1;
     private int currentSongId = -1;
 
     public MediaPlaybackService() {
@@ -160,11 +161,11 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void startForegroundService(int currentSongPosition, boolean isPlaying) {
-        if (currentSongPosition >= 0){
+        if (currentSongPosition >= 0) {
             Song song = mSongList.get(currentSongPosition);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //            showNotification(song, isPlaying);
-                startForeground(NOTIFICATION_ID,showNotification(song, isPlaying));
+                startForeground(NOTIFICATION_ID, showNotification(song, isPlaying));
                 if (!isPlaying)
                     stopForeground(false);
             }
@@ -196,8 +197,7 @@ public class MediaPlaybackService extends Service implements
                 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Bitmap bitmap = SongData.getAlbumArt(song.getData());
-        if (bitmap == null)
-        {
+        if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art_song_default);
         }
         Log.d(TAG, "showNotification: " + bitmap);
@@ -232,6 +232,7 @@ public class MediaPlaybackService extends Service implements
         NotificationCompat.Builder notifyBuilder = new NotificationCompat
                 .Builder(this, PRIMARY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_play_circle)
+                .setPriority(Notification.PRIORITY_MAX)
 //                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setContentIntent(notificationPendingIntent)
                 .setCustomContentView(notificationLayout)
@@ -259,7 +260,7 @@ public class MediaPlaybackService extends Service implements
             NotificationChannel notificationChannel = new NotificationChannel
                     (PRIMARY_CHANNEL_ID,
                             getString(R.string.notification_channel_name),
-                            NotificationManager.IMPORTANCE_LOW);
+                            NotificationManager.IMPORTANCE_NONE);
 
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
@@ -284,10 +285,10 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion:1 "+ mPlayer.getDuration()+" * "+mPlayer.getCurrentPosition());
-        Log.d(TAG, "onCompletion:2 "+ mp.getDuration()+" * "+mp.getCurrentPosition());
+        Log.d(TAG, "onCompletion:1 " + mPlayer.getDuration() + " * " + mPlayer.getCurrentPosition() + "*" + currentSongIndex);
+        Log.d(TAG, "onCompletion:2 " + mp.getDuration() + " * " + mp.getCurrentPosition() + "*" + isFirst);
         String state = "play_normal";
-        if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0){
+        if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0 && !isFirst) {
             if (isRepeat == REPEAT) {
                 play(currentSongIndex);
                 state = "play_repeat";
@@ -304,15 +305,13 @@ public class MediaPlaybackService extends Service implements
                 play(currentSongIndex);
                 state = "play_is_shuffe";
                 startForegroundService(currentSongIndex, true);
-            } else if(isRepeat == NORMAL) {
-                if (!isFirst) {
-                    currentSongIndex++;
-                    if (currentSongIndex != mSongList.size()) {
-                        play(currentSongIndex);
-                    } else {
-                        currentSongIndex = mSongList.size()-1;
-                        state = "play_done";
-                    }
+            } else if (isRepeat == NORMAL) {
+                currentSongIndex++;
+                if (currentSongIndex != mSongList.size()) {
+                    play(currentSongIndex);
+                } else {
+                    currentSongIndex = mSongList.size() - 1;
+                    state = "play_done";
                 }
                 startForegroundService(currentSongIndex, false);
             }
@@ -411,7 +410,7 @@ public class MediaPlaybackService extends Service implements
         Song playSong = mSongList.get(currentSongIndex);
         currentSongPosition = playSong.getPos();
         currentSongId = playSong.getId();
-        Log.d("MediaPlaybackFragment", " "+playSong.getId()+"*"+playSong.getTitle());
+        Log.d("MediaPlaybackFragment", " " + playSong.getId() + "*" + playSong.getTitle());
         play(playSong);
     }
 
@@ -426,14 +425,14 @@ public class MediaPlaybackService extends Service implements
                 int count = cursor.getInt(cursor.getColumnIndex(MusicDB.COUNT_OF_PLAY));
                 count++;
                 ContentValues values = new ContentValues();
-                values.put(MusicDB.COUNT_OF_PLAY,count);
+                values.put(MusicDB.COUNT_OF_PLAY, count);
                 if (count >= 3 && cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0) {
                     values.put(MusicDB.IS_FAVORITE, 2);
                 }
                 getContentResolver().update(uri, values, null, null);
             }
-            setStateMusic(song.getPos(),mSongData.getSongIndex(mSongList,song.getId()),song.getId());
-            Log.d(TAG, "play: "+currentSongIndex);
+            setStateMusic(song.getPos(), mSongData.getSongIndex(mSongList, song.getId()), song.getId());
+            Log.d(TAG, "play: " + currentSongIndex);
             mPlayer.reset();
             try {
                 mPlayer.setDataSource(song.getData());
@@ -464,7 +463,7 @@ public class MediaPlaybackService extends Service implements
         }
     }
 
-    public void saveData(){
+    public void saveData() {
         mPreferences = getSharedPreferences(ActivityMusic.SHARED_PREF_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor preferencesEditor = mPreferences.edit();
         preferencesEditor.putInt(LayoutController.LAST_SONG_ID_EXTRA, currentSongId);
@@ -509,7 +508,7 @@ public class MediaPlaybackService extends Service implements
         isFirst = false;
         currentSongIndex++;
         if (currentSongIndex == mSongList.size()) currentSongIndex = 0;
-        Log.d(TAG, "playNext: " + currentSongIndex+" "+ mSongList.size());
+        Log.d(TAG, "playNext: " + currentSongIndex + " " + mSongList.size());
         currentSongPosition = mSongList.get(currentSongIndex).getPos();
         currentSongId = mSongList.get(currentSongIndex).getId();
         play(mSongList.get(currentSongIndex));

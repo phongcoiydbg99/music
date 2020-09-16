@@ -46,6 +46,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     SongBtnClickListener songBtnClickListener;
 
     public SongListAdapter(Context context, SongData songData) {
+        Log.d(TAG, "SongListAdapter: ");
         this.mSongData = songData;
         this.mContext = context;
         this.mSongList = songData.getSongList();
@@ -57,6 +58,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: ");
         View mItemView = mInflater.inflate(R.layout.song_list_item, parent, false);
         return new SongViewHolder(mItemView, this);
     }

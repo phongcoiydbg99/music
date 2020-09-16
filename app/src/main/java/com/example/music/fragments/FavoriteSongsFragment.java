@@ -217,10 +217,10 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
             mSongData.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
             mSongData.setPlaying(mediaPlaybackService.isPlaying());
         }
-        Log.d("BaseSongsFragment", "updateAdapterFavor: " + mSongCurrentPosition);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mSongList = SongData.getFavorAllSongs(getContext());
         mAdapter.setSongList(mSongList);
+        Log.d("BaseSongsFragment", "updateAdapterFavor: " + mSongList.size());
         if (mSongList.size() <= 0)
             mTextView.setVisibility(View.VISIBLE);
         else mTextView.setVisibility(View.INVISIBLE);

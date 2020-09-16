@@ -13,6 +13,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.Handler;
@@ -243,15 +244,15 @@ public class MediaPlaybackFragment extends Fragment {
         mMediaSkipNextButton = view.findViewById(R.id.media_skip_next);
         mMediaDislikeButton = view.findViewById(R.id.media_thumb_down);
         mMediaSeekBar = view.findViewById(R.id.media_seek_bar);
-        mMediaSeekBar.setMax((int) (mSongCurrentDuration/1000));
-        mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition/1000);
+        mMediaSeekBar.setMax((int) (mSongCurrentDuration / 1000));
+        mMediaSeekBar.setProgress((int) mSongCurrentStreamPossition / 1000);
     }
 
     public void clickView() {
         mMediaQueueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getParentFragmentManager().popBackStack();
+                getParentFragmentManager().popBackStack(null, 0);
             }
         });
 
@@ -315,6 +316,17 @@ public class MediaPlaybackFragment extends Fragment {
                             mSongIsFavorClickListener.onSongIsFavorClickListener();
                         }
                     }
+//                    else if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2) {
+//                        ContentValues values = new ContentValues();
+//                        values.put(MusicDB.IS_FAVORITE, 0);
+//                        getContext().getContentResolver().update(uri, values, null, null);
+//                        Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
+//                        mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
+//                        mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
+//                        if (mSongIsFavorClickListener != null) {
+//                            mSongIsFavorClickListener.onSongIsFavorClickListener();
+//                        }
+//                    }
                 }
             }
         });
@@ -337,8 +349,16 @@ public class MediaPlaybackFragment extends Fragment {
                             Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                             mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
                             mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
-                            mSongIsFavorClickListener.onSongIsFavorClickListener();
                         }
+//                        else if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 1) {
+//                            ContentValues values = new ContentValues();
+//                            values.put(MusicDB.IS_FAVORITE, 0);
+//                            getContext().getContentResolver().update(uri, values, null, null);
+//                            Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
+//                            mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
+//                            mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
+//                        }
+                        mSongIsFavorClickListener.onSongIsFavorClickListener();
                     }
                 }
             }
@@ -386,16 +406,16 @@ public class MediaPlaybackFragment extends Fragment {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        Log.d(TAG, "onProgressChanged: "+mediaPlaybackService.isPlaying());
+                        Log.d(TAG, "onProgressChanged: " + mediaPlaybackService.isPlaying());
                         mediaPlaybackService.setFirst(false);
                         mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
                         isPlaying = true;
                         mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
                         updateSeekBarThread.updateSeekBar();
                     }
-                    mediaPlaybackService.seekTo(progress*1000);
+                    mediaPlaybackService.seekTo(progress * 1000);
                 }
-                mStartTime.setText(formattedTime(progress*1000));
+                mStartTime.setText(formattedTime(progress * 1000));
             }
 
             @Override
@@ -449,12 +469,15 @@ public class MediaPlaybackFragment extends Fragment {
                     null);
             if (cursor != null) {
                 cursor.moveToFirst();
-                if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) != 2) {
-                        mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
-                        mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
+                if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0) {
+                    mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
+                    mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
+                } else if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 1) {
+                    mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
+                    mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
                 } else {
-                        mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
-                        mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
+                    mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
+                    mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up_black);
                 }
             }
         }
@@ -509,8 +532,8 @@ public class MediaPlaybackFragment extends Fragment {
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration()/1000));
-                                                mMediaSeekBar.setProgress((int) (finalCurrent/1000));
+                                                mMediaSeekBar.setMax((int) (mediaPlaybackService.getDuration() / 1000));
+                                                mMediaSeekBar.setProgress((int) (finalCurrent / 1000));
 
                                             }
                                         });
