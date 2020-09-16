@@ -42,6 +42,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -220,6 +221,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 } else {
                     // case 5. Permission denied permanently.
                     // You can open Permission setting's page from here now.
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", this.getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
                     finish();
                 }
             }
