@@ -41,6 +41,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     protected int mSongCurrentPosition = -1;
     protected int mSongCurrentId = -1;
     protected Boolean isPortrait;
+    protected Boolean isFavorite = false;
     protected TextView mTextView;
     protected LinkedList<Song> mSongList = new LinkedList<>();
     protected SongListAdapter mAdapter;
@@ -237,6 +238,10 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         mSongCurrentPosition = position;
         mSongCurrentId = id;
         isPlaying = playing;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
     }
 
     public void updateUI() {

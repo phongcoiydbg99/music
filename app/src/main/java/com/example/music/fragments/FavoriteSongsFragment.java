@@ -116,7 +116,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
     }
 
     @Override
-    protected void updatePopupMenu(View v, final Song song, int pos) {
+    protected void updatePopupMenu(View v, final Song song, final int pos) {
         PopupMenu popup = new PopupMenu(v.getContext(), v);
         // Inflate the Popup using XML file.
         popup.getMenuInflater().inflate(R.menu.menu_popup_favorite, popup.getMenu());
@@ -138,6 +138,12 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                                 mSongData.setSongList(SongData.getAllSongs(getActivity().getApplicationContext()));
                                 mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
                                 mediaPlaybackService.setSongList(mSongData.getSongList());
+                            } else if (pos < mediaPlaybackService.getCurrentSongIndex() && isFavorite == true){
+                                int index = mediaPlaybackService.getCurrentSongIndex()-1;
+                                if (index < 0) index = 0;
+                                if (index >= mSongData.getSongListFavor().size()) index =  mSongData.getSongListFavor().size() - 1;
+                                mediaPlaybackService.setCurrentSongIndex(index);
+                                mediaPlaybackService.setSongList(mSongData.getSongListFavor());
                             }
                             Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                             songRemoveFavoriteListener.onSongRemoveFavoriteListener();

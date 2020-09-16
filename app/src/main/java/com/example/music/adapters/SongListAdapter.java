@@ -44,7 +44,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private boolean isPlaying;
     SongItemClickListener songItemClickListener;
     SongBtnClickListener songBtnClickListener;
-    SongItemClickIdListener songItemClickIdListener;
 
     public SongListAdapter(Context context, SongData songData) {
         this.mSongData = songData;
@@ -173,7 +172,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         public final TextView songItemView;
         public final TextView songDurationView;
         public final ImageButton imageButton;
-//        public final ImageView iconPlay;
         public EqualizerView iconPlay;
         final SongListAdapter mAdapter;
 
@@ -184,7 +182,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             songDurationView = itemView.findViewById(R.id.song_duration);
             imageButton = itemView.findViewById(R.id.popup_button);
             relativeLayout = itemView.findViewById(R.id.song_list_item);
-//            iconPlay = itemView.findViewById(R.id.icon_play);
             iconPlay = (EqualizerView) itemView.findViewById(R.id.equalizer_view);
             this.mAdapter = adapter;
         }
@@ -200,26 +197,13 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         mSongListFull.addAll(mSongList);
     }
 
-    public void setCurrentPos(int currentPos) {
-        this.currentPos = currentPos;
-    }
-
-    public void setCurrentId(int currentId) {
-        this.currentId = currentId;
-    }
 
     public interface SongBtnClickListener {
         void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);
     }
-    public interface SongItemClickIdListener {
-        void onSongItemClickId(SongListAdapter.SongViewHolder holder, int pos);
-    }
 
     public void setOnSongItemClickListener(SongItemClickListener songItemClickListener) {
         this.songItemClickListener = songItemClickListener;
-    }
-    public void setOnSongItemClickIdListener(SongItemClickIdListener songItemClickIdListener) {
-        this.songItemClickIdListener = songItemClickIdListener;
     }
     public void setOnSongBtnClickListener(SongBtnClickListener songBtnClickListener) {
         this.songBtnClickListener = songBtnClickListener;

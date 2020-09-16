@@ -68,7 +68,7 @@ public class PortLayoutController extends LayoutController {
         setListener();
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
         mBaseSongsFragment.setStateMusic(mediaPlaybackService.getCurrentSongPosition(), mediaPlaybackService.getCurrentSongId(), mediaPlaybackService.isPlaying());
-
+        mBaseSongsFragment.setFavorite(isFavorite);
         mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
         // Add the fragment to the 'fragment_container' FrameLayout
@@ -119,7 +119,7 @@ public class PortLayoutController extends LayoutController {
         mediaPlaybackService.play(song);
         mediaPlaybackService.startForegroundService(pos, true);
         mBaseSongsFragment.setStateMusic(song.getPos(), song.getId(), true);
-
+        mBaseSongsFragment.setFavorite(isFavorite);
         Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getCurrentSongId());
         mBaseSongsFragment.updateUI();
     }
