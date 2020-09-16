@@ -316,17 +316,6 @@ public class MediaPlaybackFragment extends Fragment {
                             mSongIsFavorClickListener.onSongIsFavorClickListener();
                         }
                     }
-//                    else if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2) {
-//                        ContentValues values = new ContentValues();
-//                        values.put(MusicDB.IS_FAVORITE, 0);
-//                        getContext().getContentResolver().update(uri, values, null, null);
-//                        Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
-//                        mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
-//                        mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
-//                        if (mSongIsFavorClickListener != null) {
-//                            mSongIsFavorClickListener.onSongIsFavorClickListener();
-//                        }
-//                    }
                 }
             }
         });
@@ -350,14 +339,6 @@ public class MediaPlaybackFragment extends Fragment {
                             mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down_black);
                             mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
                         }
-//                        else if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 1) {
-//                            ContentValues values = new ContentValues();
-//                            values.put(MusicDB.IS_FAVORITE, 0);
-//                            getContext().getContentResolver().update(uri, values, null, null);
-//                            Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
-//                            mMediaDislikeButton.setImageResource(R.drawable.ic_thumb_down);
-//                            mMediaLikeButton.setImageResource(R.drawable.ic_thumb_up);
-//                        }
                         mSongIsFavorClickListener.onSongIsFavorClickListener();
                     }
                 }

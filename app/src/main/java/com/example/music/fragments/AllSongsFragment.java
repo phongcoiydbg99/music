@@ -40,7 +40,7 @@ import com.example.music.services.MediaPlaybackService;
  * Use the {@link AllSongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AllSongsFragment extends BaseSongsFragment  {
+public class AllSongsFragment extends BaseSongsFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -110,33 +110,37 @@ public class AllSongsFragment extends BaseSongsFragment  {
     }
 
     @Override
-    protected void updatePopupMenu(View v, Song song, final int pos) {
+    protected void updatePopupMenu(View v, final Song song, final int pos) {
         PopupMenu popup = new PopupMenu(v.getContext(), v);
         // Inflate the Popup using XML file.
-        popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                    int id = mSongData.getSongAt(pos).getId();
-                    Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
-                    Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
-                            null);
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                        ContentValues values = new ContentValues();
-                        if (item.getItemId() == R.id.action_add_songs) {
-                            values.put(MusicDB.IS_FAVORITE, 2);
-                            Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
-                        } else if (item.getItemId() == R.id.action_remove_songs) {
-                            values.put(MusicDB.IS_FAVORITE, 0);
-                            Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
-                        }
-                        getContext().getContentResolver().update(uri, values, null, null);
+        int id = song.getId();
+        final Uri uri = Uri.parse(MusicProvider.CONTENT_URI + "/" + id);
+        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null,
+                null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            Log.d(TAG, "updatePopupMenu: "+cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)));
+            if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2) {
+                popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
+            } else  popup.getMenuInflater().inflate(R.menu.menu_popup_add, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    ContentValues values = new ContentValues();
+                    if (item.getItemId() == R.id.action_add_songs) {
+                        values.put(MusicDB.IS_FAVORITE, 2);
+                        Toast.makeText(getActivity().getApplicationContext(), "Add Favorite", Toast.LENGTH_SHORT).show();
+                    } else if (item.getItemId() == R.id.action_remove_songs) {
+                        values.put(MusicDB.IS_FAVORITE, 0);
+                        Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                     }
-                return false;
-            }
-        });
+                    getContext().getContentResolver().update(uri, values, null, null);
+                    return false;
+                }
+            });
+        }
         popup.show();
+
     }
 
     @Override
@@ -219,12 +223,10 @@ public class AllSongsFragment extends BaseSongsFragment  {
         mSongData.setPlaying(isPlaying);
         mAdapter = new SongListAdapter(view.getContext(), mSongData);
         mSongList = mAdapter.getSongList();
-        if (mSongList.size() <= 0)
-        {
+        if (mSongList.size() <= 0) {
             mTextView.setText("Bạn chưa có bài hát");
             mTextView.setVisibility(View.VISIBLE);
-        }
-        else mTextView.setVisibility(View.INVISIBLE);
+        } else mTextView.setVisibility(View.INVISIBLE);
     }
 
     @Override
