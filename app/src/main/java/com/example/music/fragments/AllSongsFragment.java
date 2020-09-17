@@ -139,6 +139,7 @@ public class AllSongsFragment extends BaseSongsFragment {
                 }
             });
         }
+        cursor.close();
         popup.show();
 
     }

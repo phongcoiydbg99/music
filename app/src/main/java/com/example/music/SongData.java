@@ -108,7 +108,7 @@ public class SongData {
         return null;
     }
 
-    public int getSongIndex(LinkedList<Song> songList, int id){
+    public static int getSongIndex(LinkedList<Song> songList, int id){
         int pos = 0;
         if (songList.size() > 0) {
             for(Song song: songList){

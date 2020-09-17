@@ -411,8 +411,9 @@ public class MediaPlaybackService extends Service implements
                     values.put(MusicDB.IS_FAVORITE, 2);
                 }
                 getContentResolver().update(uri, values, null, null);
+                cursor.close();
             }
-            setStateMusic(song.getPos(), mSongData.getSongIndex(mSongList, song.getId()), song.getId());
+            setStateMusic(song.getPos(), SongData.getSongIndex(mSongList, song.getId()), song.getId());
             isFirst = false;
             Log.d(TAG, "play: " + currentSongIndex);
             mPlayer.reset();

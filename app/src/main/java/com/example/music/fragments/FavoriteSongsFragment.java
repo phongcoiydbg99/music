@@ -152,6 +152,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                             Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();
                             songRemoveFavoriteListener.onSongRemoveFavoriteListener();
                         }
+                        cursor.close();
                     }
 
                 }

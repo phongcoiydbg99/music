@@ -122,13 +122,13 @@ public class LandLayoutController extends LayoutController {
         int pos = holder.getAdapterPosition();
         if (isFavorite) {
             mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
-            Log.d(TAG, "onSongItemClick: " + SongData.getFavorAllSongs(mActivity).size());
         } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.play(song);
         mediaPlaybackService.setStateMusic(song.getPos(), holder.getAdapterPosition(), song.getId());
         Log.d(TAG, "onSongItemClick: " + holder.getAdapterPosition());
         mBaseSongsFragment.setStateMusic(holder.getAdapterPosition(), mediaPlaybackService.getCurrentSongId(), true);
         mBaseSongsFragment.setFavorite(isFavorite);
+        if (!isFavorite) mediaPlaybackService.setCurrentSongIndex(song.getPos()); else mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(SongData.getFavorAllSongs(mActivity),song.getId()));
         mBaseSongsFragment.updateUI();
 
         mediaPlaybackService.startForegroundService(pos, true);
