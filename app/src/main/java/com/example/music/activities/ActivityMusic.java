@@ -96,25 +96,24 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             public void onServiceConnected(ComponentName name, IBinder service) {
                 MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
                 mediaPlaybackService = binder.getMediaPlaybackService();
-                Log.d(TAG, "onServiceConnected() " + mediaPlaybackService.isFirst());
                 isConnected = true;
                 mediaPlaybackService.setRepeat(mSongLastIsRepeat);
                 mediaPlaybackService.setShuffle(mSongLastIsShuffle);
                 mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+                mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(),mSongLastId));
                 if (mediaPlaybackService.isFirst()) {
-                    Log.d(TAG, "onServiceConnected() " + mSongLastPossition);
-                    mediaPlaybackService.setCurrentSongPosition(mSongLastPossition);
+//                    mediaPlaybackService.setCurrentSongPosition(mSongLastPossition);
                     mediaPlaybackService.setCurrentSongId(mSongLastId);
                     mSongLastIsPlaying = false;
                 }
-                Log.d(TAG, "onServiceConnected() mSongLastDuration " + mSongLastDuration);
+                Log.d(TAG, "onServiceConnected() mSongLastDuration " + mSongLastPossition);
 
-                mLayoutController.setConnected(true);
-                mLayoutController.onConnection();
                 if (isFavoriteLayout) {
                     getSupportActionBar().setTitle("Favorite Songs");
                     mLayoutController.onCreateFavorite();
                 }
+                mLayoutController.setConnected(true);
+                mLayoutController.onConnection();
             }
 
 
@@ -131,12 +130,10 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
             isFavoriteLayout = savedInstanceState.getBoolean(IS_FAVORITE_LAYOUT);
         }
-        Log.d(TAG, "onCreate: "+mSongLastIsPlaying);
         mPreferences = getSharedPreferences(SHARED_PREF_FILE, Context.MODE_PRIVATE);
         mSongLastId = mPreferences.getInt(LayoutController.LAST_SONG_ID_EXTRA, -1);
         mSongLastIsRepeat = mPreferences.getInt(LayoutController.LAST_SONG_IS_REPEAT_EXTRA, MediaPlaybackService.NORMAL);
         mSongLastIsShuffle =  mPreferences.getInt(LayoutController.LAST_SONG_IS_SHUFFLE_EXTRA, MediaPlaybackService.NORMAL);
-        Log.d(TAG, "onCreate: " + mSongLastId);
         permission();
     }
 
@@ -148,7 +145,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             Helper.getAllSongs(this);
             mSongData = new SongData(getApplicationContext());
             startService();
-            mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos() : -1;
+//            mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos() : -1;
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
         }
     }

@@ -149,9 +149,9 @@ public class MediaPlaybackService extends Service implements
         return START_NOT_STICKY;
     }
 
-    public void startForegroundService(int currentSongPosition, boolean isPlaying) {
-        if (currentSongPosition >= 0) {
-            Song song = mSongList.get(currentSongPosition);
+    public void startForegroundService(int currentSongIndex, boolean isPlaying) {
+        if (currentSongIndex >= 0) {
+            Song song = mSongList.get(currentSongIndex);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //            showNotification(song, isPlaying);
                 startForeground(NOTIFICATION_ID, showNotification(song, isPlaying));

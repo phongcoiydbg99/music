@@ -167,9 +167,9 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
         if (mediaPlaybackService != null) {
             Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
-            if (song != null) {
-                mSongCurrentPosition = mSongData.getCurrentSongPossition();
-            } else mSongCurrentPosition = -1;
+//            if (song != null) {
+//                mSongCurrentPosition = mSongData.getCurrentSongPossition();
+//            } else mSongCurrentPosition = -1;
             updateUI();
         }
     }
@@ -180,9 +180,9 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
             Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             Log.d(TAG, String.valueOf("onReceive: " + song == null));
-            if (song != null) {
-                mSongCurrentPosition = mSongData.getCurrentSongPossition();
-            } else mSongCurrentPosition = -1;
+//            if (song != null) {
+//                mSongCurrentPosition = mSongData.getCurrentSongPossition();
+//            } else mSongCurrentPosition = -1;
             updateUI();
         }
     }
@@ -197,9 +197,9 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
         if (mediaPlaybackService != null) {
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             Song song = mSongData.getSongId(mediaPlaybackService.getCurrentSongId());
-            if (song != null) {
-                mSongCurrentPosition = mSongData.getCurrentSongPossition();
-            } else mSongCurrentPosition = -1;
+//            if (song != null) {
+//                mSongCurrentPosition = mSongData.getCurrentSongPossition();
+//            } else mSongCurrentPosition = -1;
             mSongData.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
             mSongData.setPlaying(mediaPlaybackService.isPlaying());
         }

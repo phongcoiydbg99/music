@@ -47,9 +47,7 @@ public class Helper {
 
                 Song song = new Song(pos, id, title, artistName, data, duration);
                 Cursor cursorDB = context.getContentResolver().query(MusicProvider.CONTENT_URI, projectionDB, null, null, null);
-                Log.d(TAG, "getAllSongs: ----------------" + pos);
                 if (cursorDB.moveToPosition(pos)) {
-                    Log.d(TAG, "getAllSongs: " + String.valueOf(cursorDB.getString(cursorDB.getColumnIndexOrThrow(MusicDB.IS_FAVORITE))) + " " + pos);
                 } else {
                     ContentValues values = new ContentValues();
                     values.put(MusicDB.ID_PROVIDER, id);

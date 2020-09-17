@@ -59,7 +59,7 @@ public class MediaPlaybackFragment extends Fragment {
     private long mSongCurrentDuration;
     private long mSongCurrentStreamPossition;
     private boolean isPlaying;
-    private int mSongCurrentPosition;
+    private int mSongCurrentIndex;
     private int mSongCurrentId = -1;
 
     private boolean isPortrait = true;
@@ -95,7 +95,7 @@ public class MediaPlaybackFragment extends Fragment {
      * @return A new instance of fragment MediaPlaybackFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MediaPlaybackFragment newInstance(Boolean isPortrait, String title, String artist, String data, long duration, int pos, long current, boolean isPlaying) {
+    public static MediaPlaybackFragment newInstance(Boolean isPortrait, String title, String artist, String data, long duration, long current, boolean isPlaying) {
         MediaPlaybackFragment fragment = new MediaPlaybackFragment();
         Bundle args = new Bundle();
         args.putBoolean(IS_PORTRAIT, isPortrait);
@@ -105,7 +105,6 @@ public class MediaPlaybackFragment extends Fragment {
         args.putLong(DURATION, duration);
         args.putLong(CURRENT_STREAM_POSSITION, current);
         args.putBoolean(IS_PLAYING, isPlaying);
-        args.putInt(SONG_POSSITON, pos);
         Log.d(TAG, "newInstance: " + artist);
         fragment.setArguments(args);
         return fragment;
@@ -118,13 +117,12 @@ public class MediaPlaybackFragment extends Fragment {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
                 isPlaying = !state.equals("play_done");
                 if (mediaPlaybackService != null) {
-                    mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
-                    if (mSongCurrentPosition < 0) mSongCurrentPosition = 0;
-                    Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
+                    mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
+                    if (mSongCurrentIndex < 0) mSongCurrentIndex = 0;
+                    Song song = mediaPlaybackService.getSongList().get(mSongCurrentIndex);
                     mSongCurrentStreamPossition = mediaPlaybackService.getCurrentStreamPosition();
-                    updateSongCurrentData(song, mSongCurrentPosition, isPlaying);
+                    updateSongCurrentData(song, isPlaying);
                     updateUI();
-                    Log.d(TAG, "song complete: " + isPlaying + " " + mSongCurrentPosition);
                 }
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
@@ -139,10 +137,9 @@ public class MediaPlaybackFragment extends Fragment {
                     mMediaPlayButton.setImageResource(R.drawable.ic_play_circle);
                 } else {
                     if (mediaPlaybackService != null) {
-                        mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
-                        Log.d(TAG, "onReceive: song play change " + mSongCurrentPosition);
-                        Song song = mediaPlaybackService.getSongData().getSongAt(mSongCurrentPosition);
-                        updateSongCurrentData(song, mSongCurrentPosition, true);
+                        mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
+                        Song song = mediaPlaybackService.getSongList().get(mSongCurrentIndex);
+                        updateSongCurrentData(song, true);
                         updateUI();
                         mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), true);
                     }
@@ -168,9 +165,7 @@ public class MediaPlaybackFragment extends Fragment {
             mSongCurrentData = getArguments().getString(DATA);
             mSongCurrentDuration = getArguments().getLong(DURATION);
             isPlaying = getArguments().getBoolean(IS_PLAYING);
-            mSongCurrentPosition = getArguments().getInt(SONG_POSSITON);
             mSongCurrentStreamPossition = getArguments().getLong(CURRENT_STREAM_POSSITION);
-            Log.d(TAG, "onCreate: " + mSongCurrentPosition);
         }
         updateSeekBarThread = new UpdateSeekBarThread();
         updateSeekBarThread.start();
@@ -405,13 +400,12 @@ public class MediaPlaybackFragment extends Fragment {
         });
     }
 
-    public void updateSongCurrentData(Song song, int pos, boolean isplaying) {
+    public void updateSongCurrentData(Song song, boolean isplaying) {
         mSongCurrentTitle = song.getTitle();
         mSongCurrentArtist = song.getArtistName();
         mSongCurrentData = song.getData();
         mSongCurrentDuration = song.getDuration();
         isPlaying = isplaying;
-        mSongCurrentPosition = pos;
     }
 
     public void updateUI() {

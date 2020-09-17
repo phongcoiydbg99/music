@@ -220,7 +220,7 @@ public class AllSongsFragment extends BaseSongsFragment {
     }
 
     public interface SongPlayClickListener {
-        void onSongPlayClickListener(View v, Song song, int pos, long current, boolean isPlaying);
+        void onSongPlayClickListener(View v, Song song, long current, boolean isPlaying);
     }
 
 }
