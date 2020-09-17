@@ -28,7 +28,6 @@ public class PortLayoutController extends LayoutController {
     private boolean isPlaying;
     private int mCurrentSongPossion;
     private int mCurrentSongId;
-    private boolean onClick = false;
 
     public PortLayoutController(AppCompatActivity activity) {
         super(activity);

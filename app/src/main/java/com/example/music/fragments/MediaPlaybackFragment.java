@@ -379,18 +379,14 @@ public class MediaPlaybackFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (mediaPlaybackService != null && fromUser) {
                     if (mediaPlaybackService.isFirst()) {
-                        try {
-                            mediaPlaybackService.play(mediaPlaybackService.getCurrentSongIndex());
-                            Thread.sleep(5);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        mediaPlaybackService.play(mediaPlaybackService.getCurrentSongIndex());
+                        mSongCurrentDuration = (int) mediaPlaybackService.getDuration();
                         Log.d(TAG, "onProgressChanged: " + mediaPlaybackService.isPlaying());
-                        mediaPlaybackService.setFirst(false);
                         mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongPosition(), true);
                         isPlaying = true;
                         mMediaPlayButton.setImageResource(R.drawable.ic_pause_circle);
                         updateSeekBarThread.updateSeekBar();
+                        mediaPlaybackService.sendMessageChangeState("song_state_play");
                     }
                     mediaPlaybackService.seekTo(progress * 1000);
                 }

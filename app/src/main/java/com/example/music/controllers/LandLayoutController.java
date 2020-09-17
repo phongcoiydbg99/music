@@ -78,6 +78,7 @@ public class LandLayoutController extends LayoutController {
 
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
         mBaseSongsFragment.setStateMusic(mediaPlaybackService.getCurrentSongPosition(), mediaPlaybackService.getCurrentSongId(), mediaPlaybackService.isPlaying());
+        mBaseSongsFragment.setFavorite(isFavorite);
 
         mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
@@ -127,7 +128,9 @@ public class LandLayoutController extends LayoutController {
         mediaPlaybackService.setStateMusic(song.getPos(), holder.getAdapterPosition(), song.getId());
         Log.d(TAG, "onSongItemClick: " + holder.getAdapterPosition());
         mBaseSongsFragment.setStateMusic(holder.getAdapterPosition(), mediaPlaybackService.getCurrentSongId(), true);
+        mBaseSongsFragment.setFavorite(isFavorite);
         mBaseSongsFragment.updateUI();
+
         mediaPlaybackService.startForegroundService(pos, true);
         if (isConnected)
             mMediaPlaybackFragment.updateSongCurrentData(mediaPlaybackService.getSongList().get(pos), pos, true);

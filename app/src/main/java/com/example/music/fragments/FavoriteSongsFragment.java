@@ -50,7 +50,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String TAG = AllSongsFragment.class.getSimpleName();
+    private static final String TAG = FavoriteSongsFragment.class.getSimpleName();
     private static final String IS_PORTRAIT = "is_portrait";
     // TODO: Rename and change types of parameters
 
@@ -146,6 +146,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                                         mediaPlaybackService.setCurrentSongIndex(index);
                                     }
                                     mediaPlaybackService.setSongList(mSongData.getSongListFavor());
+                                    Log.d(TAG, "onMenuItemClick: "+mSongData.getSongListFavor().size());
                                 }
                             }
                             Toast.makeText(getActivity().getApplicationContext(), "Remove Favorite", Toast.LENGTH_SHORT).show();

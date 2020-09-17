@@ -269,10 +269,10 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion:1 " + mPlayer.getDuration() + " * " + mPlayer.getCurrentPosition() + "*" + currentSongIndex);
+        Log.d(TAG, "onCompletion:1 " + mPlayer.getDuration()/1000 + " * " + mPlayer.getCurrentPosition()/1000 + "*" + String.valueOf(mPlayer == null));
         Log.d(TAG, "onCompletion:2 " + mp.getDuration() + " * " + mp.getCurrentPosition() + "*" + isFirst);
         String state = "play_normal";
-        if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0 && !isFirst) {
+        if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0 && !isFirst && Math.abs(mPlayer.getDuration()/1000 - mPlayer.getCurrentPosition()/1000) <=3 ) {
             if (isRepeat == REPEAT) {
                 play(currentSongIndex);
                 state = "play_repeat";
@@ -289,7 +289,7 @@ public class MediaPlaybackService extends Service implements
                 play(currentSongIndex);
                 state = "play_is_shuffe";
                 startForegroundService(currentSongIndex, true);
-            } else if (isRepeat == NORMAL) {
+            } else {
                 currentSongIndex++;
                 if (currentSongIndex != mSongList.size()) {
                     play(currentSongIndex);
@@ -313,6 +313,7 @@ public class MediaPlaybackService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
+        Log.d(TAG, "onPrepared: ");
     }
 
     public int getCurrentSongPosition() {
@@ -345,10 +346,6 @@ public class MediaPlaybackService extends Service implements
 
     public SongData getSongData() {
         return mSongData;
-    }
-
-    public void setSongData(SongData mSongData) {
-        this.mSongData = mSongData;
     }
 
     public LinkedList<Song> getSongList() {
@@ -416,11 +413,13 @@ public class MediaPlaybackService extends Service implements
                 getContentResolver().update(uri, values, null, null);
             }
             setStateMusic(song.getPos(), mSongData.getSongIndex(mSongList, song.getId()), song.getId());
+            isFirst = false;
             Log.d(TAG, "play: " + currentSongIndex);
             mPlayer.reset();
             try {
                 mPlayer.setDataSource(song.getData());
                 mPlayer.prepareAsync();
+                mPlayer.start();
             } catch (Exception e) {
                 Log.e(TAG, "Error playing from data source", e);
             }
