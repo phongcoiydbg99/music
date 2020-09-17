@@ -272,7 +272,7 @@ public class MediaPlaybackService extends Service implements
         Log.d(TAG, "onCompletion:1 " + mPlayer.getDuration()/1000 + " * " + mPlayer.getCurrentPosition()/1000 + "*" + String.valueOf(mPlayer == null));
         Log.d(TAG, "onCompletion:2 " + mp.getDuration() + " * " + mp.getCurrentPosition() + "*" + isFirst);
         String state = "play_normal";
-        if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0 && !isFirst && Math.abs(mPlayer.getDuration()/1000 - mPlayer.getCurrentPosition()/1000) <=3 ) {
+        if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0 && !isFirst && Math.abs(mPlayer.getDuration()/1000 - mPlayer.getCurrentPosition()/1000) <=3 || mPlayer.getDuration() == 0 ) {
             if (isRepeat == REPEAT) {
                 play(currentSongIndex);
                 state = "play_repeat";
