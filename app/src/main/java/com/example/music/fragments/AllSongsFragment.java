@@ -191,7 +191,7 @@ public class AllSongsFragment extends BaseSongsFragment {
     @Override
     public void onReceiverSongComplete() {
         if (mediaPlaybackService != null) {
-            mSongCurrentPosition = mediaPlaybackService.getCurrentSongPosition();
+            mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             updateUI();
         }

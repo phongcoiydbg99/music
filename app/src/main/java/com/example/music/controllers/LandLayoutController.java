@@ -22,7 +22,7 @@ public class LandLayoutController extends LayoutController {
     private SongData mSongData;
     private Song mSong;
     private boolean mIsPlaying;
-    private int mCurrentSongPossion;
+    private int mSongCurrentIndex;
     private int mSongCurrentStreamPossition;
     private int mCurrentSongId;
 
@@ -33,20 +33,33 @@ public class LandLayoutController extends LayoutController {
     @Override
     public void onCreate(Bundle savedInstanceState, int songPos, int songId, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.contentAllSongs_land) != null) {
-            if (songPos < 0) songPos = 0;
-            mCurrentSongPossion = songPos;
             mIsPlaying = isPlaying;
-            mSongCurrentStreamPossition = (int) songDuration;
             isFavorite = false;
-            mCurrentSongId =songId;
-            Log.d(TAG, "onCreate: " + " * " + " " + isPlaying);
+            mSongData = new SongData(mActivity.getApplicationContext());
+            mSong = mSongData.getSongId(songId);
+            mSongCurrentIndex = songPos;
+            if (mSong == null)  {
+                mSong = mSongData.getSongAt(0);
+                mSongCurrentIndex = 0;
+            }
+            Log.d(TAG, "onCreate: " + " * " + " " + mSong.getDuration());
+            Log.d(TAG, "onCreate: " + " * " + " " + songId);
+            if (songDuration > mSong.getDuration()) mSongCurrentStreamPossition = 0; else mSongCurrentStreamPossition = (int) songDuration;
+            mCurrentSongId = mSong.getId();
+            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(false, mSong.getTitle(), mSong.getArtistName(), mSong.getData(), mSong.getDuration(), mSongCurrentStreamPossition, mIsPlaying);
+            mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
 
             // Create a new Fragment to be placed in the activity layout
             mBaseSongsFragment = AllSongsFragment.newInstance(false);
-            mBaseSongsFragment.setStateMusic(mCurrentSongPossion, mCurrentSongId, mIsPlaying);
+            mBaseSongsFragment.setStateMusic(mSongCurrentIndex, mCurrentSongId, mIsPlaying);
 
             setListener();
 
+
+            mActivity.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_all_songs, mBaseSongsFragment)
+                    .replace(R.id.fragment_media, mMediaPlaybackFragment)
+                    .commit();
         }
     }
 
@@ -81,32 +94,26 @@ public class LandLayoutController extends LayoutController {
     @Override
     public void onConnection() {
         Log.d(TAG, "onConnection: " + mSongCurrentStreamPossition + " " + mediaPlaybackService.getDuration());
-        Log.d(TAG, "onConnection: " + mCurrentSongPossion + " " + mediaPlaybackService.getCurrentStreamPosition());
+        Log.d(TAG, "onConnection: " + mSongCurrentIndex + " " + mediaPlaybackService.getCurrentStreamPosition());
         Log.d(TAG, "onConnection: " + mCurrentSongId);
         if (isConnected) {
-            mSong = mediaPlaybackService.getSongList().get(mediaPlaybackService.getCurrentSongIndex());
-            if (mSongCurrentStreamPossition > mSong.getDuration()) mSongCurrentStreamPossition = 0;
-            mCurrentSongId = mSong.getId();
-            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(false, mSong.getTitle(), mSong.getArtistName(), mSong.getData(), mSong.getDuration(), mSongCurrentStreamPossition, mIsPlaying);
-            mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
 
             mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
 
-            if (mCurrentSongPossion >= 0) {
-                mediaPlaybackService.setCurrentSongIndex(mCurrentSongPossion);
-                mediaPlaybackService.setCurrentSongId(mCurrentSongId);
-                mediaPlaybackService.startForegroundService(mCurrentSongPossion, mIsPlaying);
+            if (mSongCurrentIndex < 0) {
+                mSongCurrentIndex = SongData.getSongIndex(mediaPlaybackService.getSongList(),mCurrentSongId);
             }
-            mBaseSongsFragment.setStateMusic(mCurrentSongPossion, mCurrentSongId, mIsPlaying);
-            mBaseSongsFragment.updateUI();
-//            mMediaPlaybackFragment.updateSongCurrentData(mediaPlaybackService.getSongList().get(mCurrentSongPossion), mIsPlaying);
-//            mMediaPlaybackFragment.updateUI();
+            mediaPlaybackService.setCurrentSongIndex(mSongCurrentIndex);
+            mediaPlaybackService.setCurrentSongId(mCurrentSongId);
+            mediaPlaybackService.startForegroundService(mSongCurrentIndex, mIsPlaying);
 
-            mActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_all_songs, mBaseSongsFragment)
-                    .replace(R.id.fragment_media, mMediaPlaybackFragment)
-                    .commit();
+            mBaseSongsFragment.setStateMusic(mSongCurrentIndex, mCurrentSongId, mIsPlaying);
+            mBaseSongsFragment.updateUI();
+
+            mMediaPlaybackFragment.updateSongCurrentData(mediaPlaybackService.getSongList().get(mSongCurrentIndex), mIsPlaying);
+            mMediaPlaybackFragment.updateUI();
+
         }
     }
 

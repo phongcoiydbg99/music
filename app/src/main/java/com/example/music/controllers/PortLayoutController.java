@@ -26,7 +26,7 @@ import com.example.music.fragments.MediaPlaybackFragment;
 public class PortLayoutController extends LayoutController {
     public static final String TAG = "PortLayoutController";
     private boolean isPlaying;
-    private int mCurrentSongPossion;
+    private int mSongCurrentIndex;
     private int mCurrentSongId;
 
     public PortLayoutController(AppCompatActivity activity) {
@@ -39,7 +39,7 @@ public class PortLayoutController extends LayoutController {
             // Create a new Fragment to be placed in the activity layout
             Log.d(TAG, "onCreate: " + songPos);
             isFavorite = false;
-            mCurrentSongPossion = songPos;
+            mSongCurrentIndex = songPos;
             mCurrentSongId = songId;
             mBaseSongsFragment = AllSongsFragment.newInstance(true);
             setListener();
@@ -81,15 +81,12 @@ public class PortLayoutController extends LayoutController {
         if (isConnected) {
             mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
             isPlaying = mediaPlaybackService.isPlaying();
-            Log.d(TAG, "onConnection: " + mCurrentSongPossion);
-            if (mCurrentSongPossion >= 0) {
+            Log.d(TAG, "onConnection: " + mSongCurrentIndex);
                 mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
-                mediaPlaybackService.setCurrentSongIndex(mCurrentSongPossion);
-                mediaPlaybackService.startForegroundService(mCurrentSongPossion, isPlaying);
-            }
-
+                mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(),mCurrentSongId));
+                mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), isPlaying);
             if (isPlaying) {
-                mBaseSongsFragment.setStateMusic(mCurrentSongPossion, mCurrentSongId, true);
+                mBaseSongsFragment.setStateMusic(mSongCurrentIndex, mCurrentSongId, true);
                 mBaseSongsFragment.updateUI();
             }
         }

@@ -165,7 +165,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
     @Override
     public void onReceiverSongComplete() {
         if (mediaPlaybackService != null) {
-            Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
+//            Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
 //            if (song != null) {
 //                mSongCurrentPosition = mSongData.getCurrentSongPossition();
@@ -177,9 +177,8 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
     @Override
     public void onReceiverSongChange() {
         if (mediaPlaybackService != null){
-            Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
+//            Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
-            Log.d(TAG, String.valueOf("onReceive: " + song == null));
 //            if (song != null) {
 //                mSongCurrentPosition = mSongData.getCurrentSongPossition();
 //            } else mSongCurrentPosition = -1;

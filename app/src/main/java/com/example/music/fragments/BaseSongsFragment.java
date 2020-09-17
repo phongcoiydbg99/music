@@ -81,6 +81,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                     isPlaying = false;
                 } else {
                     mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                    mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
                     isPlaying = true;
                 }
                 onReceiverSongChange();
@@ -134,7 +135,6 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             mAdapter.setOnSongItemClickListener(mSongItemClickListener);
         }
 
-        Log.d(TAG, String.valueOf(mediaPlaybackService != null));
         if (mediaPlaybackService != null && mSongCurrentId >= 0) {
             mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
             isPlaying = mediaPlaybackService.isPlaying();
@@ -146,7 +146,6 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         mSongPlayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: start" + mediaPlaybackService.isFirst());
                 if (mediaPlaybackService.isPlaying()) {
                     mediaPlaybackService.pause();
                     mSongPlayBtn.setImageResource(R.drawable.ic_media_play_light);
@@ -174,10 +173,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             @Override
             public void onClick(View v) {
                 if (songPlayClickListener != null)
-                    Log.d(TAG, String.valueOf(mediaPlaybackService == null));
                 isPlaying = mediaPlaybackService.isPlaying();
                 int mCurrentStreamPosition = mediaPlaybackService.getCurrentStreamPosition() > mSong.getDuration() ? 0 : mediaPlaybackService.getCurrentStreamPosition();
-                Log.d(TAG, "onClick: " + String.valueOf(mediaPlaybackService.getDuration()) + " " + mSong.getDuration());
                 songPlayClickListener.onSongPlayClickListener(v, mSong, mCurrentStreamPosition, mediaPlaybackService.isPlaying());
             }
         });
@@ -237,8 +234,8 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
         }
     }
 
-    public void setStateMusic(int position, int id, boolean playing){
-        mSongCurrentIndex = position;
+    public void setStateMusic(int index, int id, boolean playing){
+        mSongCurrentIndex = index;
         mSongCurrentId = id;
         isPlaying = playing;
     }
@@ -254,11 +251,12 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             }
             mSongData.setSongCurrentId(mSongCurrentId);
-            mRecyclerView.scrollToPosition(mSongCurrentIndex);
+            int pos = (mSongCurrentIndex - 2) > 0 ? (mSongCurrentIndex - 2) : 0;
+            mRecyclerView.scrollToPosition(pos);
             mAdapter.notifyDataSetChanged();
             SongData songData = new SongData(getActivity().getApplicationContext());
             Song song = songData.getSongId(mSongCurrentId);
-            Log.d(TAG, "updateUI: "+song.getId());
+            Log.d(TAG, "updateUI: "+ mSongCurrentIndex);
             if (isPortrait) updatePlaySongLayout(song);
         }
     }
