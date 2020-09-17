@@ -75,17 +75,22 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
-                if (state == "song_state_play") {
-                    isPlaying = true;
-                } else if (state == "song_state_pause") {
-                    isPlaying = false;
+                if (state == "chance_data"){
+                    refresh();
                 } else {
-                    mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
-                    mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
-                    isPlaying = true;
+                    if (state == "song_state_play") {
+                        isPlaying = true;
+                    } else if (state == "song_state_pause") {
+                        isPlaying = false;
+                    } else {
+                        mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                        mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
+                        isPlaying = true;
+                    }
+                    onReceiverSongChange();
                 }
-                onReceiverSongChange();
             }
+
         }
     };
 
