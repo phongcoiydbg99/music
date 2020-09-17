@@ -69,12 +69,14 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                 if (intent.getAction() == MediaPlaybackService.SONG_PLAY_COMPLETE) {
                     String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_COMPLETE);
+                    mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
                     isPlaying = !state.equals("play_done");
                     onReceiverSongComplete();
                 }
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
+                mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
                 if (state == "chance_data"){
                     refresh();
                 } else {
@@ -84,7 +86,6 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                         isPlaying = false;
                     } else {
                         mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
-                        mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
                         isPlaying = true;
                     }
                     onReceiverSongChange();
@@ -256,7 +257,9 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 mSongCurrentId = mediaPlaybackService.getCurrentSongId();
             }
             mSongData.setSongCurrentId(mSongCurrentId);
-            int pos = (mSongCurrentIndex - 2) > 0 ? (mSongCurrentIndex - 2) : 0;
+            int pos;
+            if (isPortrait) pos = mSongCurrentIndex; else
+            pos = (mSongCurrentIndex - 2) > 0 ? (mSongCurrentIndex - 2) : 0;
             mRecyclerView.scrollToPosition(pos);
             mAdapter.notifyDataSetChanged();
             SongData songData = new SongData(getActivity().getApplicationContext());
