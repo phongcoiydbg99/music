@@ -29,6 +29,7 @@ public class MusicProvider extends ContentProvider {
     // *: Matches a string of any valid characters of any length.
     // #: Matches a string of numeric characters of any length.
     private static final UriMatcher uriMatcher;
+
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, "music", URI_ALL_ITEMS_CODE);
@@ -37,6 +38,7 @@ public class MusicProvider extends ContentProvider {
 
     public MusicProvider() {
     }
+
     // system calls onCreate() when it starts up the provider.
     @Override
     public boolean onCreate() {

@@ -68,7 +68,6 @@ public class MediaPlaybackService extends Service implements
     private MediaPlayer mPlayer;
     private AudioManager mAudioManager;
     private LinkedList<Song> mSongList = new LinkedList<>();
-    private SongData mSongData;
     private int isRepeat;
     private int isShuffle;
     private boolean isFirst = true;
@@ -85,7 +84,8 @@ public class MediaPlaybackService extends Service implements
         super.onCreate();
         mPlayer = new MediaPlayer();
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
-        mSongData = new SongData(this);
+        mAudioManager.requestAudioFocus(this,AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        SongData mSongData = new SongData(this);
         mSongList = mSongData.getSongList();
         // init service
         mPlayer.setOnPreparedListener(this);
@@ -187,7 +187,6 @@ public class MediaPlaybackService extends Service implements
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art_song_default);
         }
-        Log.d(TAG, "showNotification: " + bitmap);
         RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
         RemoteViews notificationLayoutExpanded = new RemoteViews(getPackageName(), R.layout.notification_large);
 

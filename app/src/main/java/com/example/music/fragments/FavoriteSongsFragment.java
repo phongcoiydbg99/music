@@ -138,7 +138,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
                                 mediaPlaybackService.setCurrentSongIndex(mediaPlaybackService.getCurrentSongPosition());
                                 mediaPlaybackService.setSongList(mSongData.getSongList());
                             } else {
-                                if (isFavorite == true) {
+                                if (isFavorite) {
                                     if (pos < mediaPlaybackService.getCurrentSongIndex()){
                                         int index = mediaPlaybackService.getCurrentSongIndex()-1;
                                         if (index < 0) index = 0;
@@ -165,11 +165,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
     @Override
     public void onReceiverSongComplete() {
         if (mediaPlaybackService != null) {
-//            Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
-//            if (song != null) {
-//                mSongCurrentPosition = mSongData.getCurrentSongPossition();
-//            } else mSongCurrentPosition = -1;
             updateUI();
         }
     }
@@ -177,11 +173,7 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
     @Override
     public void onReceiverSongChange() {
         if (mediaPlaybackService != null){
-//            Song song = mSongData.getSongFavorId(mediaPlaybackService.getCurrentSongId());
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
-//            if (song != null) {
-//                mSongCurrentPosition = mSongData.getCurrentSongPossition();
-//            } else mSongCurrentPosition = -1;
             updateUI();
         }
     }
@@ -195,10 +187,6 @@ public class FavoriteSongsFragment extends BaseSongsFragment  {
     public void updateAdapter() {
         if (mediaPlaybackService != null) {
             mSongCurrentId = mediaPlaybackService.getCurrentSongId();
-            Song song = mSongData.getSongId(mediaPlaybackService.getCurrentSongId());
-//            if (song != null) {
-//                mSongCurrentPosition = mSongData.getCurrentSongPossition();
-//            } else mSongCurrentPosition = -1;
             mSongData.setSongCurrentId(mediaPlaybackService.getCurrentSongId());
             mSongData.setPlaying(mediaPlaybackService.isPlaying());
         }

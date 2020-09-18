@@ -78,31 +78,27 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onConnection() {
-        if (isConnected) {
-            mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-            isPlaying = mediaPlaybackService.isPlaying();
-            Log.d(TAG, "onConnection: " + mSongCurrentIndex);
-                mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
-                mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(),mCurrentSongId));
-                mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), isPlaying);
-                mBaseSongsFragment.setStateMusic(mSongCurrentIndex, mCurrentSongId, isPlaying);
-                if (isPlaying)
-                mBaseSongsFragment.updateUI();
-        }
+        mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
+        isPlaying = mediaPlaybackService.isPlaying();
+        Log.d(TAG, "onConnection: " + mSongCurrentIndex);
+        mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
+        mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(), mCurrentSongId));
+        mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), isPlaying);
+        mBaseSongsFragment.setStateMusic(mSongCurrentIndex, mCurrentSongId, isPlaying);
+        if (isPlaying)
+            mBaseSongsFragment.updateUI();
 
     }
 
     @Override
     public void onSongPlayClickListener(View v, Song song, long current, boolean isPlaying) {
         Log.d(TAG, "onSongPlayClick: " + mediaPlaybackService.getCurrentSongIndex());
-        if (isConnected) {
-            mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true, song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), current, isPlaying);
-            mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
-            mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
-            mActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
-            mActivity.getSupportActionBar().hide();
-        }
+        mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true, song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), current, isPlaying);
+        mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
+        mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
+        mActivity.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_all_songs, mMediaPlaybackFragment).addToBackStack(null).commit();
+        mActivity.getSupportActionBar().hide();
     }
 
     @Override
@@ -113,7 +109,7 @@ public class PortLayoutController extends LayoutController {
             Log.d(TAG, "onSongItemClick: " + SongData.getFavorAllSongs(mActivity).size());
         } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.play(song);
-        int index = (!isFavorite) ? song.getPos() : SongData.getSongIndex(SongData.getFavorAllSongs(mActivity),song.getId());
+        int index = (!isFavorite) ? song.getPos() : SongData.getSongIndex(SongData.getFavorAllSongs(mActivity), song.getId());
         Log.d(TAG, "onSongItemClick: " + index);
         mediaPlaybackService.startForegroundService(index, true);
         mediaPlaybackService.setStateMusic(song.getPos(), index, song.getId());

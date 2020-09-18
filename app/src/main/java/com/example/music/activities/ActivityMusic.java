@@ -62,7 +62,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private LayoutController mLayoutController;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private boolean isConnected = false;
     private int mSongLastPossition = -1;
     private long mSongLastDuration = -1;
     private Boolean isFavoriteLayout = false;
@@ -70,7 +69,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private int mSongLastIsRepeat ;
     private int mSongLastIsShuffle ;
     private int mSongLastId = -1;
-    private SongData mSongData;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -96,13 +94,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             public void onServiceConnected(ComponentName name, IBinder service) {
                 MediaPlaybackService.MediaPlaybackBinder binder = (MediaPlaybackService.MediaPlaybackBinder) service;
                 mediaPlaybackService = binder.getMediaPlaybackService();
-                isConnected = true;
                 mediaPlaybackService.setRepeat(mSongLastIsRepeat);
                 mediaPlaybackService.setShuffle(mSongLastIsShuffle);
-                mLayoutController.setMediaPlaybackService(mediaPlaybackService);
                 mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(),mSongLastId));
+                mLayoutController.setMediaPlaybackService(mediaPlaybackService);
+
                 if (mediaPlaybackService.isFirst()) {
-//                    mediaPlaybackService.setCurrentSongPosition(mSongLastPossition);
                     mediaPlaybackService.setCurrentSongId(mSongLastId);
                     mSongLastIsPlaying = false;
                 }
@@ -112,14 +109,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                     getSupportActionBar().setTitle("Favorite Songs");
                     mLayoutController.onCreateFavorite();
                 }
-                mLayoutController.setConnected(true);
                 mLayoutController.onConnection();
             }
 
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                isConnected = false;
             }
         };
         mLayoutController = isPortrait ? new PortLayoutController(this)
@@ -143,9 +138,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
         } else {
             Helper.getAllSongs(this);
-            mSongData = new SongData(getApplicationContext());
             startService();
-//            mSongLastPossition = mSongData.getSongId(mSongLastId) != null ? mSongData.getSongId(mSongLastId).getPos() : -1;
             mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
         }
     }
@@ -184,13 +177,11 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
-        if (isConnected) {
+        if (mediaPlaybackService != null) {
             mediaPlaybackService.saveData();
             mediaPlaybackService.cancelNotification();
             unbindService(mServiceConnection);
-            isConnected = false;
         }
-//        stopService(playIntent);
     }
 
     @Override
@@ -207,7 +198,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 Helper.getAllSongs(this);
-                mSongData = new SongData(getApplicationContext());
                 startService();
                 mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
             } else {

@@ -494,7 +494,7 @@ public class MediaPlaybackFragment extends Fragment {
                                     try {
                                         current = mediaPlaybackService.getCurrentStreamPosition();
                                     } catch (IllegalStateException e) {
-//                                    e.printStackTrace();
+                                        e.printStackTrace();
                                     }
                                     if (getActivity() != null) {
                                         final long finalCurrent = current;

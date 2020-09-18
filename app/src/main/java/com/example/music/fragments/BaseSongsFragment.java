@@ -86,6 +86,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                         isPlaying = false;
                     } else {
                         mSongCurrentPosition = Integer.parseInt(intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE));
+                        mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
                         isPlaying = true;
                     }
                     onReceiverSongChange();
