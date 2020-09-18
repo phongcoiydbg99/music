@@ -256,6 +256,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             mSongData.setPlaying(isPlaying);
             if (mediaPlaybackService != null){
                 mSongCurrentId = mediaPlaybackService.getCurrentSongId();
+                mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
             }
             mSongData.setSongCurrentId(mSongCurrentId);
             int pos;
