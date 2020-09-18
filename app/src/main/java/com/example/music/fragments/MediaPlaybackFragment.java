@@ -324,7 +324,7 @@ public class MediaPlaybackFragment extends Fragment {
                             null);
                     if (cursor != null) {
                         cursor.moveToFirst();
-                        if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2) {
+                        if (cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 2 || cursor.getInt(cursor.getColumnIndex(MusicDB.IS_FAVORITE)) == 0) {
                             ContentValues values = new ContentValues();
                             values.put(MusicDB.IS_FAVORITE, 1);
                             getContext().getContentResolver().update(uri, values, null, null);
