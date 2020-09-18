@@ -43,7 +43,7 @@ import static android.support.v4.media.session.MediaSessionCompat.*;
 
 public class MediaPlaybackService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener {
+        MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
     private static final String TAG = MediaPlaybackService.class.getSimpleName();
     public static final String SONG_PLAY_COMPLETE = "song_play_complete";
@@ -66,6 +66,7 @@ public class MediaPlaybackService extends Service implements
     private NotificationManager mNotifyManager;
     private final IBinder mBinder = new MediaPlaybackBinder();
     private MediaPlayer mPlayer;
+    private AudioManager mAudioManager;
     private LinkedList<Song> mSongList = new LinkedList<>();
     private SongData mSongData;
     private int isRepeat;
@@ -83,6 +84,7 @@ public class MediaPlaybackService extends Service implements
     public void onCreate() {
         super.onCreate();
         mPlayer = new MediaPlayer();
+        mAudioManager = (AudioManager) getApplicationContext().getSystemService(AUDIO_SERVICE);
         mSongData = new SongData(this);
         mSongList = mSongData.getSongList();
         // init service
@@ -92,6 +94,7 @@ public class MediaPlaybackService extends Service implements
         mPlayer.setWakeMode(getApplicationContext(),
                 PowerManager.PARTIAL_WAKE_LOCK);
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        checkAudioFocus();
         createNotificationChannel();
     }
 
@@ -145,7 +148,7 @@ public class MediaPlaybackService extends Service implements
                 Log.d(TAG, "onStartCommand: default");
                 break;
         }
-
+        checkAudioFocus();
         return START_NOT_STICKY;
     }
 
@@ -269,8 +272,6 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion:1 " + mPlayer.getDuration()/1000 + " * " + mPlayer.getCurrentPosition()/1000 + "*" + String.valueOf(mPlayer == null));
-        Log.d(TAG, "onCompletion:2 " + mp.getDuration() + " * " + mp.getCurrentPosition() + "*" + isFirst);
         String state = "play_normal";
         if (mp.getCurrentPosition() > 0 && currentSongIndex >= 0 && !isFirst && Math.abs(mPlayer.getDuration()/1000 - mPlayer.getCurrentPosition()/1000) <=3 ) {
             if (isRepeat == REPEAT) {
@@ -316,12 +317,28 @@ public class MediaPlaybackService extends Service implements
         Log.d(TAG, "onPrepared: ");
     }
 
-    public int getCurrentSongPosition() {
-        return currentSongPosition;
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+//        checkAudioFocus();
+        Log.d(TAG, "onAudioFocusChange: "+focusChange);
+        if (focusChange == -1) {
+            pause();
+            startForegroundService(currentSongIndex, false);
+            sendMessageChangeState("song_state_pause");
+        }
     }
 
-    public void setCurrentSongPosition(int currentSongPosition) {
-        this.currentSongPosition = currentSongPosition;
+    private void checkAudioFocus() {
+        if(mAudioManager.isMusicActive())
+        {
+            int result = mAudioManager.requestAudioFocus(this,AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            Log.d(TAG, "checkAudioFocus: "+ result);
+        } else Log.d(TAG, "checkAudioFocus: "+ 0);
+    }
+    
+    public int getCurrentSongPosition() {
+        return currentSongPosition;
     }
 
     public int getCurrentSongId() {
@@ -342,10 +359,6 @@ public class MediaPlaybackService extends Service implements
 
     public MediaPlayer getPlayer() {
         return mPlayer;
-    }
-
-    public SongData getSongData() {
-        return mSongData;
     }
 
     public LinkedList<Song> getSongList() {

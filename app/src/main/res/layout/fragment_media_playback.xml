@@ -88,7 +88,7 @@
             android:background="#0000"
             android:contentDescription="@string/todo"
             android:padding="10dp"
-            android:src="@drawable/ic_action_popup" />
+            android:src="@drawable/ic_baseline_more_vert_30" />
     </RelativeLayout>
 
     <ImageButton

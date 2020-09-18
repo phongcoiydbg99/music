@@ -85,10 +85,9 @@ public class PortLayoutController extends LayoutController {
                 mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
                 mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(),mCurrentSongId));
                 mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), isPlaying);
-            if (isPlaying) {
-                mBaseSongsFragment.setStateMusic(mSongCurrentIndex, mCurrentSongId, true);
+                mBaseSongsFragment.setStateMusic(mSongCurrentIndex, mCurrentSongId, isPlaying);
+                if (isPlaying)
                 mBaseSongsFragment.updateUI();
-            }
         }
 
     }
