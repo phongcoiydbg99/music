@@ -100,7 +100,7 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
-        if (song.getId() != mediaPlaybackService.getCurrentSongId() || mediaPlaybackService.isFirst()){
+        if (song.getId() != mediaPlaybackService.getCurrentSongId() || mediaPlaybackService.isFirst() || !mediaPlaybackService.isPlaying()){
             int pos = holder.getAdapterPosition();
             if (isFavorite) {
                 mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
