@@ -37,7 +37,6 @@ public class PortLayoutController extends LayoutController {
     public void onCreate(Bundle savedInstanceState, int songPos, int songId, long songDuration, boolean isPlaying) {
         if (mActivity.findViewById(R.id.fragment_all_songs) != null) {
             // Create a new Fragment to be placed in the activity layout
-            Log.d(TAG, "onCreate: " + songPos);
             isFavorite = false;
             mSongCurrentIndex = songPos;
             mCurrentSongId = songId;
@@ -80,7 +79,6 @@ public class PortLayoutController extends LayoutController {
     public void onConnection() {
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
         isPlaying = mediaPlaybackService.isPlaying();
-        Log.d(TAG, "onConnection: " + mSongCurrentIndex);
         mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
         mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(), mCurrentSongId));
         mediaPlaybackService.startForegroundService(mediaPlaybackService.getCurrentSongIndex(), isPlaying);
@@ -92,7 +90,6 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onSongPlayClickListener(View v, Song song, long current, boolean isPlaying) {
-        Log.d(TAG, "onSongPlayClick: " + mediaPlaybackService.getCurrentSongIndex());
         mMediaPlaybackFragment = MediaPlaybackFragment.newInstance(true, song.getTitle(), song.getArtistName(), song.getData(), song.getDuration(), current, isPlaying);
         mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
         mMediaPlaybackFragment.setOnSongIsFavorClickListener(this);
@@ -103,20 +100,19 @@ public class PortLayoutController extends LayoutController {
 
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
-        int pos = holder.getAdapterPosition();
-        if (isFavorite) {
-            mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
-            Log.d(TAG, "onSongItemClick: " + SongData.getFavorAllSongs(mActivity).size());
-        } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
-        mediaPlaybackService.play(song);
-        int index = (!isFavorite) ? song.getPos() : SongData.getSongIndex(SongData.getFavorAllSongs(mActivity), song.getId());
-        Log.d(TAG, "onSongItemClick: " + index);
-        mediaPlaybackService.startForegroundService(index, true);
-        mediaPlaybackService.setStateMusic(song.getPos(), index, song.getId());
-        mBaseSongsFragment.setStateMusic(index, song.getId(), true);
-        mBaseSongsFragment.setFavorite(isFavorite);
-        Log.d(TAG, "onSongItemClick: " + mediaPlaybackService.getCurrentSongId());
-        mBaseSongsFragment.updateUI();
+        if (song.getId() != mediaPlaybackService.getCurrentSongId() || mediaPlaybackService.isFirst()){
+            int pos = holder.getAdapterPosition();
+            if (isFavorite) {
+                mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
+            } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
+            mediaPlaybackService.play(song);
+            int index = (!isFavorite) ? song.getPos() : SongData.getSongIndex(SongData.getFavorAllSongs(mActivity), song.getId());
+            mediaPlaybackService.startForegroundService(index, true);
+            mediaPlaybackService.setStateMusic(song.getPos(), index, song.getId());
+            mBaseSongsFragment.setStateMusic(index, song.getId(), true);
+            mBaseSongsFragment.setFavorite(isFavorite);
+            mBaseSongsFragment.updateUI();
+        }
     }
 
     @Override

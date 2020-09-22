@@ -149,7 +149,6 @@ public class SongData {
                 int is_fravorite = cursor.getInt(6);
                 int count_of_play = cursor.getInt(7);
                 Song song = new Song(pos,id_provider,title,artistName,data,duration);
-                Log.d("TAG", "Data: "+ id + " Album: " + is_fravorite+" * "+count_of_play);
                 songList.add(song);
                 pos++;
             }
@@ -183,7 +182,6 @@ public class SongData {
                 String data = cursor.getString(5);
                 int is_fravorite = cursor.getInt(6);
                 String count_of_play = cursor.getString(7);
-                Log.d("TAG", "Data: "+ id + " Album: " + is_fravorite);
                 if (is_fravorite == 2 ) {
                     Song song = new Song(posFavor,id_provider,title,artistName,data,duration);
                     songListFavor.add(song);
@@ -194,20 +192,6 @@ public class SongData {
         }
         return  songListFavor;
     }
-//    public static byte[] getAlbumArt(String uri)
-//    {
-//        byte[] albumArt = new byte[0];
-//        try {
-//            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-//            mediaMetadataRetriever.setDataSource(uri);
-//            albumArt = mediaMetadataRetriever.getEmbeddedPicture();
-//            mediaMetadataRetriever.release();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return albumArt;
-//    }
     public static Bitmap getAlbumArt(String path){
         Log.d("TAG", "getAlbumArt: "+path);
         MediaMetadataRetriever mediaMetadataRetriever=new MediaMetadataRetriever();

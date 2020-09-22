@@ -122,6 +122,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
         view = inflater.inflate(R.layout.fragment_all_songs, container, false);
         mRelativeLayout = view.findViewById(R.id.play_song_layout);
         mSongImage = view.findViewById(R.id.song_image);
@@ -259,14 +260,11 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
                 mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
             }
             mSongData.setSongCurrentId(mSongCurrentId);
-            int pos;
-            if (isPortrait) pos = mSongCurrentIndex; else
-            pos = (mSongCurrentIndex - 2) > 0 ? (mSongCurrentIndex - 2) : 0;
-            mRecyclerView.scrollToPosition(pos);
+            if (mSongCurrentIndex >= 0)
+            mRecyclerView.smoothScrollToPosition(mSongCurrentIndex);
             mAdapter.notifyDataSetChanged();
             SongData songData = new SongData(getActivity().getApplicationContext());
             Song song = songData.getSongId(mSongCurrentId);
-            Log.d(TAG, "updateUI: "+ mSongCurrentIndex);
             if (isPortrait) updatePlaySongLayout(song);
         }
     }

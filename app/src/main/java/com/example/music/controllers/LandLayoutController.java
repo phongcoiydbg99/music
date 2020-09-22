@@ -42,8 +42,6 @@ public class LandLayoutController extends LayoutController {
                 mSong = mSongData.getSongAt(0);
                 mSongCurrentIndex = 0;
             }
-            Log.d(TAG, "onCreate: " + " * " + " " + mSong.getDuration());
-            Log.d(TAG, "onCreate: " + " * " + " " + songId);
             if (songDuration > mSong.getDuration()) mSongCurrentStreamPossition = 0;
             else mSongCurrentStreamPossition = (int) songDuration;
             mCurrentSongId = mSong.getId();
@@ -69,7 +67,6 @@ public class LandLayoutController extends LayoutController {
         isFavorite = true;
         mBaseSongsFragment = FavoriteSongsFragment.newInstance(false);
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
-        Log.d(TAG, "onCreateFavorite: " + mediaPlaybackService.getCurrentSongId());
         setListener();
         mActivity.getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_all_songs, mBaseSongsFragment).commit();
@@ -94,10 +91,6 @@ public class LandLayoutController extends LayoutController {
 
     @Override
     public void onConnection() {
-        Log.d(TAG, "onConnection: " + mSongCurrentStreamPossition + " " + mediaPlaybackService.getDuration());
-        Log.d(TAG, "onConnection: " + mSongCurrentIndex + " " + mediaPlaybackService.getCurrentStreamPosition());
-        Log.d(TAG, "onConnection: " + mCurrentSongId);
-
         mBaseSongsFragment.setMediaPlaybackService(mediaPlaybackService);
         mMediaPlaybackFragment.setMediaPlaybackService(mediaPlaybackService);
 
@@ -125,23 +118,24 @@ public class LandLayoutController extends LayoutController {
 
     @Override
     public void onSongItemClick(SongListAdapter.SongViewHolder holder, Song song) {
-        int pos = holder.getAdapterPosition();
-        if (isFavorite) {
-            mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
-        } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
-        mediaPlaybackService.play(song);
-        int index = (!isFavorite) ? song.getPos() : SongData.getSongIndex(SongData.getFavorAllSongs(mActivity), song.getId());
-        mediaPlaybackService.setStateMusic(song.getPos(), index, song.getId());
-        Log.d(TAG, "onSongItemClick: " + index);
-        mBaseSongsFragment.setStateMusic(index, mediaPlaybackService.getCurrentSongId(), true);
-        mBaseSongsFragment.setFavorite(isFavorite);
-        mBaseSongsFragment.updateUI();
+        if (song.getId() != mediaPlaybackService.getCurrentSongId() || mediaPlaybackService.isFirst()) {
+            int pos = holder.getAdapterPosition();
+            if (isFavorite) {
+                mediaPlaybackService.setSongList(SongData.getFavorAllSongs(mActivity));
+            } else mediaPlaybackService.setSongList(SongData.getAllSongs(mActivity));
+            mediaPlaybackService.play(song);
+            int index = (!isFavorite) ? song.getPos() : SongData.getSongIndex(SongData.getFavorAllSongs(mActivity), song.getId());
+            mediaPlaybackService.setStateMusic(song.getPos(), index, song.getId());
+            mBaseSongsFragment.setStateMusic(index, mediaPlaybackService.getCurrentSongId(), true);
+            mBaseSongsFragment.setFavorite(isFavorite);
+            mBaseSongsFragment.updateUI();
 
-        mediaPlaybackService.startForegroundService(pos, true);
-        if (isConnected)
-            mMediaPlaybackFragment.updateSongCurrentData(mediaPlaybackService.getSongList().get(pos), true);
-        mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
-        mMediaPlaybackFragment.updateUI();
+            mediaPlaybackService.startForegroundService(pos, true);
+            if (isConnected)
+                mMediaPlaybackFragment.updateSongCurrentData(mediaPlaybackService.getSongList().get(pos), true);
+            mMediaPlaybackFragment.setSongCurrentStreamPossition(0);
+            mMediaPlaybackFragment.updateUI();
+        }
     }
 
     @Override
