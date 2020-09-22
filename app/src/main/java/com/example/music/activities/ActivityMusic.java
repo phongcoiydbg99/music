@@ -62,7 +62,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
     private LayoutController mLayoutController;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-    private int mSongLastPossition = -1;
+    private int mSongLastIndex = -1;
     private long mSongLastDuration = -1;
     private Boolean isFavoriteLayout = false;
     private Boolean mSongLastIsPlaying = false;
@@ -98,7 +98,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 mediaPlaybackService.setShuffle(mSongLastIsShuffle);
                 mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(),mSongLastId));
                 mLayoutController.setMediaPlaybackService(mediaPlaybackService);
-                mSongLastPossition = mediaPlaybackService.getCurrentSongIndex();
+                mSongLastIndex = mediaPlaybackService.getCurrentSongIndex();
                 if (mediaPlaybackService.isFirst()) {
                     mediaPlaybackService.setCurrentSongId(mSongLastId);
                     mSongLastIsPlaying = false;
@@ -120,7 +120,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         mLayoutController = isPortrait ? new PortLayoutController(this)
                 : new LandLayoutController(this);
         if (savedInstanceState != null) {
-            mSongLastPossition = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
+            mSongLastIndex = savedInstanceState.getInt(LayoutController.LAST_SONG_POS_EXTRA);
             mSongLastDuration = savedInstanceState.getLong(LayoutController.LAST_SONG_DURATION_EXTRA);
             mSongLastIsPlaying = savedInstanceState.getBoolean(LayoutController.LAST_SONG_ISPLAYING_EXTRA);
             isFavoriteLayout = savedInstanceState.getBoolean(IS_FAVORITE_LAYOUT);
@@ -139,7 +139,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
         } else {
             Helper.getAllSongs(this);
             startService();
-            mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
+            mLayoutController.onCreate(savedInstanceState, mSongLastIndex, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
         }
     }
 
@@ -199,7 +199,7 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                 Helper.getAllSongs(this);
                 startService();
-                mLayoutController.onCreate(savedInstanceState, mSongLastPossition, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
+                mLayoutController.onCreate(savedInstanceState, mSongLastIndex, mSongLastId, mSongLastDuration, mSongLastIsPlaying);
             } else {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(ActivityMusic.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
