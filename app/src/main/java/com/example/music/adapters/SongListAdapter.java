@@ -39,7 +39,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     private LinkedList<Song> mSongListFull;
     private Context mContext;
     private LayoutInflater mInflater;
-    private int currentPos;
+    private int currentIndex;
     private int currentId;
     private boolean isPlaying;
     SongItemClickListener songItemClickListener;
@@ -72,7 +72,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     public void onBindViewHolder(@NonNull final SongViewHolder holder, final int position) {
         final Song mCurrent = mSongList.get(position);
         isPlaying = mSongData.isPlaying();
-        currentPos = mSongData.getCurrentSongPossition();
         currentId = mSongData.getSongCurrentId();
         Log.d(TAG, "onBindViewHolder: "+ currentId+"*"+isPlaying);
         holder.itemId.setText(String.valueOf(position + 1));
@@ -86,6 +85,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 //        Log.d(TAG, "onBindViewHolder: "+ currentPos+"*"+isPlaying);
         if (mCurrent.getId() == currentId)
         {
+            currentIndex = position;
             holder.itemId.setVisibility(View.INVISIBLE);
             holder.iconPlay.setVisibility(View.VISIBLE);
             if (isPlaying) holder.iconPlay.animateBars();
@@ -190,7 +190,6 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         mSongListFull = new LinkedList<Song>();
         mSongListFull.addAll(mSongList);
     }
-
 
     public interface SongBtnClickListener {
         void onSongBtnClickListener(ImageButton btn, View v, Song song, int pos);

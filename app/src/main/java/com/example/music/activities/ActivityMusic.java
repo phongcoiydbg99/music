@@ -98,12 +98,12 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
                 mediaPlaybackService.setShuffle(mSongLastIsShuffle);
                 mediaPlaybackService.setCurrentSongIndex(SongData.getSongIndex(mediaPlaybackService.getSongList(),mSongLastId));
                 mLayoutController.setMediaPlaybackService(mediaPlaybackService);
-
+                mSongLastPossition = mediaPlaybackService.getCurrentSongIndex();
                 if (mediaPlaybackService.isFirst()) {
                     mediaPlaybackService.setCurrentSongId(mSongLastId);
                     mSongLastIsPlaying = false;
                 }
-                Log.d(TAG, "onServiceConnected() mSongLastDuration " + mSongLastPossition);
+                Log.d(TAG, "onServiceConnected() mSongLastDuration " + mediaPlaybackService.getCurrentSongIndex());
 
                 if (isFavoriteLayout) {
                     getSupportActionBar().setTitle("Favorite Songs");
