@@ -44,11 +44,9 @@ public class Helper {
                 String composer = cursor.getString(5);
                 String albumName = cursor.getString(6);
                 String data = cursor.getString(7);
-
                 Song song = new Song(pos, id, title, artistName, data, duration);
                 Cursor cursorDB = context.getContentResolver().query(MusicProvider.CONTENT_URI, projectionDB, null, null, null);
-                if (cursorDB.moveToPosition(pos)) {
-                } else {
+                if (!cursorDB.moveToPosition(pos)) {
                     ContentValues values = new ContentValues();
                     values.put(MusicDB.ID_PROVIDER, id);
                     values.put(MusicDB.TITLE, title);
@@ -60,10 +58,25 @@ public class Helper {
                     // insert a record
                     Log.d(TAG, "getAllSongs: " + id + " " + data);
                     context.getContentResolver().insert(MusicProvider.CONTENT_URI, values);
-                }
+                } else                 Log.d(TAG, "getAllSongs: " + pos + " " + cursorDB.getInt(cursorDB.getColumnIndex(MusicDB.ID_PROVIDER)) + " " + id + " " + title + " " + cursorDB.getCount());
+
                 pos++;
             }
-            cursor.close();
         }
+        Cursor cursorDB = context.getContentResolver().query(MusicProvider.CONTENT_URI, projectionDB, null, null, null);
+        if (cursorDB != null) {
+            while (cursorDB.moveToNext()) {
+                String selection = MediaStore.Audio.Media._ID + "=?";
+                String[] selectionArgs = new String[] {"" + cursorDB.getInt(cursorDB.getColumnIndex(MusicDB.ID_PROVIDER))};
+                Cursor mediaCursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+                if (mediaCursor != null && !mediaCursor.moveToFirst()) {
+                    context.getContentResolver().delete(Uri.parse(MusicProvider.CONTENT_URI + "/" + cursorDB.getInt(cursorDB.getColumnIndex(MusicDB.ID_PROVIDER))), null, null);
+                }
+
+            }
+        }
+        Log.d(TAG, "getAllSongs: "+cursorDB.getCount());
+        cursor.close();
+        cursorDB.close();
     }
 }

@@ -76,6 +76,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             }
             if (intent.getAction() == MediaPlaybackService.SONG_PLAY_CHANGE) {
                 String state = intent.getStringExtra(MediaPlaybackService.MESSAGE_SONG_PLAY_CHANGE);
+                if (mediaPlaybackService!= null)
                 mSongCurrentIndex = mediaPlaybackService.getCurrentSongIndex();
                 if (state == "chance_data"){
                     refresh();
@@ -265,7 +266,7 @@ public abstract class BaseSongsFragment extends Fragment implements SearchView.O
             mAdapter.notifyDataSetChanged();
             SongData songData = new SongData(getActivity().getApplicationContext());
             Song song = songData.getSongId(mSongCurrentId);
-            if (isPortrait) updatePlaySongLayout(song);
+            if (isPortrait && song != null) updatePlaySongLayout(song);
         }
     }
 
