@@ -97,7 +97,8 @@ public class LandLayoutController extends LayoutController {
         if (mSongCurrentIndex < 0) {
             mSongCurrentIndex = SongData.getSongIndex(mediaPlaybackService.getSongList(), mCurrentSongId);
         }
-        mIsPlaying = (mediaPlaybackService != null) ? mediaPlaybackService.isPlaying(): false;
+        mIsPlaying = (mediaPlaybackService != null) && mediaPlaybackService.isPlaying();
+
         mediaPlaybackService.setCurrentSongIndex(mSongCurrentIndex);
         mediaPlaybackService.setCurrentSongId(mCurrentSongId);
         mediaPlaybackService.startForegroundService(mSongCurrentIndex, mIsPlaying);
