@@ -267,7 +267,6 @@ public class ActivityMusic extends AppCompatActivity implements NavigationView.O
             case R.id.nav_favorite_songs:
                 isFavoriteLayout = true;
                 getSupportActionBar().setTitle("Favorite Songs");
-                Toast.makeText(this, "Favorite songs" + mediaPlaybackService.getCurrentSongId(), Toast.LENGTH_SHORT).show();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
