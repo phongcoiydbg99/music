@@ -1,0 +1,304 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<!--
+3 Copyright (C) 2012 The Android Open Source Project
+4
+5     Licensed under the Apache License, Version 2.0 (the "License");
+6     you may not use this file except in compliance with the License.
+7     You may obtain a copy of the License at
+8
+9          http://www.apache.org/licenses/LICENSE-2.0
+10
+11     Unless required by applicable law or agreed to in writing, software
+12     distributed under the License is distributed on an "AS IS" BASIS,
+13     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+14     See the License for the specific language governing permissions and
+15     limitations under the License.
+16-->
+17<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+18    coreApp="true"
+19    package="com.android.inputmethod.latin" >
+20
+21    <uses-sdk android:minSdkVersion="1" />
+21-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml
+22
+23    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+23-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:21:5-79
+23-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:21:22-76
+24    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+24-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:22:5-88
+24-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:22:22-85
+25    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+25-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:23:5-71
+25-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:23:22-68
+26    <uses-permission android:name="android.permission.READ_CONTACTS" />
+26-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:24:5-72
+26-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:24:22-69
+27    <uses-permission android:name="android.permission.READ_PROFILE" />
+27-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:25:5-71
+27-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:25:22-68
+28    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+28-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:26:5-77
+28-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:26:22-74
+29    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+29-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:27:5-74
+29-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:27:22-71
+30    <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
+30-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:28:5-79
+30-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:28:22-76
+31    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+31-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:29:5-81
+31-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:29:22-78
+32    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+32-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:30:5-74
+32-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:30:22-71
+33    <uses-permission android:name="android.permission.VIBRATE" />
+33-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:31:5-66
+33-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:31:22-63
+34    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+34-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:32:5-81
+34-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:32:22-78
+35    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+35-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:33:5-78
+35-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:33:22-75
+36    <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
+36-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:34:5-80
+36-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:34:22-77
+37
+38    <application
+38-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:36:5-173:19
+39        android:allowBackup="true"
+39-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:39:9-35
+40        android:defaultToDeviceProtectedStorage="true"
+40-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:40:9-55
+41        android:directBootAware="true"
+41-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:41:9-39
+42        android:icon="@drawable/ic_launcher_keyboard"
+42-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:37:9-54
+43        android:label="@string/english_ime_name"
+43-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:36:18-58
+44        android:supportsRtl="true" >
+44-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:38:9-35
+45
+46        <!-- Services -->
+47        <!--
+48        <service android:name="LatinIME"
+49            android:label="@string/english_ime_name"
+50            android:permission="android.permission.BIND_INPUT_METHOD">
+51            <intent-filter>
+52                <action android:name="android.view.InputMethod" />
+53            </intent-filter>
+54            <meta-data android:name="android.view.im" android:resource="@xml/method" />
+55        </service>
+56        -->
+57
+58        <service
+58-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:53:9-61:19
+59            android:name="com.android.inputmethod.latin.spellcheck.AndroidSpellCheckerService"
+59-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:53:18-71
+60            android:label="@string/spell_checker_service_name"
+60-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:54:13-63
+61            android:permission="android.permission.BIND_TEXT_SERVICE" >
+61-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:55:13-70
+62            <intent-filter>
+62-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:56:13-58:29
+63                <action android:name="android.service.textservice.SpellCheckerService" />
+63-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:57:17-90
+63-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:57:25-87
+64            </intent-filter>
+65
+66            <meta-data
+66-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:59:13-60:56
+67                android:name="android.view.textservice.scs"
+67-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:59:24-67
+68                android:resource="@xml/spellchecker" />
+68-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:60:17-53
+69        </service>
+70        <service
+70-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:63:9-65:19
+71            android:name="com.android.inputmethod.dictionarypack.DictionaryService"
+71-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:63:18-89
+72            android:label="@string/dictionary_service_name" >
+72-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:64:13-60
+73        </service>
+74
+75        <!-- Activities -->
+76        <!--
+77        <activity android:name=".setup.SetupActivity"
+78            android:theme="@style/platformActivityTheme"
+79            android:label="@string/english_ime_name"
+80            android:icon="@drawable/ic_launcher_keyboard"
+81            android:launchMode="singleTask"
+82            android:noHistory="true">
+83            <intent-filter>
+84                <action android:name="android.intent.action.MAIN" />
+85                <category android:name="android.intent.category.LAUNCHER" />
+86            </intent-filter>
+87        </activity>
+88        -->
+89
+90        <activity
+90-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:80:9-85:20
+91            android:name="com.android.inputmethod.latin.permissions.PermissionsActivity"
+91-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:81:13-60
+92            android:exported="false"
+92-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:83:13-37
+93            android:taskAffinity=""
+93-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:84:13-36
+94            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+94-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:82:13-72
+95        </activity>
+96
+97        <!--
+98        <activity android:name=".setup.SetupWizardActivity"
+99            android:theme="@style/platformActivityTheme"
+100            android:label="@string/english_ime_name"
+101            android:clearTaskOnLaunch="true">
+102            <intent-filter>
+103                <action android:name="android.intent.action.MAIN" />
+104            </intent-filter>
+105        </activity>
+106        -->
+107
+108
+109        <!--
+110        <activity android:name=".settings.SettingsActivity"
+111            android:theme="@style/platformSettingsTheme"
+112            android:label="@string/english_ime_settings">
+113            <intent-filter>
+114                <action android:name="android.intent.action.MAIN" />
+115            </intent-filter>
+116        </activity>
+117        -->
+118
+119        <activity
+119-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:104:9-110:20
+120            android:name="com.android.inputmethod.latin.spellcheck.SpellCheckerSettingsActivity"
+120-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:104:19-74
+121            android:label="@string/android_spell_checker_settings"
+121-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:106:13-67
+122            android:theme="@style/platformSettingsTheme" >
+122-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:105:13-57
+123            <intent-filter>
+123-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:107:13-109:29
+124                <action android:name="android.intent.action.MAIN" />
+124-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:108:17-69
+124-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:108:25-66
+125            </intent-filter>
+126        </activity>
+127        <activity
+127-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:112:9-119:20
+128            android:name="com.android.inputmethod.dictionarypack.DictionarySettingsActivity"
+128-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:112:19-99
+129            android:label="@string/dictionary_settings_title"
+129-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:114:13-62
+130            android:theme="@style/platformSettingsTheme"
+130-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:113:13-57
+131            android:uiOptions="splitActionBarWhenNarrow" >
+131-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:115:13-57
+132            <intent-filter>
+132-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:107:13-109:29
+133                <action android:name="android.intent.action.MAIN" />
+133-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:108:17-69
+133-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:108:25-66
+134            </intent-filter>
+135        </activity>
+136        <activity
+136-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:121:9-127:20
+137            android:name="com.android.inputmethod.dictionarypack.DownloadOverMeteredDialog"
+137-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:121:19-98
+138            android:label="@string/dictionary_install_over_metered_network_prompt"
+138-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:123:13-83
+139            android:theme="@style/platformActivityTheme" >
+139-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:122:13-57
+140            <intent-filter>
+140-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:107:13-109:29
+141                <action android:name="android.intent.action.MAIN" />
+141-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:108:17-69
+141-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:108:25-66
+142            </intent-filter>
+143        </activity>
+144
+145        <!-- Unexported activity used for tests. -->
+146        <activity
+146-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:130:9-131:40
+147            android:name="com.android.inputmethod.latin.settings.TestFragmentActivity"
+147-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:130:19-64
+148            android:exported="false" />
+148-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:131:13-37
+149
+150        <!-- Broadcast receivers -->
+151        <!--
+152        <receiver android:name="SystemBroadcastReceiver">
+153            <intent-filter>
+154                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+155                <action android:name="android.intent.action.BOOT_COMPLETED" />
+156                <action android:name="android.intent.action.USER_INITIALIZE" />
+157                <action android:name="android.intent.action.LOCALE_CHANGED" />
+158            </intent-filter>
+159        </receiver>
+160        -->
+161
+162        <receiver
+162-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:143:9-147:20
+163            android:name="com.android.inputmethod.latin.DictionaryPackInstallBroadcastReceiver"
+163-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:143:19-72
+164            android:exported="false" >
+164-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:143:73-97
+165            <intent-filter>
+165-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:144:13-146:29
+166                <action android:name="com.android.inputmethod.dictionarypack.aosp.UNKNOWN_CLIENT" />
+166-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:145:17-101
+166-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:145:25-98
+167            </intent-filter>
+168        </receiver>
+169        <receiver android:name="com.android.inputmethod.dictionarypack.EventHandler" >
+169-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:149:9-156:20
+169-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:149:19-85
+170            <intent-filter>
+170-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:150:13-155:29
+171                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+171-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:151:17-82
+171-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:151:25-79
+172                <action android:name="android.intent.action.DATE_CHANGED" />
+172-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:152:17-77
+172-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:152:25-74
+173                <action android:name="com.android.inputmethod.dictionarypack.aosp.UPDATE_NOW" />
+173-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:153:17-97
+173-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:153:25-94
+174                <action android:name="com.android.inputmethod.dictionarypack.aosp.INIT_AND_UPDATE_NOW" />
+174-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:154:17-106
+174-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:154:25-103
+175            </intent-filter>
+176        </receiver>
+177
+178        <!-- Broadcast receiver for AccountManager#LOGIN_ACCOUNTS_CHANGED_ACTION. -->
+179        <receiver android:name="com.android.inputmethod.latin.accounts.AccountsChangedReceiver" >
+179-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:159:9-163:20
+179-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:159:19-67
+180            <intent-filter>
+180-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:160:13-162:29
+181                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+181-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:161:17-82
+181-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:161:25-79
+182            </intent-filter>
+183        </receiver>
+184
+185        <!-- Content providers -->
+186        <provider
+186-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:166:9-172:20
+187            android:name="com.android.inputmethod.dictionarypack.DictionaryProvider"
+187-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:166:19-91
+188            android:authorities="@string/authority"
+188-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:169:13-52
+189            android:exported="false"
+189-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:168:13-37
+190            android:grantUriPermissions="true"
+190-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:167:13-47
+191            android:label="@string/dictionary_provider_name"
+191-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:171:13-61
+192            android:multiprocess="false" >
+192-->/home/bacnt/GitHub/BkavGTV/LatinIME/src/main/AndroidManifest.xml:170:13-41
+193        </provider>
+194    </application>
+195
+196</manifest>
